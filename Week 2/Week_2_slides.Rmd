@@ -1,0 +1,27 @@
+---
+title: "Week 2 Slides"
+subtitle: "Review"
+author: "Andrew Katz"
+institute: "Department of Engineering Education, VT"
+date: "`r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+Week 2 Slides
+
+---
+
+
+Place holder text
+
+
+---
+
+
+More placeholder text
