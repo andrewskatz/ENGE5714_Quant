@@ -3,7 +3,7 @@ title: "Week 2 Slides"
 subtitle: "Review, Intro Stats, and Intro to R"
 author: "Andrew Katz"
 institute: "Department of Engineering Education, VT"
-date: "`r Sys.Date()`)"
+date: "`r Sys.Date()`"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -49,6 +49,7 @@ output:
 * I certainly recognize programming may be unfamiliar to some students
 * I will try to post resources (e.g., video tutorials) to help you get started
 * Never hesitate to reach out to your classmates or me if you need help!
+* There _are_ options we can use if programming just isn't working for you
 
 
 ---
@@ -112,7 +113,7 @@ or something more specific like $x \sim \mathcal{N} (0, \,1)$
 --
 
 .pull-left[
-```{r echo = FALSE}
+```{r normal-hist, echo = FALSE}
 x <- rnorm(n = 10000, sd = 1, mean = 0)
 
 hist(x)
@@ -125,7 +126,7 @@ hist(x)
 
 .pull-right[
 
-```{r}
+```{r normal-geom_histogram}
 
 x_df <- as_tibble(x)
 ggplot(data = x_df, mapping = aes(x = x)) +
