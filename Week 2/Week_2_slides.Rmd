@@ -1,6 +1,6 @@
 ---
 title: "Week 2 Slides"
-subtitle: "Review"
+subtitle: "Review, Intro Stats, and Intro to R"
 author: "Andrew Katz"
 institute: "Department of Engineering Education, VT"
 date: "`r Sys.Date()`)"
@@ -13,15 +13,168 @@ output:
       countIncrementalSlides: false
 ---
 
-Week 2 Slides
+.center[
+# Week 2 Reading Assignment
+]
+
+.pull-left[
+## DSUR - Chapter 1:  
+Why is my evil lecturer forcing me to learn statistics
+]
+
+.pull-right[
+## DSUR - Chatper 2: 
+Everything you ever wanted to know about statistics
+]
+
+<br>
+## R4DS - Sections 1 - 8
+
+---
+
+class: inverse, middle, center
+
+
+
+# Chapter One
+
+### Why is My Evil Lecturer Forcing Me to Learn Statistics?
+
+
+---
+
+.center[
+
+# Main Takeaways
+
+]
+
+
+--
+
+.pull-left[
+## Bullet points 
+
+* Example code `x <- 4`
+* Bullet two
+
+]
+
+--
+
+.pull-right[
+## More bullet points
+
+* Bullet three
+]
+
+---
+
+.center[
+
+# Chapter One Vocabulary
+
+]
+
+.pull-left[
+
+Multimodal <br>
+Negative skew <br>
+Nominal variable <br>
+Normal distribution <br>
+Null hypothesis <br>
+Ordinal variable <br>
+Outcome variable <br>
+Platykurtic <br>
+Positive skew <br>
+Practice effect <br>
+Predictor variable <br>
+Probability distribution <br>
+Qualitative methods <br>
+Quantitative methods <br>
+Quartile <br>
+Randomization <br>
+
+
+]
+
+
+
+.pull-right[
+
+Range <br>
+Ratio variable <br>
+Reliability <br>
+Repeated-measures design <br>
+Second quartile <br>
+Skew <br>
+Systematic variation <br>
+_Tertium quid_ <br>
+Test-retest reliability <br>
+Theory <br>
+Unsystematic variation <br>
+Upper quartile <br>
+Validity <br>
+Variables <br>
+Within-subject design <br>
+z-scores
+
+]
+
+
+---
+class: inverse, middle, center
+
+# Chapter Two
+
+Everything You Ever Wanted to Know About Statistics
+
 
 ---
 
 
-Place holder text
+.center[
+
+# Chapter Two Vocabulary
+
+]
+
+.pull-left[
+
+$\alpha$-level <br>
+$\beta$-level <br>
+Central limit theorem <br>
+Confidence interval <br>
+Degrees of freedom <br>
+Deviance <br>
+Effect size <br>
+Fit <br>
+Linear model <br>
+Meta-analysis <br>
+One-tailed test <br>
+Population <br>
+Power <br>
 
 
----
+
+]
 
 
-More placeholder text
+
+.pull-right[
+
+Sample <br>
+Sampling distribution <br>
+Sampling variation <br>
+Standard deviation <br>
+Standard error <br>
+Standard error of the mean (SE) <br>
+Sum of squared errors (SSE) <br>
+Test statistic <br>
+Two-tailed test <br>
+Type I error <br>
+Type II error <br>
+Variance
+
+]
+
