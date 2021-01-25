@@ -321,6 +321,7 @@ Big focus on:
 
 * Standard deviation
 * Variance
+* Range (and quartiles)
 
 
 ---
@@ -372,6 +373,19 @@ ggplot(data = x_df, mapping = aes(x = x)) +
 
 ]
 
+---
+
+.center[
+# Z-scores
+]
+
+A $z$ score refers to a the score on a "standard normal" random variable. This is a random variable with $\mu = 0$ and $\sigma = 1$
+
+.center[
+
+$z = \frac{X - \overline{X}}{s}$
+
+]
 
 
 ---
@@ -438,6 +452,16 @@ hist(x)
 ]
 
 ---
+
+.center[
+# Hypothesis Testing
+]
+
+* Null hypothesis
+* Alternative hypothesis
+
+---
+
 
 .center[
 
