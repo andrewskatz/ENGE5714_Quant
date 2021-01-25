@@ -319,6 +319,22 @@ Big focus on:
 
 ---
 
+# Measures of Central Tendency
+* Mean
+* Median
+
+
+---
+
+# Measures of Dispersion
+
+* Standard deviation
+* Variance
+
+
+---
+
+
 
 class: center, middle
 
@@ -360,16 +376,44 @@ or something more specific like `\(x \sim \mathcal{N} (0, \,1)\)`
 
 # Binomial distribution
 
+]
+
 .left[The binomial distribution can be used to characterize a binary random variable `\(n\)` trials of probability of success `\(p\)` for each trial. &lt;br&gt;
 Such a variable is denoted as: `\(x \sim \mathcal{Bin}(n, \,p)\)`
 
 ]
+
+
+.pull-left[
+
+```r
+x &lt;- rbinom(n = 1000, size = 10, p = 0.5)
+```
 ]
+
+.pull-right[
+
+![](Week_2_slides_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+]
+
+
+---
+
+.center[
+# Additional Probability Distributions
+
+]
+
 
 --
 
 .pull-left[
 
+### Discrete distributions
+* Poisson 
+* Bernoulli 
+* Geometric 
+* Negative binomial
 
 ]
 
@@ -377,6 +421,10 @@ Such a variable is denoted as: `\(x \sim \mathcal{Bin}(n, \,p)\)`
 
 .pull-right[
 
+### Continuous distributions
+* Exponential
+* Beta
+* Gamma 
 
 ]
 
