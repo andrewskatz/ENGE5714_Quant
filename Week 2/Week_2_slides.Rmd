@@ -199,9 +199,12 @@ class: center, middle
 # Measurement Error
 ]
 
-* What does this look like in education settings?
+* What does this look like in education settings? </br>
 
-* 
+
+--
+
+* What kinds of measurements are we taking?
 
 
 ---
@@ -214,21 +217,32 @@ class: center, middle
 
 ### Validity
 * Content validity
+
 * Criterion validity
+
+  * Concurrent
+
+  * Predictive
+
 * Construct validity
+
 * Face validity
 
 ]
 
+
 --
 
-.pull-rigth[
+.pull-right[
 
 ### Reliability
 
-* Inter-rater reliability
+* Inter-rater reliability 
+
 * Intra-rater reliability
+
 * Test-retest reliability
+
 * Split-half reliability
 
 ]
@@ -455,12 +469,16 @@ class: center, middle, inverse
 
 ---
 
-# General Takeaways?
+.center[
 
+# General Impressions?
+
+]
 
 ---
 
 .center[
+
 # General Philosophy
 
 .middle[
@@ -474,39 +492,58 @@ class: center, middle, inverse
 
 ---
 
+.center[
+
 # Introduction
+
+]
 
 ---
 
+.center[
 
 # $\S$ 3 Data Visualization
 
+]
 
 ---
 
+.center[
 
 # $\S$ 4 Workflow: Basics
 
+]
 
 ---
+
+.center[
 
 # $\S$ 5 Data Transformation
 
+]
 
 ---
+
+.center[
 
 # $\S$ 6 Workflow: Scripts
 
+]
 
 ---
+
+.center[
 
 # $\S$ 7 Exploratory Data Analysis
-
+]
 
 ---
+
+.center[
 
 # $\S$ 8 Workflow: Projects
 
+]
 
 
 
