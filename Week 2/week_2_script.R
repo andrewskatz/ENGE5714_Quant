@@ -19,3 +19,13 @@ library(tidyverse)
 
 
 # Working in R
+
+
+
+
+
+prior_survey <- read_csv("ENGE_5714_2021_pre_survey.csv")
+
+ggplot(data = prior_survey, mapping = aes(x = `I know what a type I error is`)) +
+  geom_bar() +
+  coord_flip()

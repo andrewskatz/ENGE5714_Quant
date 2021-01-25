@@ -535,6 +535,114 @@ Everything You Ever Wanted to Know About Statistics
 
 ---
 
+# Populations and Samples
+
+---
+
+# Statistical Models
+
+### Linear models
+
+$y_i = \beta_0 + \beta_1 * X_{1i} + \beta_2*X_{2i} + \cdots$
+
+---
+
+# More Statistical Models
+
+** Drawing on "whiteboard" **
+
+---
+
+# Going Beyond the Data
+
+### Standard error
+
+
+### Confidence intervals
+
+
+---
+
+# Using Statistical Models to Test RQs
+(A bit of philosophy)
+
+1. Generate research question through initial observation
+2. Generate a theory to explain your initial observation
+3. Generate hypotheses - break theory into set of testable predictions
+4. Collect data to test theory
+5. Analyze the data - fit a statistical model
+
+
+---
+
+.center[
+# Test Statistics
+
+
+$test = \frac{\text{variance explained by model}}{\text{variance not explained by model}}$
+]
+
+
+* These test statistics can follow several common distributions such as a $t$ distribution, $F$ distribution, or $\chi^2$ distribution
+
+--
+
+* From a _frequentist_ perspective, these test statistics are meaningful because they can produce $p$ values
+
+--
+
+* A $p$ value tells you the probability of seeing a test statistic as extreme or more extreme under the null hypothesis
+
+
+---
+
+.center[
+# Statistical Significance vs Practical Significance
+]
+
+---
+
+# Type I and Type II Errors
+
+--
+
+* Type I error is also known as a false positive
+
+* Type I error involves finding a significant result when there actually is not
+
+* $\alpha$-level refers to type I errors and is usually set at 0.05 (or 5%)
+
+--
+
+* Type II error is also known as a false negative
+
+* Type II error involves _not_ finding a significant result when there acutally _is_
+
+* $\beta$-level refers to type II errors and is usually set at 0.8 (or 80%)
+
+
+---
+
+
+# Statistical Power
+
+
+---
+
+# Let's work through example
+
+* Identify a research question
+
+* Identify how to collect data
+
+* What are our hypotheses?
+
+* What does statistical signifance mean here?
+
+* What does practical significance mean here?
+
+
+---
 
 .center[
 
@@ -611,54 +719,6 @@ class: center, middle, inverse
 ]
 
 
----
-
-.center[
-
-# Introduction
-
-]
-
----
-
-.center[
-
-# $\S$ 3 Data Visualization
-
-]
-
----
-
-.center[
-
-# $\S$ 4 Workflow: Basics
-
-]
-
----
-
-.center[
-
-# $\S$ 5 Data Transformation
-
-]
-
----
-
-.center[
-
-# $\S$ 6 Workflow: Scripts
-
-]
-
----
-
-.center[
-
-# $\S$ 7 Exploratory Data Analysis
-]
-
-Working with the prior knowledge survey (we will switch to a script in class for more time working with this)
 
 ```{r prior-survey, echo=FALSE}
 
@@ -672,13 +732,6 @@ ggplot(data = prior_survey, mapping = aes(x = `I know what a type I error is`)) 
 
 ```
 
----
-
-.center[
-
-# $\S$ 8 Workflow: Projects
-
-]
 
 
 
