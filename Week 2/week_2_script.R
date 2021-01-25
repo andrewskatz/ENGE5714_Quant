@@ -22,9 +22,19 @@ library(tidyverse)
 
 
 
-
+## Reading in data
 
 prior_survey <- read_csv("ENGE_5714_2021_pre_survey.csv")
+
+
+
+# Exploring the data
+
+
+
+
+
+## Plotting data
 
 ggplot(data = prior_survey, mapping = aes(x = `I know what a type I error is`)) +
   geom_bar() +

@@ -607,16 +607,20 @@ $test = \frac{\text{variance explained by model}}{\text{variance not explained b
 --
 
 * Type I error is also known as a false positive
+--
 
 * Type I error involves finding a significant result when there actually is not
+--
 
 * $\alpha$-level refers to type I errors and is usually set at 0.05 (or 5%)
 
 --
 
 * Type II error is also known as a false negative
+--
 
 * Type II error involves _not_ finding a significant result when there acutally _is_
+--
 
 * $\beta$-level refers to type II errors and is usually set at 0.8 (or 80%)
 
