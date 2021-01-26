@@ -86,8 +86,27 @@ prior_survey %>%
   geom_tile()
 
 
+## This plot is okay for giving a general sense of what is going on in these plots
+## but there are a bunch of other ways to go about doing this
+
+### First, maybe we want to rename the response categories to a numerical scale
+
+prior_survey <- prior_survey %>% 
+  gather(key = "survey_item", value = "survey_response") %>% 
+  mutate(survey_response_num = case_when(survey_response == "Strongly disagree" ~ 0,
+                                         survey_response == "Somewhat disagree" ~ 1,
+                                         survey_response == "Neither agree nor disagree" ~ 2,
+                                         survey_response == "Somewhat agree" ~ 3,
+                                         survey_response == "Strongly agree" ~ 4,
+                                         )) 
 
 
+### Then we plot the same data but with the numerical scale along the x-axis
+prior_survey %>% 
+  group_by(survey_item, survey_response_num) %>% 
+  summarize(n = n()) %>% 
+  ggplot(mapping = aes(x = survey_response_num, y = survey_item, fill = n)) +
+  geom_tile()
   
 
 
