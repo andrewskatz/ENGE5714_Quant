@@ -1,4 +1,7 @@
-## Week 2 Notes
+## Week 2 Notes ----
+
+
+# Getting your R environment set up ----
 
 ## One of the first things you will have in any script or .rmd file is a section to load
 ## all the libraries that you use in that script.
@@ -6,32 +9,60 @@
 # you can install a library by using the install.packages() function, for example:
 install.packages("tidyverse")
 
+install.packages("janitor")
+
 # with this installed, you can then load the package using the library() function
 
 
 library(tidyverse)
+library(janitor)
+library(psych)
 
 
 
-# Distributions
 
 
+## Reading in data ----
+
+### A good first step is to check which directory you are working in with the getwd() function
+getwd()
+
+### you can also check which files are in that directory with list.files()
+list.files()
+
+### If you notice that the file you are looking for is not there, then you can use setwd()
+### to change your working directory
+setwd("./Week 2/")
+
+### After that, make sure you have switched to the correct working directory
+
+getwd()
+list.files()
 
 
-# Working in R
-
-
-
-## Reading in data
+### Assuming you have directed yourself to the correct place, you can now read in 
+### the file(s) that you want to be working with
 
 prior_survey <- read_csv("ENGE_5714_2021_pre_survey.csv")
 
 
 
-# Exploring the data
+
+
+# Exploring the data ----
+
+## Take a look at the csv
+
+prior_survey
+
+prior_survey <- prior_survey %>% clean_names()
 
 
 
+table(prior_survey$i_have_taken_a_quantitative_research_methods_course_before)
+
+#using describe() from the psych package
+describe(prior_survey)
 
 
 ## Plotting data
@@ -39,3 +70,29 @@ prior_survey <- read_csv("ENGE_5714_2021_pre_survey.csv")
 ggplot(data = prior_survey, mapping = aes(x = `I know what a type I error is`)) +
   geom_bar() +
   coord_flip()
+
+
+
+prior_survey %>% 
+  gather(key = "survey_item", value = "survey_response") %>%
+  
+
+
+prior_survey %>% 
+  gather(key = "survey_item", value = "survey_response") %>% 
+  group_by(survey_item, survey_response) %>% 
+  summarize(n = n()) %>% 
+  ggplot(mapping = aes(x = survey_response, y = survey_item, fill = n)) +
+  geom_tile()
+
+
+
+
+  
+
+
+
+
+
+
+
