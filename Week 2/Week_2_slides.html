@@ -94,7 +94,14 @@ Everything you ever wanted to know about statistics
 
 ### Refresh of some ideas from Fall research methods
 
-### 
+--
+
+### High-level review of concepts from textbook
+
+--
+
+### Start working in R
+
 
 ---
 
@@ -128,7 +135,7 @@ Everything you ever wanted to know about statistics
 
 # Reviewing Prior Knowledge (4/4)
 
-### Q: What study designs do we generally associated with quantitative methods?
+### Q: What study designs do we generally associate with quantitative methods?
 
 
 
@@ -146,11 +153,10 @@ class: inverse, middle, center
 
 ---
 
-class: center, middle
-
+.center[
 # Main Takeaways
-
-
+]
+* Examples takeaways start here
 
 
 ---
@@ -178,12 +184,18 @@ class: center, middle
 
 ]
 
+
+*We will revisit this image/idea throughout the semester 
+
+
 ]
 
 
----
 
+---
+.center[
 # `\(\S\)` 1.5 Data Collection
+]
 
 ## Variables
 
@@ -239,6 +251,8 @@ class: center, middle
 .center[
 # Validity and Reliability
 ]
+
+--
 
 .pull-left[
 
@@ -314,13 +328,19 @@ Big focus on:
 
 ---
 
+.center[
 # `\(\S\)` 1.7 Analyzing data
 ### Frequency Distributions
-
+]
 ---
-
+.center[
 # Measures of Central Tendency
-* Mean
+]
+
+* Mean: `\(\overline{x} = \frac{x_1 + x_2 + \cdots+ x_n}{n}\)`
+  * for population, use `\(\mu\)`
+  * for samples, use `\(\overline{x}\)`
+
 * Median
 
 
@@ -328,8 +348,20 @@ Big focus on:
 
 # Measures of Dispersion
 
-* Standard deviation
-* Variance
+* Standard deviation: 
+  * for population, use `\(\sigma\)`
+  * for sample, use `\(s\)`
+  
+--
+
+* Variance: 
+  * for population, use `\(\sigma^2\)`
+  * for sample, use `\(s^2\)`
+  * Calculate by taking average square of numbers in the sample from their average
+  * `\(\sigma^2 = \frac{\sum_{i=1}^n(x_i-\overline{x})^2}{n}\)`
+
+--
+
 * Range (and quartiles)
 
 
@@ -358,13 +390,14 @@ or something more specific like `\(x \sim \mathcal{N} (0, \,1)\)`
 --
 
 .pull-left[
+using base R graphics
 ![](Week_2_slides_files/figure-html/normal-hist-1.png)&lt;!-- --&gt;
 ]
 
 --
 
 .pull-right[
-
+using ggplot graphics
 ![](Week_2_slides_files/figure-html/normal-geom_histogram-1.png)&lt;!-- --&gt;
 
 ]
@@ -375,8 +408,16 @@ or something more specific like `\(x \sim \mathcal{N} (0, \,1)\)`
 # Z-scores
 ]
 
-A `\(z\)` score refers to a the score on a "standard normal" random variable. This is a random variable with `\(\mu = 0\)` and `\(\sigma = 1\)`
+A `\(z\)` score refers to a the score on a "standard normal" random variable. This is a random variable with `\(\mu = 0\)` and `\(\sigma = 1\)`. You would write this as: 
 
+.center[
+`\(z \sim \mathcal{N}(0,1)\)`
+]
+
+
+--
+
+You can convert from a normal variable with mean `\(\overline{x}\)` and standard deviation `\(s\)` to a standard normal with the following equation:
 .center[
 
 `\(z = \frac{X - \overline{X}}{s}\)`
@@ -392,7 +433,8 @@ A `\(z\)` score refers to a the score on a "standard normal" random variable. Th
 
 ]
 
-.left[The binomial distribution can be used to characterize a binary random variable `\(n\)` trials of probability of success `\(p\)` for each trial. &lt;br&gt;
+.left[
+The binomial distribution can be used to characterize a binary random variable `\(n\)` trials of probability of success `\(p\)` for each trial. &lt;br&gt;
 Such a variable is denoted as: `\(x \sim \mathcal{Bin}(n, \,p)\)`
 
 ]
@@ -406,6 +448,11 @@ x &lt;- rbinom(n = 1000, size = 10, p = 0.5)
 ]
 
 .pull-right[
+
+
+```r
+hist(x)
+```
 
 ![](Week_2_slides_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
 ]
@@ -518,15 +565,17 @@ Everything You Ever Wanted to Know About Statistics
 
 
 ---
-
+.center[
 # Main takeaways
-
+]
 
 
 
 ---
 
+.center[
 # Populations and Samples
+]
 
 ---
 
@@ -534,23 +583,40 @@ Everything You Ever Wanted to Know About Statistics
 
 ### Linear models
 
-`\(y_i = \beta_0 + \beta_1 * X_{1i} + \beta_2*X_{2i} + \cdots\)`
+`\(y_i = \beta_0 + \beta_1 * X_{1i} + \beta_2*X_{2i} + \cdots + \epsilon_i\)`
+
+--
+
+* Here, `\(y\)` is the outcome variable, `\(X_1\)` and `\(X_2\)` are predictors, and `\(\epsilon\)` is an error term
+
+* Note that the term "linear model" here refers to the additivity of the terms and has nothing to do with the power that the predictors are raised to.
+
+* The following is also a linear model:
+`\(y_i = \beta_0 + \beta_1 * X_{1i}^2 + \beta_2*X_{2i}^3 + \cdots + \epsilon_i\)`
+
+
+
 
 ---
-
+.center[
 # More Statistical Models
+]
 
-** Drawing on "whiteboard" **
+** Drawing on "whiteboard" to discuss deviance and squared errors**
 
 ---
-
+.center[
 # Going Beyond the Data
+]
 
 ### Standard error
+* The terminology around this can be a little confusing. We will try a simulation in class to see if we can gain some intuition.
+**Switch to simulation**
 
+--
 
 ### Confidence intervals
-
+* Be careful with the language about what confidence intervals can and cannot tell us
 
 ---
 
@@ -592,8 +658,9 @@ Everything You Ever Wanted to Know About Statistics
 ]
 
 ---
-
+.center[
 # Type I and Type II Errors
+]
 
 --
 
@@ -618,13 +685,13 @@ Everything You Ever Wanted to Know About Statistics
 
 ---
 
-
+.center[
 # Statistical Power
-
+]
 
 ---
 
-# Let's work through example
+# Work through example
 
 * Identify a research question
 
@@ -714,6 +781,27 @@ class: center, middle, inverse
 ]
 
 
+---
+
+.center[
+# Let's switch to working in R for the remainder of class
+
+]
+
+
+---
+
+
+```
+## Parsed with column specification:
+## cols(
+##   .default = col_character()
+## )
+```
+
+```
+## See spec(...) for full column specifications.
+```
 
 ![](Week_2_slides_files/figure-html/prior-survey-1.png)&lt;!-- --&gt;
 
