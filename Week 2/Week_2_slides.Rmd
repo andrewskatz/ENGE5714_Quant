@@ -543,7 +543,19 @@ Everything You Ever Wanted to Know About Statistics
 
 ### Linear models
 
-$y_i = \beta_0 + \beta_1 * X_{1i} + \beta_2*X_{2i} + \cdots$
+$y_i = \beta_0 + \beta_1 * X_{1i} + \beta_2*X_{2i} + \cdots + \epsilon_i$
+
+--
+
+* Here, $y$ is the outcome variable, $X_1$ and $X_2$ are predictors, and $\epsilon$ is an error term
+
+* Note that the term "linear model" here refers to the additivity of the terms and has nothing to do with the power that the predictors are raised to.
+
+* The following is also a linear model:
+$y_i = \beta_0 + \beta_1 * X_{1i}^2 + \beta_2*X_{2i}^3 + \cdots + \epsilon_i$
+
+
+
 
 ---
 
