@@ -147,7 +147,11 @@ class: inverse, middle, center
 .center[
 # Main Takeaways
 ]
-* Examples takeaways start here
+1. Need to have an element of curiosity about what we are doing and we need data to strategically answer our questions by testing hypothesis 
+
+2. Difference between correlation and causation and how those may get mixed up -- causation requires a much more nuanced study design
+
+3. Data collection and consideration about what we are measuring/how we are measuring it
 
 
 ---
@@ -421,7 +425,7 @@ $z \sim \mathcal{N}(0,1)$
 
 --
 
-You can convert from a normal variable with mean $\overline{x}$ and standard deviation $s$ to a standard normal with the following equation:
+You can convert from a normal variable with mean $\overline{x}$ and standard deviation $s$ to a standard normal with the following equation (from p. 27):
 .center[
 
 $z = \frac{X - \overline{X}}{s}$
