@@ -1,6 +1,14 @@
 ## Week 2 Notes ----
 
 
+x <- seq(1:10)
+y_is_a_very_long_name <- 2* x + 3
+
+
+
+plot(x, y)
+
+
 # Getting your R environment set up ----
 
 ## One of the first things you will have in any script or .rmd file is a section to load
@@ -10,6 +18,8 @@
 install.packages("tidyverse")
 
 install.packages("janitor")
+
+install.packages("psych")
 
 # with this installed, you can then load the package using the library() function
 
@@ -45,7 +55,7 @@ list.files()
 
 prior_survey <- read_csv("ENGE_5714_2021_pre_survey.csv")
 
-
+prior_survey <- read_csv("C:/desktop/my super sweet course folder/Week 2 is the best/ENGE_5714_survey.csv")
 
 
 
@@ -55,8 +65,13 @@ prior_survey <- read_csv("ENGE_5714_2021_pre_survey.csv")
 
 prior_survey
 
-prior_survey <- prior_survey %>% clean_names()
+view(prior_survey)
 
+
+
+prior_survey <- prior_survey %>% clean_names() # from janitor package
+
+prior_survey$`I have heard the term "non-parametric statistics" before`
 
 
 table(prior_survey$i_have_taken_a_quantitative_research_methods_course_before)
@@ -122,7 +137,7 @@ data_vec <- rep(NA, num_reps)
 for (i in 1:num_reps){
   data_vec[i] <- i
 }
-
+getwd()
 
 #### and let's note that we can sample from a normal distribution with this
 rnorm(n = 10, mean = 5, sd = 2)
