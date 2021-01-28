@@ -1,0 +1,755 @@
+---
+title: "Week 3 Slides"
+subtitle: "Data Cleaning, Organizing, Describing, and Communicating"
+author: "Andrew Katz"
+institute: "Department of Engineering Education <br><br> Virginia Tech"
+date: "2021-02-02"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+.center[
+
+# Week 3 Announcements
+
+]
+
+--
+### Don't forget about post-class reflections
+
+--
+
+### The weekly writing assignments (i.e., reflections and class prep) do not need to follow the provided templates
+
+--
+### General comments about grades
+* Problems sets can be revised
+* My goal is for you to reach your goals. The assignments are designed with that in mind
+  * If you want to modify a course assignment to a dataset you work with, we can do that!
+
+--
+
+### I will try to post slides before class, but we will be adding to them as we go along. The .rmd and .pdf files will be available at the course GitHub repo.
+
+
+---
+
+.center[
+# More Week 2 Announcements
+]
+
+### A note about course material organization
+* I do know that we could be using Canvas for organizing materials
+* Tools like Google Drive, Slack, and GitHub are common in practice
+* I want you all to be familiar and comfortable with these tools by the end of the semester 
+* Consider this a low-stakes opportunity to learn even more new tools (yay!)
+
+--
+
+### A note about programming
+* I certainly recognize programming may be unfamiliar to some students
+* I will try to post resources (e.g., video tutorials) to help you get started
+* Never hesitate to reach out to your classmates or me if you need help!
+* There _are_ options we can use if programming isn't your jam
+
+
+
+---
+
+.center[
+# Week 3 Reading Assignment
+]
+
+.pull-left[
+## DSUR - Chapter 4:  
+Exploring Data with Graphs
+]
+
+.pull-right[
+## R4DS - Sections 9 - 21
+
+]
+
+<br>
+
+---
+
+
+# Today's Plan
+
+### Review Chapter 2 of DSUR
+
+--
+
+### Start working in R
+
+
+---
+
+
+---
+
+.center[
+
+# General Philosophy
+
+
+
+.middle[
+
+![](stats_prob_cycle.png)
+
+]
+
+
+*We will revisit this image/idea throughout the semester 
+
+
+]
+
+
+
+---
+.center[
+# $\S$ 1.5 Data Collection
+]
+
+## Variables
+
+.pull-left[
+
+### Independent/Dependent Variables
+
+* Independent and dependent variables
+
+* Predictor and outcome variable
+
+* Covariates and target
+
+* Explanatory and response variable
+
+]
+
+--
+
+
+
+.pull-right[
+
+### Levels of Measurement
+
+* Categorial Variable
+  * **Nominal**
+  * **Ordinal**
+
+* Continuous variable
+  * **Interval**
+  * **Ratio**
+
+]
+
+
+---
+
+.center[
+# Measurement Error
+]
+
+* What does this look like in education settings? </br>
+
+
+--
+
+* What kinds of measurements are we taking?
+
+
+---
+
+.center[
+# Validity and Reliability
+]
+
+--
+
+.pull-left[
+
+### Validity
+* Content validity
+
+* Criterion validity
+
+  * Concurrent
+
+  * Predictive
+
+* Construct validity
+
+* Face validity
+
+]
+
+
+--
+
+.pull-right[
+
+### Reliability
+
+* Inter-rater reliability 
+
+* Intra-rater reliability
+
+* Test-retest reliability
+
+* Split-half reliability
+
+]
+
+
+
+---
+
+
+.center[
+
+# More on how to measure
+(More terminology - yaaaaas!)
+
+]
+
+.pull-left[
+### Correlational Research
+* Correlational
+* Cross-sectional
+* Longitudinal
+* Observational
+
+
+]
+
+
+.pull-right[
+
+### Experimental Research
+Types:
+* Randomized control trial
+* Quasi-experimental
+* Natural experiment
+
+Big focus on: 
+* Confounding variables
+* Systematic vs. Unsystematic Variation
+
+]
+
+
+---
+
+.center[
+# $\S$ 1.7 Analyzing data
+### Frequency Distributions
+]
+---
+.center[
+# Measures of Central Tendency
+]
+
+* Mean: $\overline{x} = \frac{x_1 + x_2 + \cdots+ x_n}{n}$
+  * for population, use $\mu$
+  * for samples, use $\overline{x}$
+
+* Median
+
+
+---
+
+# Measures of Dispersion
+
+* Standard deviation: 
+  * for population, use $\sigma$
+  * for sample, use $s$
+  
+--
+
+* Variance: 
+  * for population, use $\sigma^2$
+  * for sample, use $s^2$
+  * Calculate by taking average square of numbers in the sample from their average
+  * $\sigma^2 = \frac{\sum_{i=1}^n(x_i-\overline{x})^2}{n}$
+
+--
+
+* Range (and quartiles)
+
+
+---
+
+
+
+class: center, middle
+
+# Common Distributions
+
+---
+
+.center[
+# Normal Distribution
+]
+
+.center[
+In general, the notation for a normal distribution for a random variable with mean $\mu$ and standard deviation $\sigma$ looks like this: <br>
+
+$x \sim \mathcal{N} (\mu, \,\sigma^{2})$ 
+or something more specific like $x \sim \mathcal{N} (0, \,1)$
+
+]
+
+--
+
+.pull-left[
+using base R graphics
+```{r normal-hist, echo = FALSE}
+x <- rnorm(n = 10000, sd = 1, mean = 0)
+
+hist(x)
+
+
+```
+]
+
+--
+
+.pull-right[
+using ggplot graphics
+```{r normal-geom_histogram, echo=FALSE, warning=FALSE, message=FALSE}
+
+x_df <- as_tibble(x)
+ggplot(data = x_df, mapping = aes(x = x)) +
+  geom_histogram()
+
+
+```
+
+]
+
+---
+
+.center[
+# Z-scores
+]
+
+A $z$ score refers to a the score on a "standard normal" random variable. This is a random variable with $\mu = 0$ and $\sigma = 1$. You would write this as: 
+
+.center[
+$z \sim \mathcal{N}(0,1)$
+]
+
+
+--
+
+You can convert from a normal variable with mean $\overline{x}$ and standard deviation $s$ to a standard normal with the following equation (from p. 27):
+.center[
+
+$z = \frac{X - \overline{X}}{s}$
+
+]
+
+
+---
+
+.center[
+
+# Binomial distribution
+
+]
+
+.left[
+The binomial distribution can be used to characterize a binary random variable $n$ trials of probability of success $p$ for each trial. <br>
+Such a variable is denoted as: $x \sim \mathcal{Bin}(n, \,p)$
+
+]
+
+
+.pull-left[
+```{r binomial-plot, echo = TRUE}
+
+x <- rbinom(n = 1000, size = 10, p = 0.5)
+
+
+```
+]
+
+.pull-right[
+
+```{r}
+hist(x)
+
+```
+]
+
+
+---
+
+.center[
+# Additional Probability Distributions
+
+]
+
+
+--
+
+.pull-left[
+
+### Discrete distributions
+* Poisson 
+* Bernoulli 
+* Geometric 
+* Negative binomial
+
+]
+
+--
+
+.pull-right[
+
+### Continuous distributions
+* Exponential
+* Beta
+* Gamma 
+
+]
+
+---
+
+.center[
+# Hypothesis Testing
+]
+
+* Null hypothesis
+* Alternative hypothesis
+
+---
+
+
+.center[
+
+# Chapter One Vocabulary
+
+]
+
+.pull-left[
+
+Multimodal <br>
+Negative skew <br>
+Nominal variable <br>
+Normal distribution <br>
+Null hypothesis <br>
+Ordinal variable <br>
+Outcome variable <br>
+Platykurtic <br>
+Positive skew <br>
+Practice effect <br>
+Predictor variable <br>
+Probability distribution <br>
+Qualitative methods <br>
+Quantitative methods <br>
+Quartile <br>
+Randomization <br>
+
+
+]
+
+
+
+.pull-right[
+
+Range <br>
+Ratio variable <br>
+Reliability <br>
+Repeated-measures design <br>
+Second quartile <br>
+Skew <br>
+Systematic variation <br>
+_Tertium quid_ <br>
+Test-retest reliability <br>
+Theory <br>
+Unsystematic variation <br>
+Upper quartile <br>
+Validity <br>
+Variables <br>
+Within-subject design <br>
+z-scores
+
+]
+
+
+---
+class: inverse, middle, center
+
+# Chapter Two
+
+Everything You Ever Wanted to Know About Statistics
+
+
+
+
+
+---
+.center[
+# Main takeaways
+]
+
+
+
+---
+
+.center[
+# Populations and Samples
+]
+
+---
+
+# Statistical Models
+
+### Linear models
+
+$y_i = \beta_0 + \beta_1 * X_{1i} + \beta_2*X_{2i} + \cdots + \epsilon_i$
+
+--
+
+* Here, $y$ is the outcome variable, $X_1$ and $X_2$ are predictors, and $\epsilon$ is an error term
+
+* Note that the term "linear model" here refers to the additivity of the terms and has nothing to do with the power that the predictors are raised to.
+
+* The following is also a linear model:
+$y_i = \beta_0 + \beta_1 * X_{1i}^2 + \beta_2*X_{2i}^3 + \cdots + \epsilon_i$
+
+
+
+
+---
+.center[
+# More Statistical Models
+]
+
+** Drawing on "whiteboard" to discuss deviance and squared errors**
+
+---
+.center[
+# Going Beyond the Data
+]
+
+### Standard error
+* The terminology around this can be a little confusing. We will try a simulation in class to see if we can gain some intuition.
+**Switch to simulation**
+
+--
+
+### Confidence intervals
+* Be careful with the language about what confidence intervals can and cannot tell us
+
+---
+
+# Using Statistical Models to Test RQs
+(A bit of philosophy)
+
+1. Generate research question through initial observation
+2. Generate a theory to explain your initial observation
+3. Generate hypotheses - break theory into set of testable predictions
+4. Collect data to test theory
+5. Analyze the data - fit a statistical model
+
+
+---
+
+.center[
+# Test Statistics
+
+
+$test = \frac{\text{variance explained by model}}{\text{variance not explained by model}}$
+]
+
+
+* These test statistics can follow several common distributions such as a $t$ distribution, $F$ distribution, or $\chi^2$ distribution
+
+--
+
+* From a _frequentist_ perspective, these test statistics are meaningful because they can produce $p$ values
+
+--
+
+* A $p$ value tells you the probability of seeing a test statistic as extreme or more extreme under the null hypothesis
+
+
+---
+
+.center[
+# Statistical Significance vs Practical Significance
+]
+
+---
+.center[
+# Type I and Type II Errors
+]
+
+--
+
+* Type I error is also known as a false positive
+--
+
+* Type I error involves finding a significant result when there actually is not
+--
+
+* $\alpha$-level refers to type I errors and is usually set at 0.05 (or 5%)
+
+--
+
+* Type II error is also known as a false negative
+--
+
+* Type II error involves _not_ finding a significant result when there acutally _is_
+--
+
+* $\beta$-level refers to type II errors and is usually set at 0.8 (or 80%)
+
+
+---
+
+.center[
+# Statistical Power
+]
+
+---
+
+# Work through example
+
+* Identify a research question
+
+* Identify how to collect data
+
+* What are our hypotheses?
+
+* What does statistical signifance mean here?
+
+* What does practical significance mean here?
+
+
+---
+
+.center[
+
+# Chapter Two Vocabulary
+
+]
+
+.pull-left[
+
+$\alpha$-level <br>
+$\beta$-level <br>
+Central limit theorem <br>
+Confidence interval <br>
+Degrees of freedom <br>
+Deviance <br>
+Effect size <br>
+Fit <br>
+Linear model <br>
+Meta-analysis <br>
+One-tailed test <br>
+Population <br>
+Power <br>
+
+
+
+]
+
+
+
+.pull-right[
+
+Sample <br>
+Sampling distribution <br>
+Sampling variation <br>
+Standard deviation <br>
+Standard error <br>
+Standard error of the mean (SE) <br>
+Sum of squared errors (SSE) <br>
+Test statistic <br>
+Two-tailed test <br>
+Type I error <br>
+Type II error <br>
+Variance
+
+]
+
+
+---
+class: center, middle, inverse
+
+#R for Data Science
+
+
+---
+
+.center[
+
+# General Impressions?
+
+]
+
+---
+
+.center[
+
+# General Philosophy
+
+.middle[
+
+![Tidy-modeling](https://d33wubrfki0l68.cloudfront.net/795c039ba2520455d833b4034befc8cf360a70ba/558a5/diagrams/data-science-explore.png)
+
+]
+
+]
+
+
+---
+
+.center[
+# Let's switch to working in R for the remainder of class
+
+]
+
+
+---
+
+```{r prior-survey, echo=FALSE}
+
+prior_survey <- read_csv("ENGE_5714_2021_pre_survey.csv")
+
+ggplot(data = prior_survey, mapping = aes(x = `I know what a type I error is`)) +
+  geom_bar() +
+  coord_flip()
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
