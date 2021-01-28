@@ -307,14 +307,6 @@ Everything You Ever Wanted to Know About Statistics
 
 
 
-
----
-.center[
-# Main takeaways
-]
-
-
-
 ---
 
 .center[
