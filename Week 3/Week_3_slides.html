@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 3 Slides</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Andrew Katz" />
+    <meta name="date" content="2021-02-02" />
+    <script src="libs/header-attrs-2.6/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link href="libs/panelset-0.2.4/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset-0.2.4/panelset.js"></script>
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 3 Slides
+## Data Cleaning, Organizing, Describing, and Communicating
+### Andrew Katz
+### Department of Engineering Education <br><br> Virginia Tech
+### 2021-02-02
+
+---
+
+
+
+
+
+
+.center[
+
+# Week 3 Announcements
+
+]
+
+--
+### Don't forget about post-class reflections
+
+--
+
+### The weekly writing assignments (i.e., reflections and class prep) do not need to follow the provided templates
+
+--
+### General comments about grades
+* Problems sets can be revised
+* My goal is for you to reach your goals. The assignments are designed with that in mind
+  * If you want to modify a course assignment to a dataset you work with, we can do that!
+
+--
+
+### I will try to post slides before class, but we will be adding to them as we go along. The .rmd and .pdf files will be available at the course GitHub repo.
+
+
+---
+
+.center[
+# More Week 2 Announcements
+]
+
+### A note about course material organization
+* I do know that we could be using Canvas for organizing materials
+* Tools like Google Drive, Slack, and GitHub are common in practice
+* I want you all to be familiar and comfortable with these tools by the end of the semester 
+* Consider this a low-stakes opportunity to learn even more new tools (yay!)
+
+--
+
+### A note about programming
+* I certainly recognize programming may be unfamiliar to some students
+* I will try to post resources (e.g., video tutorials) to help you get started
+* Never hesitate to reach out to your classmates or me if you need help!
+* There _are_ options we can use if programming isn't your jam
+
+
+
+---
+
+.center[
+# Week 3 Reading Assignment
+]
+
+.pull-left[
+## DSUR - Chapter 4:  
+Exploring Data with Graphs
+]
+
+.pull-right[
+## R4DS - Sections 9 - 21
+
+]
+
+&lt;br&gt;
+
+---
+
+
+# Today's Plan
+
+### Review Chapter 2 of DSUR
+
+--
+
+### Start working in R
+
+
+---
+
+
+---
+
+.center[
+
+# General Philosophy
+
+
+
+.middle[
+
+![](stats_prob_cycle.png)
+
+]
+
+
+*We will revisit this image/idea throughout the semester 
+
+
+]
+
+
+
+---
+.center[
+# `\(\S\)` 1.5 Data Collection
+]
+
+## Variables
+
+.pull-left[
+
+### Independent/Dependent Variables
+
+* Independent and dependent variables
+
+* Predictor and outcome variable
+
+* Covariates and target
+
+* Explanatory and response variable
+
+]
+
+--
+
+
+
+.pull-right[
+
+### Levels of Measurement
+
+* Categorial Variable
+  * **Nominal**
+  * **Ordinal**
+
+* Continuous variable
+  * **Interval**
+  * **Ratio**
+
+]
+
+
+---
+
+.center[
+# Measurement Error
+]
+
+* What does this look like in education settings? &lt;/br&gt;
+
+
+--
+
+* What kinds of measurements are we taking?
+
+
+---
+
+.center[
+# Validity and Reliability
+]
+
+--
+
+.pull-left[
+
+### Validity
+* Content validity
+
+* Criterion validity
+
+  * Concurrent
+
+  * Predictive
+
+* Construct validity
+
+* Face validity
+
+]
+
+
+--
+
+.pull-right[
+
+### Reliability
+
+* Inter-rater reliability 
+
+* Intra-rater reliability
+
+* Test-retest reliability
+
+* Split-half reliability
+
+]
+
+
+
+---
+
+
+.center[
+
+# More on how to measure
+(More terminology - yaaaaas!)
+
+]
+
+.pull-left[
+### Correlational Research
+* Correlational
+* Cross-sectional
+* Longitudinal
+* Observational
+
+
+]
+
+
+.pull-right[
+
+### Experimental Research
+Types:
+* Randomized control trial
+* Quasi-experimental
+* Natural experiment
+
+Big focus on: 
+* Confounding variables
+* Systematic vs. Unsystematic Variation
+
+]
+
+
+---
+
+.center[
+# `\(\S\)` 1.7 Analyzing data
+### Frequency Distributions
+]
+---
+.center[
+# Measures of Central Tendency
+]
+
+* Mean: `\(\overline{x} = \frac{x_1 + x_2 + \cdots+ x_n}{n}\)`
+  * for population, use `\(\mu\)`
+  * for samples, use `\(\overline{x}\)`
+
+* Median
+
+
+---
+
+# Measures of Dispersion
+
+* Standard deviation: 
+  * for population, use `\(\sigma\)`
+  * for sample, use `\(s\)`
+  
+--
+
+* Variance: 
+  * for population, use `\(\sigma^2\)`
+  * for sample, use `\(s^2\)`
+  * Calculate by taking average square of numbers in the sample from their average
+  * `\(\sigma^2 = \frac{\sum_{i=1}^n(x_i-\overline{x})^2}{n}\)`
+
+--
+
+* Range (and quartiles)
+
+
+---
+
+.center[
+# Hypothesis Testing
+]
+
+* Null hypothesis
+* Alternative hypothesis
+
+
+---
+class: inverse, middle, center
+
+# Chapter Two
+
+Everything You Ever Wanted to Know About Statistics
+
+
+
+
+---
+
+.center[
+# Populations and Samples
+]
+
+---
+
+# Statistical Models
+
+### Linear models
+
+`\(y_i = \beta_0 + \beta_1 * X_{1i} + \beta_2*X_{2i} + \cdots + \epsilon_i\)`
+
+--
+
+* Here, `\(y\)` is the outcome variable, `\(X_1\)` and `\(X_2\)` are predictors, and `\(\epsilon\)` is an error term
+
+* Note that the term "linear model" here refers to the additivity of the terms and has nothing to do with the power that the predictors are raised to.
+
+* The following is also a linear model:
+`\(y_i = \beta_0 + \beta_1 * X_{1i}^2 + \beta_2*X_{2i}^3 + \cdots + \epsilon_i\)`
+
+
+
+
+---
+.center[
+# More Statistical Models
+]
+
+** Drawing on "whiteboard" to discuss deviance and squared errors**
+
+---
+.center[
+# Going Beyond the Data
+]
+
+### Standard error
+* The terminology around this can be a little confusing. We will try a simulation in class to see if we can gain some intuition.
+**Switch to simulation**
+
+--
+
+### Confidence intervals
+* Be careful with the language about what confidence intervals can and cannot tell us
+
+---
+
+# Using Statistical Models to Test RQs
+(A bit of philosophy)
+
+1. Generate research question through initial observation
+2. Generate a theory to explain your initial observation
+3. Generate hypotheses - break theory into set of testable predictions
+4. Collect data to test theory
+5. Analyze the data - fit a statistical model
+
+
+---
+
+.center[
+# Test Statistics
+
+
+`\(test = \frac{\text{variance explained by model}}{\text{variance not explained by model}}\)`
+]
+
+
+* These test statistics can follow several common distributions such as a `\(t\)` distribution, `\(F\)` distribution, or `\(\chi^2\)` distribution
+
+--
+
+* From a _frequentist_ perspective, these test statistics are meaningful because they can produce `\(p\)` values
+
+--
+
+* A `\(p\)` value tells you the probability of seeing a test statistic as extreme or more extreme under the null hypothesis
+
+
+---
+
+.center[
+# Statistical Significance vs Practical Significance
+]
+
+---
+.center[
+# Type I and Type II Errors
+]
+
+--
+
+* Type I error is also known as a false positive
+--
+
+* Type I error involves finding a significant result when there actually is not
+--
+
+* `\(\alpha\)`-level refers to type I errors and is usually set at 0.05 (or 5%)
+
+--
+
+* Type II error is also known as a false negative
+--
+
+* Type II error involves _not_ finding a significant result when there acutally _is_
+--
+
+* `\(\beta\)`-level refers to type II errors and is usually set at 0.8 (or 80%)
+
+
+---
+
+.center[
+# Statistical Power
+]
+
+---
+
+# Work through example
+
+* Identify a research question
+
+* Identify how to collect data
+
+* What are our hypotheses?
+
+* What does statistical signifance mean here?
+
+* What does practical significance mean here?
+
+
+---
+
+.center[
+
+# Chapter Two Vocabulary
+
+]
+
+.pull-left[
+
+`\(\alpha\)`-level &lt;br&gt;
+`\(\beta\)`-level &lt;br&gt;
+Central limit theorem &lt;br&gt;
+Confidence interval &lt;br&gt;
+Degrees of freedom &lt;br&gt;
+Deviance &lt;br&gt;
+Effect size &lt;br&gt;
+Fit &lt;br&gt;
+Linear model &lt;br&gt;
+Meta-analysis &lt;br&gt;
+One-tailed test &lt;br&gt;
+Population &lt;br&gt;
+Power &lt;br&gt;
+
+
+
+]
+
+
+
+.pull-right[
+
+Sample &lt;br&gt;
+Sampling distribution &lt;br&gt;
+Sampling variation &lt;br&gt;
+Standard deviation &lt;br&gt;
+Standard error &lt;br&gt;
+Standard error of the mean (SE) &lt;br&gt;
+Sum of squared errors (SSE) &lt;br&gt;
+Test statistic &lt;br&gt;
+Two-tailed test &lt;br&gt;
+Type I error &lt;br&gt;
+Type II error &lt;br&gt;
+Variance
+
+]
+
+
+---
+class: center, middle, inverse
+
+#R for Data Science
+
+
+---
+
+.center[
+
+# General Impressions?
+
+]
+
+---
+
+.center[
+
+# General Philosophy
+
+.middle[
+
+![Tidy-modeling](https://d33wubrfki0l68.cloudfront.net/795c039ba2520455d833b4034befc8cf360a70ba/558a5/diagrams/data-science-explore.png)
+
+]
+
+]
+
+
+---
+
+.center[
+# Let's switch to working in R for the remainder of class
+
+]
+
+
+---
+
+.panelset[
+
+.panel[.panel-name[R Code]
+
+```r
+num &lt;- 50
+mu &lt;- 5
+stdev &lt;- 2
+
+x &lt;- rnorm(n = num, mean = mu, sd = stdev)
+hist(x)
+```
+
+]
+
+.panel[.panel-name[Plot]
+panel 2 test
+![](Week_3_slides_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+]
+
+
+.panel[.panel-name[ggplot Code]
+
+
+```r
+num &lt;- 50
+mu &lt;- 5
+stdev &lt;- 2
+
+x_vec &lt;- rnorm(n = num, mean = mu, sd = stdev)
+x_df &lt;- tibble(x_col = x_vec)
+
+ggplot(data = x_df, mapping = aes(x = x)) +
+  geom_histogram()
+```
+
+
+]
+
+.panel[.panel-name[ggplot Plot]
+
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+![](Week_3_slides_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+
+]
+
+
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

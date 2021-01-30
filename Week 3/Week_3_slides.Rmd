@@ -12,6 +12,17 @@ output:
       highlightLines: true
       countIncrementalSlides: false
 ---
+```{r setup-chunk, echo=FALSE}
+library(tidyverse)
+
+
+xaringanExtra::use_panelset()
+
+
+```
+
+
+
 
 .center[
 
@@ -527,19 +538,60 @@ class: center, middle, inverse
 
 ---
 
-```{r prior-survey, echo=FALSE}
+.panelset[
 
-prior_survey <- read_csv("ENGE_5714_2021_pre_survey.csv")
+.panel[.panel-name[R Code]
+```{r example-hist, fig.show='hide'}
+num <- 50
+mu <- 5
+stdev <- 2
 
-ggplot(data = prior_survey, mapping = aes(x = `I know what a type I error is`)) +
-  geom_bar() +
-  coord_flip()
-
+x <- rnorm(n = num, mean = mu, sd = stdev)
+hist(x)
 
 
 ```
 
+]
 
+.panel[.panel-name[Plot]
+panel 2 test
+```{r ref.label = 'example-hist', echo = FALSE}
+
+
+```
+]
+
+
+.panel[.panel-name[ggplot Code]
+
+```{r ggplot-hist, fig.show = 'hide', warning = FALSE, message = FALSE}
+num <- 50
+mu <- 5
+stdev <- 2
+
+x_vec <- rnorm(n = num, mean = mu, sd = stdev)
+x_df <- tibble(x_col = x_vec)
+
+ggplot(data = x_df, mapping = aes(x = x)) +
+  geom_histogram()
+
+```
+
+
+]
+
+.panel[.panel-name[ggplot Plot]
+
+```{r ref.label = 'ggplot-hist', echo = FALSE}
+
+
+```
+
+]
+
+
+]
 
 
 
