@@ -500,6 +500,26 @@ Variance
 
 
 ---
+
+
+
+
+
+class: center, inverse, middle
+
+# Chapter Four 
+
+Exploring Data with Graphs
+
+
+
+
+
+
+---
+
+
+
 class: center, middle, inverse
 
 #R for Data Science
@@ -526,6 +546,13 @@ class: center, middle, inverse
 ]
 
 ]
+
+
+
+
+
+
+
 
 
 ---
