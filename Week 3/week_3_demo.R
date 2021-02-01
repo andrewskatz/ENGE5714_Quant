@@ -125,7 +125,7 @@ newdf %>%
 # Next, group_by and summarize work together to get us our aggregate totals.
 
 county_level_aggregate <- newdf %>% 
-  select(div_name,total_2017,totalFRL_1718) %>%
+  select(div_name, total_2017, totalFRL_1718) %>%
   group_by(div_name) %>%
   summarize(totalstudents = sum(total_2017), 
             totalFRL = sum(totalFRL_1718))
