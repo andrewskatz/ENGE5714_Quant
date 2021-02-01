@@ -38,10 +38,7 @@ xaringanExtra::use_panelset()
 ### The weekly writing assignments (i.e., reflections and class prep) do not need to follow the provided templates
 
 --
-### General comments about grades
-* Problems sets can be revised
-* My goal is for you to reach your goals. The assignments are designed with that in mind
-  * If you want to modify a course assignment to a dataset you work with, we can do that!
+### I _do_ try to respond to comments or questions that you leave in your Google Docs
 
 --
 
@@ -51,22 +48,20 @@ xaringanExtra::use_panelset()
 ---
 
 .center[
-# More Week 2 Announcements
+# More Week 3 Announcements
 ]
 
 ### A note about course material organization
-* I do know that we could be using Canvas for organizing materials
-* Tools like Google Drive, Slack, and GitHub are common in practice
-* I want you all to be familiar and comfortable with these tools by the end of the semester 
-* Consider this a low-stakes opportunity to learn even more new tools (yay!)
+* It sounds like the course organization is not a hindrance for anyone so far. If you do find yourself
+having issues finding things, **_please let me know!_**
 
 --
 
-### A note about programming
-* I certainly recognize programming may be unfamiliar to some students
-* I will try to post resources (e.g., video tutorials) to help you get started
-* Never hesitate to reach out to your classmates or me if you need help!
-* There _are_ options we can use if programming isn't your jam
+### A note about the pace of the course
+* There is a lot of material that we cover in the first few weeks
+* The pace will not stay this way - we will slow down
+* Try to think of this as a steep ramp-up period for introducing things
+that we will iteratively practice
 
 
 
@@ -94,6 +89,10 @@ Exploring Data with Graphs
 # Today's Plan
 
 ### Review Chapter 2 of DSUR
+
+--
+
+### Review Chapter 4 of DSUR
 
 --
 
@@ -572,7 +571,7 @@ in data, filtering, transforming, and visualizing data
 .panelset[
 
 .panel[.panel-name[R Code]
-```{r example-hist, fig.show='hide'}
+```{r example-hist, fig.show='hide', echo = TRUE}
 num <- 50
 mu <- 5
 stdev <- 2
@@ -586,7 +585,7 @@ hist(x)
 ]
 
 .panel[.panel-name[Plot]
-panel 2 test
+
 ```{r ref.label = 'example-hist', echo = FALSE}
 
 
@@ -596,7 +595,7 @@ panel 2 test
 
 .panel[.panel-name[ggplot Code]
 
-```{r ggplot-hist, fig.show = 'hide', warning = FALSE, message = FALSE}
+```{r ggplot-hist, fig.show = 'hide', warning = FALSE, message = FALSE, echo = TRUE}
 num <- 50
 mu <- 5
 stdev <- 2
@@ -615,6 +614,27 @@ ggplot(data = x_df, mapping = aes(x = x)) +
 .panel[.panel-name[ggplot Plot]
 
 ```{r ref.label = 'ggplot-hist', echo = FALSE}
+
+
+```
+
+]
+
+.panel[.panel-name[ggplot Density]
+
+```{r echo = FALSE}
+
+num_big <- 5000
+mu <- 5
+stdev <- 2
+
+x_vec_big <- rnorm(n = num_big, mean = mu, sd = stdev)
+x_df_big <- tibble(x_col = x_vec_big)
+
+
+
+ggplot(data = x_df_big, mapping = aes(x = x_col)) +
+  geom_density()
 
 
 ```
