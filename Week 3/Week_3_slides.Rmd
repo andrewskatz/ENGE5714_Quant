@@ -124,177 +124,6 @@ Exploring Data with Graphs
 
 
 
----
-.center[
-# $\S$ 1.5 Data Collection
-]
-
-## Variables
-
-.pull-left[
-
-### Independent/Dependent Variables
-
-* Independent and dependent variables
-
-* Predictor and outcome variable
-
-* Covariates and target
-
-* Explanatory and response variable
-
-]
-
---
-
-
-
-.pull-right[
-
-### Levels of Measurement
-
-* Categorial Variable
-  * **Nominal**
-  * **Ordinal**
-
-* Continuous variable
-  * **Interval**
-  * **Ratio**
-
-]
-
-
----
-
-.center[
-# Measurement Error
-]
-
-* What does this look like in education settings? </br>
-
-
---
-
-* What kinds of measurements are we taking?
-
-
----
-
-.center[
-# Validity and Reliability
-]
-
---
-
-.pull-left[
-
-### Validity
-* Content validity
-
-* Criterion validity
-
-  * Concurrent
-
-  * Predictive
-
-* Construct validity
-
-* Face validity
-
-]
-
-
---
-
-.pull-right[
-
-### Reliability
-
-* Inter-rater reliability 
-
-* Intra-rater reliability
-
-* Test-retest reliability
-
-* Split-half reliability
-
-]
-
-
-
----
-
-
-.center[
-
-# More on how to measure
-(More terminology - yaaaaas!)
-
-]
-
-.pull-left[
-### Correlational Research
-* Correlational
-* Cross-sectional
-* Longitudinal
-* Observational
-
-
-]
-
-
-.pull-right[
-
-### Experimental Research
-Types:
-* Randomized control trial
-* Quasi-experimental
-* Natural experiment
-
-Big focus on: 
-* Confounding variables
-* Systematic vs. Unsystematic Variation
-
-]
-
-
----
-
-.center[
-# $\S$ 1.7 Analyzing data
-### Frequency Distributions
-]
----
-.center[
-# Measures of Central Tendency
-]
-
-* Mean: $\overline{x} = \frac{x_1 + x_2 + \cdots+ x_n}{n}$
-  * for population, use $\mu$
-  * for samples, use $\overline{x}$
-
-* Median
-
-
----
-
-# Measures of Dispersion
-
-* Standard deviation: 
-  * for population, use $\sigma$
-  * for sample, use $s$
-  
---
-
-* Variance: 
-  * for population, use $\sigma^2$
-  * for sample, use $s^2$
-  * Calculate by taking average square of numbers in the sample from their average
-  * $\sigma^2 = \frac{\sum_{i=1}^n(x_i-\overline{x})^2}{n}$
-
---
-
-* Range (and quartiles)
 
 
 ---
@@ -329,16 +158,22 @@ Everything You Ever Wanted to Know About Statistics
 
 ### Linear models
 
-$y_i = \beta_0 + \beta_1 * X_{1i} + \beta_2*X_{2i} + \cdots + \epsilon_i$
+$y_i = \beta_0 + \beta_1 * X_{1i} + \beta_2*X_{2i} + \cdots + e_i$
+
+
 
 --
 
-* Here, $y$ is the outcome variable, $X_1$ and $X_2$ are predictors, and $\epsilon$ is an error term
+* Here, $y$ is the outcome variable, $X_1$ and $X_2$ are predictors, and $e_i$ is an error term to account for the error between the estimate of the model and the true value of the outcome variable observed in the data.
+
+--
 
 * Note that the term "linear model" here refers to the additivity of the terms and has nothing to do with the power that the predictors are raised to.
 
+--
+
 * The following is also a linear model:
-$y_i = \beta_0 + \beta_1 * X_{1i}^2 + \beta_2*X_{2i}^3 + \cdots + \epsilon_i$
+$y_i = \beta_0 + \beta_1 * X_{1i}^2 + \beta_2*X_{2i}^3 + \cdots + e_i$
 
 
 
@@ -647,8 +482,75 @@ ggplot(data = x_df_big, mapping = aes(x = x_col)) +
 
 
 
+---
+
+# Discrete Predictor, Continuous Outcome
+
+.center[
+Boxplots
+]
+
+.panelset[
 
 
+.panel[.panel-name[Code]
+
+```{r boxplot-example, fig.show = 'hide', echo = TRUE}
+group_size <- 20
+chem_e_scores <- rnorm(n = group_size, mean = 85, sd = 4)
+chem_scores <- rnorm(n = group_size, mean = 78, sd = 6)
+
+
+data_df <- tibble(
+  discipline = rep(c("ChemE", "Chemistry"), each = group_size),
+  score = c(chem_e_scores, chem_scores)
+)
+
+data_df %>% 
+  ggplot(aes(x = discipline, y = score)) +
+  geom_boxplot()
+
+```
+
+]
+
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = 'boxplot-example', echo = FALSE, out.width = '400px'}
+
+
+```
+
+]
+
+.panel[.panel-name[Boxplot + Dots]
+.pull-left[
+```{r box-and-dot-plot, fig.show = 'hide', echo = TRUE}
+
+data_df %>% 
+  ggplot(aes(x = score, y = discipline)) +
+  geom_boxplot() +
+  geom_jitter()
+
+```
+]
+
+.pull-right[
+
+```{r ref.label = 'box-and-dot-plot', echo = FALSE}
+
+```
+
+]
+
+]
+
+]
+
+
+
+]
 
 
 

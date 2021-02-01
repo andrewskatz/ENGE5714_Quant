@@ -1,0 +1,134 @@
+---
+title: "Week 3 Notes"
+author: "Katz"
+date: "2/2/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+
+
+## One continuous variable (either predictor or outcome variable)
+
+```{r example-hist, fig.show='hide', echo = TRUE}
+num <- 50
+mu <- 5
+stdev <- 2
+
+x <- rnorm(n = num, mean = mu, sd = stdev)
+hist(x)
+
+
+```
+
+
+You can also do this using ggplot rather than base R graphics
+
+```{r ggplot-hist}
+num <- 50
+mu <- 5
+stdev <- 2
+
+x_vec <- rnorm(n = num, mean = mu, sd = stdev)
+x_df <- tibble(x_col = x_vec)
+
+ggplot(data = x_df, mapping = aes(x = x)) +
+  geom_histogram()
+
+```
+
+
+You can use geom_density() instead of geom_histogram() to get a smooth graph
+
+
+```{r echo = FALSE}
+
+num <- 50
+mu <- 5
+stdev <- 2
+
+x_vec <- rnorm(n = num, mean = mu, sd = stdev)
+x_df <- tibble(x_col = x_vec)
+
+
+
+ggplot(data = x_df, mapping = aes(x = x_col)) +
+  geom_density()
+
+
+```
+
+
+
+Just for fun, look at what happens to the the plot if you increase the sample size
+
+
+```{r echo = FALSE}
+
+num <- 5000
+mu <- 5
+stdev <- 2
+
+x_vec <- rnorm(n = num, mean = mu, sd = stdev)
+x_df <- tibble(x_col = x_vec)
+
+
+
+ggplot(data = x_df, mapping = aes(x = x_col)) +
+  geom_density()
+
+
+```
+
+
+
+
+
+
+
+
+## Discrete Predictor, Continuous Outcome
+
+
+```{r boxplot-example}
+group_size <- 20
+chem_e_scores <- rnorm(n = group_size, mean = 85, sd = 4)
+chem_scores <- rnorm(n = group_size, mean = 78, sd = 6)
+
+
+data_df <- tibble(
+  discipline = rep(c("ChemE", "Chemistry"), each = group_size),
+  score = c(chem_e_scores, chem_scores)
+)
+
+data_df %>% 
+  ggplot(aes(x = discipline, y = score)) +
+  geom_boxplot()
+
+```
+
+
+You can make a few modifications to possibly make this easier to read. 
+
+The first is to put the discrete category on the y axis instead of the x axis.
+
+The second is to use geom_jitter() in addition to geom_boxplot() to show the individual points in each group. 
+
+
+```{r box-and-dot-plot}
+
+data_df %>% 
+  ggplot(aes(x = score, y = discipline)) +
+  geom_boxplot() +
+  geom_jitter()
+
+```
+
+
+
+
