@@ -62,6 +62,16 @@ ggplot(data = x_df, mapping = aes(x = x_col)) +
   geom_density()
 
 
+x_df %>%
+  ggplot(mapping = aes(x = x_col)) +
+  geom_density()
+
+
+x_df %>%
+  ggplot(aes(x_col)) +
+  geom_density()
+
+
 ```
 
 
@@ -134,6 +144,7 @@ survey_df$i_have_taken_a_quantitative_research_methods_course_before <- factor(s
 survey_df %>% 
   ggplot(aes(x = i_have_taken_a_quantitative_research_methods_course_before)) +
   geom_bar() +
+  coord_flip() +
   labs(x = "I have taken a quantitative research methods course before",
        y = "Count",
        title = "Reordered Example")
@@ -186,6 +197,7 @@ The x axis looks a little crowded. What if we try coord_flip()
 ```{r}
 
 survey_df %>% 
+  filter(standing == "doctoral") %>%
   ggplot(aes(x = i_have_taken_a_quantitative_research_methods_course_before)) +
   geom_bar() +
   coord_flip() +
@@ -196,6 +208,17 @@ survey_df %>%
 
 
 ```
+
+A quick note on filters
+
+```{r}
+
+filter(data = survey_df, required == "yes")
+
+filtered_df <- survey_df %>% filter(required == "yes")
+
+```
+
 
 
 
@@ -233,7 +256,7 @@ The second is to use geom_jitter() in addition to geom_boxplot() to show the ind
 ```{r box-and-dot-plot}
 
 data_df %>% 
-  ggplot(aes(x = score, y = discipline)) +
+  ggplot(aes(y = score, x = discipline)) +
   geom_boxplot() +
   geom_jitter()
 
@@ -291,6 +314,14 @@ First, we use the $ operator which lets me specify a specific column within my d
 mydata$total_2017<-as.numeric(mydata$total_2017)
 mydata$totalFRL_1718<-as.numeric(mydata$totalFRL_1718)
 
+# some columns have a percent symbol, which you will need to remove before coercing to numeric data type
+
+mydata <- mydata %>%
+  mutate(totalper_0809 = str_remove(totalper_0809, "%"))
+str_replace()
+mydata$totalper_0809 <- as.numeric(mydata$totalper_0809)
+
+str(mydata$totalper_0809)
 
 # Second, alternatively, we can do this for a whole set of variables at once.
 # We just need to specify a matching criteria.
@@ -407,7 +438,7 @@ newdf %>%
 ```{r}
 
 newdf %>% 
-  filter(totalFRL_0809 > 0) %>% 
+  filter(!is.na(totalFRL_0809)) %>%
   ggplot(aes(totalFRL_0809, totalFT_2008)) +
   geom_point() +
   labs(title = "FRL 2008", 

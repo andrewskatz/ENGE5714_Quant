@@ -11,6 +11,21 @@ library(tidyverse)
 
 ### Central Limit Theorem and Standard Error Demo ----
 
+pop_students <- 10000
+
+zoom_min_pop <- rnorm(n = pop_students, mean = 600, sd = 100)
+
+hist(zoom_min_pop)
+
+
+zoom_min_sample <- sample(x = zoom_min_pop,
+                          size = 200,
+                          replace = FALSE)
+
+
+hist(zoom_min_sample)
+mean(zoom_min_sample)
+sd(zoom_min_sample)
 
 
 ## First, let's review the idea of a loop
@@ -31,19 +46,23 @@ mean(rnorm(n = 10, mean = 5, sd = 2))
 
 
 
+
 #### Next, let's act as if we are drawing a certain sample size (samp_size) 
 ## of data points for num_reps number of times. Keep in mind that, in practice, 
 ## when we are collecting data, num_reps will be 1. 
 num_reps <- 1000
-samp_size <- 100
+samp_size <- 1000
 data_vec <- rep(NA, num_reps)
 for (i in 1:num_reps){
-  data_vec[i] <- mean(rnorm(n = samp_size, mean = 5, sd = 2))
+  data_vec[i] <- mean(rnorm(n = samp_size, mean = 600, sd = 100))
 }
+
+
 
 
 # and we can plot a histogram of those means here
 hist(data_vec)
+sd(data_vec)
 
 ## focus on how the x-axis values change when you change the num_reps and samp_size variables
 
@@ -51,6 +70,14 @@ hist(data_vec)
 # while the Weak Law of Large Numbers will explain the concentration around the true mean as samp_size increases
 
 
+
+rnorm(n = 5, mean = 50, sd = 10)
+
+mean(rnorm(n = samp_size, mean = 600, sd = 100))
+
+rep(c(1, 2), times = 5)
+
+rep(c(1, 2), each = 5)
 
 
 
