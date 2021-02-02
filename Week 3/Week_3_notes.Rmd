@@ -92,6 +92,8 @@ ggplot(data = x_df, mapping = aes(x = x_col)) +
 
 ```{r geom-bar}
 
+## load in the data
+deg_df <- read_csv("./data/ENGE_5714_2021_pre_survey.csv")
 
 ```
 

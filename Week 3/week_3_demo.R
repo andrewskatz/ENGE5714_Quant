@@ -9,6 +9,52 @@ library(tidyverse)
 
 
 
+### Central Limit Theorem and Standard Error Demo ----
+
+
+
+## First, let's review the idea of a loop
+
+num_reps <- 100
+
+data_vec <- rep(NA, num_reps)
+for (i in 1:num_reps){
+  data_vec[i] <- i
+}
+
+
+## and let's note that we can sample from a normal distribution with this
+rnorm(n = 10, mean = 5, sd = 2)
+
+## and take a mean like this
+mean(rnorm(n = 10, mean = 5, sd = 2))
+
+
+
+#### Next, let's act as if we are drawing a certain sample size (samp_size) 
+## of data points for num_reps number of times. Keep in mind that, in practice, 
+## when we are collecting data, num_reps will be 1. 
+num_reps <- 1000
+samp_size <- 100
+data_vec <- rep(NA, num_reps)
+for (i in 1:num_reps){
+  data_vec[i] <- mean(rnorm(n = samp_size, mean = 5, sd = 2))
+}
+
+
+# and we can plot a histogram of those means here
+hist(data_vec)
+
+## focus on how the x-axis values change when you change the num_reps and samp_size variables
+
+# Hint: CLT will explain the normal distribution of the sampling mean
+# while the Weak Law of Large Numbers will explain the concentration around the true mean as samp_size increases
+
+
+
+
+
+
 ### Reading and Writing for RDS ----
 
 # The .RDS format is helpful when working with very large datasets (on the order of hundreds of MB). If your

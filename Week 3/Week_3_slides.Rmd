@@ -178,12 +178,6 @@ $y_i = \beta_0 + \beta_1 * X_{1i}^2 + \beta_2*X_{2i}^3 + \cdots + e_i$
 
 
 
----
-.center[
-# More Statistical Models
-]
-
-** Drawing on "whiteboard" to discuss deviance and squared errors**
 
 ---
 .center[
@@ -196,8 +190,10 @@ $y_i = \beta_0 + \beta_1 * X_{1i}^2 + \beta_2*X_{2i}^3 + \cdots + e_i$
 
 --
 
+
 ### Confidence intervals
 * Be careful with the language about what confidence intervals can and cannot tell us
+
 
 ---
 
@@ -238,41 +234,52 @@ $test = \frac{\text{variance explained by model}}{\text{variance not explained b
 # Statistical Significance vs Practical Significance
 ]
 
+* It is important to recognize that these two are different things
+
+--
+
+* Statistical difference refers to whether a p-value is below a certain threshold (usually 0.05)
+
+--
+
+* Practical significance tells us whether that difference is actually meaningful (i.e., the effect size)
+
 ---
 .center[
 # Type I and Type II Errors
 ]
 
---
+.pull-left[
+
 
 * Type I error is also known as a false positive
---
+
 
 * Type I error involves finding a significant result when there actually is not
---
+
 
 * $\alpha$-level refers to type I errors and is usually set at 0.05 (or 5%)
 
---
-
-* Type II error is also known as a false negative
---
-
-* Type II error involves _not_ finding a significant result when there acutally _is_
---
-
-* $\beta$-level refers to type II errors and is usually set at 0.8 (or 80%)
-
-
----
-
-.center[
-# Statistical Power
 ]
 
+--
+
+.pull-right[
+* Type II error is also known as a false negative
+
+
+* Type II error involves _not_ finding a significant result when there acutally _is_
+
+
+* $\beta$-level refers to type II errors and is usually set at 0.8 (or 80%)
+]
+
+
 ---
 
-# Work through example
+# General steps to remember
+
+Do not bother to memorize these right now. Just note that this will be our general procedure in a few weeks.
 
 * Identify a research question
 
@@ -348,24 +355,6 @@ Exploring Data with Graphs
 
 
 
-
-
----
-
-
-
-class: center, middle, inverse
-
-#R for Data Science
-
-
----
-
-.center[
-
-# General Impressions?
-
-]
 
 ---
 
