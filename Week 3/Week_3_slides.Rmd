@@ -22,7 +22,7 @@ xaringanExtra::use_panelset()
 ```
 
 
-
+---
 
 .center[
 
@@ -59,7 +59,9 @@ having issues finding things, **_please let me know!_**
 
 ### A note about the pace of the course
 * There is a lot of material that we cover in the first few weeks
+--
 * The pace will not stay this way - we will slow down
+--
 * Try to think of this as a steep ramp-up period for introducing things
 that we will iteratively practice
 
@@ -132,8 +134,22 @@ Exploring Data with Graphs
 # Hypothesis Testing
 ]
 
+.center[
+#### _We are going to table this topic for now and return to it next week_
+]
+
+.pull-left[
 * Null hypothesis
+]
+
+.pull-right[
 * Alternative hypothesis
+]
+
+
+--
+
+
 
 
 ---
@@ -158,8 +174,9 @@ Everything You Ever Wanted to Know About Statistics
 
 ### Linear models
 
+.center[
 $y_i = \beta_0 + \beta_1 * X_{1i} + \beta_2*X_{2i} + \cdots + e_i$
-
+]
 
 
 --
@@ -173,8 +190,9 @@ $y_i = \beta_0 + \beta_1 * X_{1i} + \beta_2*X_{2i} + \cdots + e_i$
 --
 
 * The following is also a linear model:
+.center[
 $y_i = \beta_0 + \beta_1 * X_{1i}^2 + \beta_2*X_{2i}^3 + \cdots + e_i$
-
+]
 
 
 
@@ -186,6 +204,7 @@ $y_i = \beta_0 + \beta_1 * X_{1i}^2 + \beta_2*X_{2i}^3 + \cdots + e_i$
 
 ### Standard error
 * The terminology around this can be a little confusing. We will try a simulation in class to see if we can gain some intuition.
+
 **Switch to simulation**
 
 --
