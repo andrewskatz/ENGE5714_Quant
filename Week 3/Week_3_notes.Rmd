@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
+library(janitor)
 ```
 
 
@@ -90,10 +91,54 @@ ggplot(data = x_df, mapping = aes(x = x_col)) +
 ## One Discrete Variable (either predictor or outcome)
 
 
-```{r geom-bar}
+```{r pre-survey}
 
 ## load in the data
-deg_df <- read_csv("./data/ENGE_5714_2021_pre_survey.csv")
+survey_df <- read_csv("./data/ENGE_5714_2021_pre_survey.csv")
+survey_df <- survey_df %>% clean_names()
+
+```
+
+
+```{r geom-bar}
+survey_df %>% 
+  ggplot(aes(x = i_have_taken_a_quantitative_research_methods_course_before)) +
+  geom_bar()
+
+
+```
+
+
+Notice that the ordering is not quite what we would want. It is alphabetical. Try to find how we can fix this.
+
+
+
+Here is one way:
+
+
+
+```{r}
+
+q_levels <- c("Strongly disagree", "Somewhat disagree", "Neither agree nor disagree",
+              "Somewhat agree", "Strongly agree")
+
+
+
+survey_df$i_have_taken_a_quantitative_research_methods_course_before <- factor(survey_df$i_have_taken_a_quantitative_research_methods_course_before, 
+                                                                               levels = q_levels,
+                                                                               ordered = TRUE)
+
+
+## Now try plotting
+
+survey_df %>% 
+  ggplot(aes(x = i_have_taken_a_quantitative_research_methods_course_before)) +
+  geom_bar() +
+  labs(x = "I have taken a quantitative research methods course before",
+       y = "Count",
+       title = "Reordered Example")
+
+
 
 ```
 
@@ -136,6 +181,188 @@ data_df %>%
   geom_jitter()
 
 ```
+
+
+
+
+
+
+## Continuous predictor and continuous outcome
+
+
+First, let's re-do a lot of the steps in this week's script for reading in data and transforming it a little
+
+
+
+```{r}
+mydata <- read_csv("./data/Free Reduced Lunch by Schools and Grade Structures 2008-2017_final.csv")
+
+
+
+
+# check the structure of the data (this output is a bit long)
+str(mydata)
+str(mydata$total_2017)
+```
+
+
+
+### NOTE: When you have a lot of variables, running this str() function is not a great idea - the output is a little too cumbersome
+
+
+
+## Mutating Variables
+
+Note that almost all of the data reads in as a "character" data type which are just strings, 
+This can create issues.  
+
+We know that many of the columns are actually storing  numbers or "numeric" values as R refers to them.
+We need to fix this.
+
+Let's tell R that these columns (at least the two we are going to use) are numeric.
+
+We are going to see two interchangeable ways to do this.
+
+First, we use the $ operator which lets me specify a specific column within my data frame in combination with the as.numeric() function
+
+
+
+
+
+```{r warning = FALSE}
+
+mydata$total_2017<-as.numeric(mydata$total_2017)
+mydata$totalFRL_1718<-as.numeric(mydata$totalFRL_1718)
+
+
+# Second, alternatively, we can do this for a whole set of variables at once.
+# We just need to specify a matching criteria.
+
+newdf <- mydata %>% 
+  mutate_at(vars(starts_with("total")), as.numeric)
+
+newdf <- newdf %>% 
+  mutate_at(vars(starts_with("totalFRL")), as.numeric)
+
+# Check whether the old and new variables are stored differently 
+# (old as a character, new as a numeric variable)
+str(mydata$total_2008)
+str(newdf$total_2008)
+```
+
+
+
+## Filtering, Selecting, Grouping, and Summarizing
+
+
+A basic operation we do a lot is to filter the data so that we are working with a subset of all that we have.
+
+
+We can do this with the filter() function, part of the dplyr package (in the tidyverse collection of packages).
+
+
+
+```{r}
+
+
+# Let's say we want to look at the schools with div_num values less than 50
+newdf %>% filter(div_num < 50)
+
+# Or, if we want to look at schools where the highest grade in 2008 was grade five, we can try:
+newdf %>% filter(higrade_2008 == "5") # this returns a subsetted dataframe with 878 rows
+
+## Note that we had to set it equal to the character value "5" rather than the numeric value 5. Why?
+
+# If we wanted to filter on numeric values instead, we would want to do something like this:
+newdf %>% 
+  mutate(higrade_2008 = as.numeric(higrade_2008)) %>% 
+  filter(higrade_2008 == 5) # again, this returns a subsetted dataframe with 878 rows
+```
+
+
+
+
+Let's shift gears to a different combination of operations...
+
+Let's go ahead and try using tidyverse to narrow to what we want.
+Imagine we want to see the county level aggregate numbers for FRL in the 2017-2018 school year.
+
+We will start out with our entire data frame and then use pipes (the %>% operator) to work from there.
+The final result will be stored in our new data frame that we are creating, called county_level_aggregate.
+ 
+First, select will pick columns
+Next, group_by and summarize work together to get us our aggregate totals.
+
+
+
+```{r}
+
+
+county_level_aggregate <- newdf %>% 
+  select(div_name, total_2017, totalFRL_1718) %>%
+  group_by(div_name) %>%
+  summarize(totalstudents = sum(total_2017), 
+            totalFRL = sum(totalFRL_1718))
+# now, we can compute percentages if we like and we can specify a new column by referring to
+# one that doesn't exist yet but will after we run this code.
+# We will do this two interchangeable ways.
+
+# First, the old school way:
+
+county_level_aggregate$percent_FRL <- county_level_aggregate$totalFRL/county_level_aggregate$totalstudents*100
+
+
+# Second, the tidyverse way:
+county_level_aggregate <- county_level_aggregate %>% 
+  mutate(percent_frl = totalFRL / totalstudents * 100)
+
+
+
+# just for fun, let's see how this could have been incorporated into our summarize call
+
+county_level_percents <- newdf %>% 
+  select(div_name, total_2017, totalFRL_1718) %>%
+  group_by(div_name) %>%
+  summarize(percentFRL=sum(totalFRL_1718)/sum(total_2017) * 100)
+
+
+
+
+
+```
+
+
+
+
+### Something is going to look weird with this plot
+
+```{r}
+
+newdf %>% 
+  ggplot(aes(totalFRL_0809, totalFT_2008)) +
+  geom_point() +
+  labs(title = "FRL 2008", x = "totalFRL_0809")
+```
+
+
+### Let's see if we can fix it
+
+```{r}
+
+newdf %>% 
+  filter(totalFRL_0809 > 0) %>% 
+  ggplot(aes(totalFRL_0809, totalFT_2008)) +
+  geom_point() +
+  labs(title = "FRL 2008", 
+       x = "totalFRL_0809") +
+  xlim(0, 1000) +
+  ylim(0, 1000)
+
+
+
+```
+
+
 
 
 
