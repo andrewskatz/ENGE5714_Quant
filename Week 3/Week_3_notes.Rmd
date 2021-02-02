@@ -143,7 +143,64 @@ survey_df %>%
 ```
 
 
+### Joining two datasets
 
+Let's imagine that we have a separate dataset that has information about the students who completed the pre-course prior knowledge survey. 
+
+First, we will load in that dataset
+
+```{r}
+
+survey_info_df <- read_csv("./data/survey_student_info.csv")
+
+```
+
+
+Next, let's join the two datasets based on the student id column, which is in each of the two dataframes.
+
+```{r}
+
+survey_df <- survey_df %>% inner_join(survey_info_df, by = "student_id")
+
+```
+
+Now we should have both datasets joined into one and saved as survey_df.
+
+With this, we can make some nicer plots and do something like use facet_grid() to look at students who are masters and doctoral students, for example.
+
+```{r}
+
+survey_df %>% 
+  ggplot(aes(x = i_have_taken_a_quantitative_research_methods_course_before)) +
+  geom_bar() +
+  facet_grid(standing ~.) +
+  labs(x = "I have taken a quantitative research methods course before",
+       y = "Count",
+       title = "Reordered Example")
+
+```
+
+
+The x axis looks a little crowded. What if we try coord_flip()
+
+```{r}
+
+survey_df %>% 
+  ggplot(aes(x = i_have_taken_a_quantitative_research_methods_course_before)) +
+  geom_bar() +
+  coord_flip() +
+  facet_grid(standing ~.) +
+  labs(x = "I have taken a quantitative research methods course before",
+       y = "Count",
+       title = "Reordered Example")
+
+
+```
+
+
+
+# A little more about plotting
+We are going to shift gears again and look at a few different kinds of plots. The main thing to remember here is that you want to think about whether the variables you have are nominal, ordinal, or continuous (that includes interval and ratio).
 
 ## Discrete Predictor, Continuous Outcome
 
