@@ -1,0 +1,27 @@
+---
+title: "Week 4 Notes"
+author: "Katz"
+date: "2/9/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Continuation of Week 3
+
+
+```{r}
+
+```
+
+
+# New material
+
+
+
+```{r}
+
+```
+

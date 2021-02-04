@@ -318,7 +318,9 @@ mydata$totalFRL_1718<-as.numeric(mydata$totalFRL_1718)
 
 mydata <- mydata %>%
   mutate(totalper_0809 = str_remove(totalper_0809, "%"))
+
 str_replace()
+
 mydata$totalper_0809 <- as.numeric(mydata$totalper_0809)
 
 str(mydata$totalper_0809)

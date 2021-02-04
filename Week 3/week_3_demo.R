@@ -51,7 +51,7 @@ mean(rnorm(n = 10, mean = 5, sd = 2))
 ## of data points for num_reps number of times. Keep in mind that, in practice, 
 ## when we are collecting data, num_reps will be 1. 
 num_reps <- 1000
-samp_size <- 1000
+samp_size <- 200
 data_vec <- rep(NA, num_reps)
 for (i in 1:num_reps){
   data_vec[i] <- mean(rnorm(n = samp_size, mean = 600, sd = 100))
@@ -151,7 +151,7 @@ mydata$totalFRL_1718<-as.numeric(mydata$totalFRL_1718)
 
 # Second, alternatively, we can do this for a whole set of variables at once.
 # We just need to specify a matching criteria.
-
+mutate_at(mydata, vars())
 newdf <- mydata %>% 
   mutate_at(vars(starts_with("total")), as.numeric)
 
@@ -174,7 +174,7 @@ str(newdf$total_2008)
 
 # Let's say we want to look at the schools with div_num values less than 50
 newdf %>% filter(div_num < 50)
-
+filter(newdf, div_num<50)
 # Or, if we want to look at schools where the highest grade in 2008 was grade five, we can try:
 newdf %>% filter(higrade_2008 == "5") # this returns a subsetted dataframe with 878 rows
 
