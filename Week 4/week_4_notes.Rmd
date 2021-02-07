@@ -1,5 +1,5 @@
 ---
-title: "Week 4 Notes"
+title: "Week 4 Notes - Assumptions and Correlations"
 author: "Katz"
 date: "2/9/2021"
 output: html_document
@@ -7,6 +7,9 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(psych)
 ```
 
 # Continuation of Week 3
@@ -17,11 +20,166 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-# New material
+# Week 4 Material
 
 
+We will use the RExam.dat for several examples in this section of the notes.
 
 ```{r}
 
+exam_df <- read.delim(file = "./data/RExam.dat", header = TRUE)
+
 ```
 
+
+
+### Another worked example
+
+
+This script takes an incomplete subset of senior data from a .csv file, cleans it, 
+computes factor scores, and prepares it for analysis.
+
+If you have not already done so, make sure that you have run `library(tidyverse)` and `library(psych)` since we will be using functions from both of those packages.
+
+#### Loading in data
+
+First, as usual, load in your data. We will use the file `seniorsurvey.csv` for this demo.
+
+`file_path <- "YOUR PATH HERE"`
+`setwd(file_path)` use this command to change the working directory to the folder where you have your file
+`list.files()` run this to make sure that your file is in your current working directory
+
+
+```{r}
+seniorSurvey_df <- read_csv("./data/seniorsurvey.csv") # replace text in the parentheses with your file name
+```
+
+#### Data prep and cleaning
+
+After loading, it is always nice to just see how things loaded in. Functions like str() and describe() from the psych package are nice for this. For example, if we use describe(), we can see the following (we deleted some variables):
+
+```{r}
+psych::describe(seniorSurvey_df)
+```
+
+
+Upon examining this, we can notice a few things:
+Primary Major variable is all messed up.  We won't fix it here, but basically there is a numeric code needed (e.g., 13 = underwater basket weaving)
+
+Columns 3 and 5 have lots of missing values (note the small N's) -- this means that this was asked via checkbox so (1) is true and missing is not missing but False
+
+SJ1-8 and DA1-5 all look essentially ok -- about the same N (some survey fatigue or skips) but all values in range (1-5)
+
+
+Now, we know that SJ and DA are scales from the literature and we want to compute scale scores for those. Typically for attitude scales like these we just report means across the items.  So, we will use the "psych" package to use a built in function to help us with this.  If you have not used psych yet, be sure it is installed using the command install.packages("psych") -- you need only do this once and then in subsequent uses you only need `library(psych)` to tell R to look in that package for the functions you will be using.
+
+```{r}
+library(psych)
+```
+
+Subset out only the SJ and DA items in their own dataframe and then use tools in the psych package to compute scale means
+
+The first method to do this - use numbering of the columns:
+
+```{r}
+seniorSurveyScales_df <- seniorSurvey_df[6:18]
+
+```
+
+A second method to do this - use select() from dplyr
+```{r}
+
+seniorSurveyScales_df <- seniorSurvey_df %>% select(SJ1:DA5)
+```
+
+Use the make.keys() function from psych package to key-in how the scales are built (mapping items to scales, use - for reverse scored items)
+```{r}
+my_keys <- make.keys(seniorSurveyScales_df, list(SJCa=c(-1,-2,-3,-4),SJCh=c(5,6,7),DA=c(-9,-10,-11,12,13)))
+```
+
+
+Use scoreItems function to score each respondent on the three scales of interest SJCa, SJCh, and DA -- the default here in scoreItems is to takes the mean of the items (not additive though that is sometimes used) and also, it imputes missing values instead of dropping cases the scoreItems function calculates many things.  At this stage, all we really want are the scores, so we include a line to only extract that info.
+
+```{r}
+my_scales <- scoreItems(my_keys, seniorSurveyScales_df)	
+my_scores <- my_scales$scores
+```
+
+
+Now, if you view the first few rows of the my.scores vector using the header -- head() command -- it looks like we expect:
+```{r}
+head(my_scores)
+```
+
+
+Now, let's build a clean dataframe to prep for analysis - by clean in this case I mean that we have replaced item scores from the scales with their means and also that we have fixed the NAs that don't belong (for participation variables, in this dataset, the NAs should be 0s)
+
+```{r}
+my_df <- data.frame(seniorSurvey_df[1:5],my_scores, seniorSurvey_df[19:25])
+```
+
+This is an old school method to replace NAs in specific columns
+
+```{r}
+my_df$ParticipateServiceL[is.na(my_df$ParticipateServiceL)] <- 0 
+my_df$ParticipateCService[is.na(my_df$ParticipateCService)] <- 0 
+my_df$ParticipateStudyAbroadSemester[is.na(my_df$ParticipateStudyAbroadSemester)] <- 0 
+```
+
+my_df$ParticipateInternCoop...[is.na(mydf$ParticipateInternCoop...)] <- 0 ------- this variable read in cumbersomely named and I don't care about it right now so I'll skip
+
+
+Here is An alternative method to replace NAs in specific columns:
+```{r}
+my_df <- my_df %>% 
+  replace_na(list(ParticipateCService = 0, ParticipateStudyAbroadSemester = 0, ParticipateServiceL = 0))
+```
+
+
+#### Preliminary analysis
+
+At this point, we are ready for some analysis
+
+Let's investigate correlations. What seems most obvious would just be to run cor() but, as we found out in class, this can cause us to run full speed ahead without considering assumptions
+
+```{r}
+my_correlations <- my_df %>% select(SJCa,SJCh,DA) %>% cor()
+print(my_correlations)
+```
+
+Ok, so, it is important that we note that this ran correlations but R doesn't know that this was sample data and therefore that we are interested instatistical significance (or not) of these results AND that our data may need another method (e.g., non-parametric).  cor() does have a way to run spearman instead.
+
+```{r}
+my_spearman_correlations <- my_df %>% select(SJCa,SJCh,DA) %>% cor(method="spearman")
+print(my_spearman_correlations)
+
+```
+
+If we need p values though, we need to change to something else -- corr.test
+
+```{r}
+my_results <- corr.test(my_df$SJCa,my_df$DA)
+
+```
+
+Then we can pull out results from this list or print it.  Let's do both.
+```{r}
+print(my_results,short=FALSE)
+my_results$r # correlation coefficient
+my_results$p # p-value
+```
+
+
+Visually, we should be able to see this on a scatterplot.  We are going to use qplot which stands for quickplot from within ggplot.  It is useful and quicker for simple plotting than building up ggplot (though from the same package) we need to jitter my points (take geom="jitter" out if you want to see why)
+
+```{r}
+qplot(SJCa,DA,data=my_df,geom="jitter")
+
+qqnorm(my_df$SJCa, frame = FALSE)
+qqline(my_df$SJCa, col = "steelblue", lwd = 1.5)
+
+my_df %>% ggplot(aes(x = SJCa)) +
+  geom_histogram()
+```
+
+Other functions we used today in class were describe() and also the q-q plot creation to investigate normality assumption copying syntax from the Field, Miles, & Field book
