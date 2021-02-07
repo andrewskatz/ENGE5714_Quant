@@ -33,7 +33,7 @@ exam_df <- read.delim(file = "./data/RExam.dat", header = TRUE)
 
 
 
-### Another worked example
+## Another worked example for cleaning and prelim analysis
 
 
 This script takes an incomplete subset of senior data from a .csv file, cleans it, 

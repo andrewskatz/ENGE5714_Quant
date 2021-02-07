@@ -1,0 +1,467 @@
+---
+title: "Week 4 Slides"
+subtitle: "Assumptions and correlations"
+author: "Andrew Katz"
+institute: "Department of Engineering Education <br><br> Virginia Tech"
+date: "2021-02-09"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r setup-chunk, echo = FALSE, message = FALSE}
+library(tidyverse)
+library(car)
+
+
+xaringanExtra::use_panelset()
+
+
+```
+
+
+---
+
+.center[
+
+# Week 4 Announcements
+
+]
+
+--
+### Problem Set 1 is due next week :)
+
+--
+
+### I have started compiling course notes in a book available at this URL: https://andrewskatz.github.io/test_course_note/
+
+--
+
+### If you have suggestions about the class, the feedback surveys are a great option
+
+--
+
+### I am going to continue posting resources that I think you all might find helpful in the #resources channel in the course Slack workspace
+
+
+
+
+---
+
+.center[
+# Week 4 Reading Assignment
+]
+
+.pull-left[
+## DSUR Chapter 5  
+### Assumptions
+]
+
+.pull-right[
+## DSUR Chapter 6
+### Correlations
+
+]
+
+
+---
+
+
+# Today's Plan
+
+### Review Chapter 5 of DSUR
+
+--
+
+### Review Chapter 6 of DSUR
+
+--
+
+### Team practice in R
+
+---
+
+
+class: inverse, middle, center
+
+
+
+# Chapter Five
+
+### Assumptions
+
+
+---
+
+# Three Big Assumptions
+
+--
+
+1. Normality of the data
+
+--
+
+2. Homogeneity of variance
+
+--
+
+3. Independence
+
+
+
+
+
+---
+
+# Normal Distribution of the Data
+
+--
+
+* Central limit theorem - the sampling distribution (distribution of the sample means) is normally distributed for large sample sizes. This gives us the 30 sample size rule of thumb.
+--
+
+* A reminder: 
+$\lim_{n\to\infty} \frac{\overline{X_n} - \mu}{\frac{\sigma}{\sqrt{n}}} \sim \mathcal{N} (0, \,1)$ 
+
+--
+* Note that $\frac{\sigma}{n}$ is the standard error (which is the standard deviation of the sampling distribution of the sample mean). This is the same thing that we do when we need to center a random variable by first subtracting its mean and then dividing by its standard deviation: $\frac{x_i - \overline{x}}{s}$
+
+--
+
+* Standard error: standard deviation of the sampling distribution (we saw this last week)
+--
+
+* _There is a difference in having a normal distribution and a normal sampling distribution_
+
+---
+
+# Normal Distribution (cont.)
+
+--
+
+* Shapiro-Wilk test can determine if data are normally distributed. Use `shapiro.test()`
+--
+
+* We can use histograms and Q-Q plots to see if data are normally distributed (this is for visual inspection)
+--
+
+* With large sample sizes, you can get statistically significant result from the Shapiro-Wilk test, so it is good to also look at histograms and Q-Q plots to check for normality
+
+---
+
+# Examples of Normality
+
+.panelset[
+
+.panel[.panel-name[Normal]
+
+.pull-left[
+```{r norm-data}
+x_norm <- rnorm(n = 100, mean = 10, sd = 3)
+```
+
+```{r out.width = '300px', out.height = '300px'}
+hist(x_norm)
+
+```
+
+]
+
+.pull-right[
+```{r out.width = '300px', out.height = '300px'}
+qqnorm(x_norm)
+
+```
+
+]
+
+]
+
+.panel[.panel-name[Non-normal]
+
+.pull-left[
+```{r non-norm-data}
+x_non_norm <- rpois(n = 100, lambda = 8)
+```
+
+```{r out.width = '300px', out.height = '300px'}
+hist(x_non_norm)
+
+```
+
+]
+
+.pull-right[
+```{r out.width = '300px', out.height = '300px'}
+qqnorm(x_non_norm)
+
+```
+
+]
+
+]
+
+]
+
+
+---
+
+
+# Homogeneity of Variance
+
+* Variances of a variable should be the same across different groups
+--
+
+* The variance of one variable should be the same at all levels of the other variable
+
+--
+
+* Variance of your outcome variable should be the same in each group 
+
+--
+
+* Spread within samples is the same
+
+--
+
+* The idea behind homogeneity of variance is that these standard deviations should be close together - the box plots should be similar
+
+---
+
+# Homogeneity of Variance (cont.)
+
+--
+
+* When box plots are pretty different, you can tell that the assumption of homogeneity of variance
+
+--
+
+* Heterogeneity of variance - some groups have huge variance while others have small variance
+
+--
+
+* Hartley’s F_max can test homogeneity of variance (not common)
+
+--
+
+* Levene’s test is commonly used to test homogeneity of variance
+  * Null hypothesis - the variance is homogeneous (same across groups)
+  * Rejecting null hypothesis means the variance is not homogeneous
+  * Commonly used with T-tests and ANOVA
+
+---
+
+# Homogeneity of Variance Example
+
+
+.panelset[
+
+.panel[.panel-name[Setup]
+
+
+* Example: Let's say we are interested in knowing whether there is a difference among disciplines in how much students in each discipline study on average every week. 
+
+
+
+* We go out and sample 50 civil engineering students and 50 chemical engineering students. We are looking at the number of minutes spent on homework every day.
+
+
+
+* Suppose $\overline{x}_{civ} = 80$ minutes and $\overline{x}_{che} = 95$ minutes
+
+
+
+* suppose $s_{civ} = 15$ minutes and $s_{che} = 30$ minutes
+
+
+
+* What does this actually look like?
+
+]
+
+.panel[.panel-name[Data Code]
+
+.pull-left[
+```{r}
+civ_min <- rnorm(n = 50, mean = 80, sd = 15)
+che_min <- rnorm(n = 50, mean = 95, sd = 30)
+
+discipline <- rep(c("civ", "che"), each = 50)
+minutes <- c(civ_min, che_min)
+
+min_data <- tibble(discipline = discipline, minutes = minutes)
+
+
+```
+
+]
+
+.pull-right[
+```{r}
+# Check to make sure the dataframe looks correct
+head(min_data)
+
+```
+
+]
+
+]
+
+.panel[.panel-name[Levene]
+Use `leveneTest()` in the car package.
+
+```{r}
+
+leveneTest(minutes ~ discipline, data = min_data)
+
+```
+
+]
+
+.panel[.panel-name[Plot]
+
+.pull-left[
+
+```{r var-hist, out.height='200px', out.width = '200px', fig.show = 'hide'}
+min_data %>% 
+  ggplot(aes(x = discipline, y = minutes)) + 
+  geom_boxplot()
+
+```
+
+
+]
+
+.pull-right[
+
+```{r ref.label = 'var-hist', echo = FALSE}
+
+```
+
+]
+
+]
+
+]
+
+
+
+---
+
+# Independence
+
+--
+* IID is an acronym independent and identically distributed - this is a fundamental assumption that comes up a lot
+
+--
+
+* The results from one sample do not affect the results from another sample
+
+--
+
+* Ex: when students cheat on a test, that affects the independence assumption because one student’s answers influences another students’ answers
+
+
+---
+
+# When Assumptions Fail...
+
+* We will cover two basic options for when assumptions fail
+
+--
+
+* Transform the data
+  * Square root transformation 
+  * Logarithmic transformation
+
+--
+* Use non-parametric tests
+
+---
+
+
+class: inverse, middle, center
+
+
+# Chapter Six
+
+### Correlations
+
+
+---
+
+# What Do Correlations Do?
+
+
+---
+
+# What Don't Correlations Do?
+
+
+---
+
+
+# Data to Covariance to Correlation Coefficients
+
+
+---
+
+# What Do Correlation Coefficients Signify?
+
+
+
+---
+
+# Why Are Confidence Intervals Here?
+
+
+
+---
+
+class: center, middle
+
+# Kinds of Correlation Coefficients
+
+
+---
+
+# Pearson Correlation Coefficient
+
+
+---
+
+# Spearman's rho
+
+
+---
+
+# Kendall's tau
+
+
+---
+
+# What is Partial Correlation?
+
+
+
+
+
+---
+
+class: center, middle, inverse
+
+# Start working in R
+
+
+---
+
+
+
+
+
+
+
+
