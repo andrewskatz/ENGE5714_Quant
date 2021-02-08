@@ -19,7 +19,7 @@ hist(zoom_min_pop)
 
 
 zoom_min_sample <- sample(x = zoom_min_pop,
-                          size = 200,
+                          size = 100,
                           replace = FALSE)
 
 
@@ -74,6 +74,8 @@ sd(data_vec)
 rnorm(n = 5, mean = 50, sd = 10)
 
 mean(rnorm(n = samp_size, mean = 600, sd = 100))
+
+
 
 rep(c(1, 2), times = 5)
 

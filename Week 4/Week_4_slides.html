@@ -49,6 +49,10 @@ class: center, middle, inverse, title-slide
 
 ### I am going to continue posting resources that I think you all might find helpful in the #resources channel in the course Slack workspace
 
+--
+
+### I will update the key terms list this week
+
 
 
 
@@ -322,12 +326,12 @@ head(min_data)
 ## # A tibble: 6 x 2
 ##   discipline minutes
 ##   &lt;chr&gt;        &lt;dbl&gt;
-## 1 civ           88.0
-## 2 civ           68.8
-## 3 civ           82.6
-## 4 civ           68.2
-## 5 civ           82.4
-## 6 civ           63.6
+## 1 civ           79.7
+## 2 civ           72.1
+## 3 civ           78.9
+## 4 civ           74.6
+## 5 civ           90.0
+## 6 civ           67.8
 ```
 
 ]
@@ -343,14 +347,13 @@ leveneTest(minutes ~ discipline, data = min_data)
 ```
 
 ```
-## Warning in leveneTest.default(y = y, group = group, ...): group coerced to
-## factor.
+## Warning in leveneTest.default(y = y, group = group, ...): group coerced to factor.
 ```
 
 ```
 ## Levene's Test for Homogeneity of Variance (center = median)
 ##       Df F value    Pr(&gt;F)    
-## group  1  15.613 0.0001467 ***
+## group  1  15.662 0.0001434 ***
 ##       98                      
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
@@ -430,11 +433,41 @@ class: inverse, middle, center
 
 # What Do Correlations Do?
 
+--
+
+* Tell us how one variable changes when another variable changes, _on average_.
+
+--
+
+* Positive correlation 
+  * when one variable increases, the second variable increases on average
+  * Similarly, when one variable decreases, the second variable decreases on average
+
+--
+
+* Negative correlation
+  * when one variable increases, the second variable _decreases_ on average
+  * Similarly, when one variable decreases, the second variable _increases_ on average
+
+--
+
+* They can tell us if there is _no_ relationship between variables
 
 ---
 
 # What Don't Correlations Do?
 
+--
+
+* They do not tell us about causality
+
+--
+
+* There is nothing about direction - which variable causes or influences the other
+
+--
+
+* They do not tell us about the relationship between multiple (more than two) variables
 
 ---
 
@@ -442,15 +475,82 @@ class: inverse, middle, center
 # Data to Covariance to Correlation Coefficients
 
 
+* Start with the observation that variance is calculated with:
+.center[
+`\(Variance(s^2) = \frac{\sum(x_i - \overline{x})^2}{N - 1} = \frac{\sum(x_i - \overline{x})(x_i - \overline{x})}{N - 1}\)`
+]
+
+--
+
+* What if we want to know how `\(x\)` varies with a second variable, `\(y\)`? 
+
+--
+
+* In practice, we really want to know: when `\(x_i\)` is above its average value in a sample `\(\overline{x}\)`, how does `\(y_i\)` change? Does it also tend to be above the sample average for `\(y\)`, i.e., `\(\overline{y}\)`? This is expressed in the general formular for covariance:
+
+
+.center[
+`\(cov(x,y) = \frac{\sum(x_i - \overline{x})(y_i - \overline{y})}{N - 1}\)`
+]
+
+--
+
+* Covariance can be helpful, but we will be using correlation coefficients instead of covariance. This is because covariance is an unnormalized value, which can make comparisons across different ranges of values difficult.
+
+---
+
+### Correlation coefficient
+
+--
+
+* To standardize the covariance to a value that is easier to work with across ranges of values, we use the correlatoin coefficient. 
+
+--
+
+* There are several version of this, depending on the type of data you are working with. The most basic version is the Pearson correlation coefficient. It is calculated by dividing the covariance by the standard deviations of your two variables of interest:
+
+.center[
+`\(r = \frac{cov_{xy}}{s_xs_y} = \frac{\sum(x_i - \overline{x})(y_i - \overline{y})}{(N-1)s_xs_y}\)`
+]
+
+--
+
+* This is a _bivariate_ correlation coefficient because it is looking at the correlation between _two variables_. There are also partial correlation coefficients, which look at the correlation between two variables whil controlling for other variables. 
+
+--
+
+* We can calculate the correlatoin between two variables using the `cor()` or `cor.test()` functions, which are part of base R. 
+
+
 ---
 
 # What Do Correlation Coefficients Signify?
 
+* Relationship between variables
+
+--
+
+* How spread out or close together the points align on a scatterplot 
+  * Strong relationship - points are close to a diagonal line
+  * Weak relationship - points are spread out
 
 
 ---
 
 # Why Are Confidence Intervals Here?
+
+--
+
+* Null hypothesis: no relationship between variables, r=0
+
+--
+
+* P value tells you if that happens
+
+--
+
+* For r = -.3, you might see a confidence interval like (-0.25, 0.35) - the interval is symmetric about our r correlation coefficient - 95% of the time, that interval will contain the true value for the population
+
 
 
 
@@ -465,16 +565,50 @@ class: center, middle
 
 # Pearson Correlation Coefficient
 
+--
+
+* Use if you have:
+  * Large (&gt; 30) sample size
+  * Normally distributed data
+  * Interval data
+
+--
+
+* Values for r lie in [-1,1]
+
+--
+
+* Rules of thumb for interpretation:
+  * very small effect size: 0 &lt; |r| &lt; 0.1 
+  * small effect size: 0.1 &lt; |r| &lt; 0.3 
+  * medium effect size: 0.3 &lt; |r| &lt; 0.5 
+  * large effect size: 0.5 &lt; |r| &lt; 1
 
 ---
 
-# Spearman's rho
+# Spearman's rho and Kendall's Tau
 
+.pull-left[
+
+
+### Spearmean's rho
+* Use when data are not normally distributed
+* Specify with `cor(method="spearman")`
+]
+
+
+.pull-right[
+
+### Kendall's Tau
+* Use with small sample size
+* Use when lots of tied ranks
+* Specify with `cor(method="kendall")`
+
+]
 
 ---
 
-# Kendall's tau
-
+# Point Biserial Correlation
 
 ---
 

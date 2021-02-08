@@ -12,15 +12,70 @@ library(tidyverse)
 library(psych)
 ```
 
-# Continuation of Week 3
-
-
-```{r}
-
-```
-
 
 # Week 4 Material
+
+This week we discuss assumptions and correlations
+
+## Assumptions
+
+
+These assumptions that we are making are helpful when determining whether we should be using parametric vs non-parametric statistical tests. What does "parametric" mean here? It means that the data are from a parameterized distribution (i.e., parameters characterize the distribution that the data come from). An example of a parameterized distribution that we have already seen is the normal distribution. The two parameters for the normal distribution are $\mu$ for the mean and $\sigma$ for the standard deviation. We have seen this altogether with this kind of notation to denote that $x_i$ is from a normal distribution:
+
+$x_i \sim \mathcal{N} (\mu, \,\sigma^{2})$ 
+
+
+### Normally distributed data
+This assumption is about the normality of the sampling distribution. The big idea here is that we tend to operate under the belief that if our _sampled_ data are normally distributed then the underlying _sampling distribution_ is also normally distributed. Also, keep in mind that this becomes less of a concern as our sample size increases (thank, Central Limit Theorem!). 
+
+There are several tests for normality that we will discuss, which include either (a) calculations or (b) visual examination. We will discuss both.
+
+#### Visual check of normality
+
+You can accomplish this with a histogram or a q-q plot (which standards for quantile-quantile). 
+
+
+### Homogeneity of variance
+
+Here, you want to know whether the variance of a variable is the same across different groups. For example, if you are looking at test scores in chemistry and chemical engineering students, you want to know if the variances (spread) of the test scores in the chemistry group and the chemical engineering group are close to each other. 
+
+### Interval data
+
+This might be a little redundant given that we want normally distributed data, but you want at least interval data (ratio data are also fine, but in practice very few things we work with actually qualify as ratio variables). If you have ordinal or nominal variables, you might be in trouble with this assumption...
+
+### Independence
+
+This assumption is about the observations not being related to each other or affecting each other in some way. In practice, this can also be a little tricky. For example, if you are sampling students from different classrooms, depending on the variables you are measuring, you might actually have reason to believe that students in one classroom are more related to each other than students in a different classroom. In practice, you can handle this with a multi-level model (aka hierarchical model), but that is beyond the scope of this class.
+
+
+
+## Correlations
+
+
+### From Covariance to Correlation 
+First, start with the observation that variance is calculated with:
+$Variance(s^2) = \frac{\sum(x_i - \overline{x})^2}{N - 1} = \frac{\sum(x_i - \overline{x})(x_i - \overline{x})}{N - 1}$
+
+But now let's say that we want to know how, for each observation we have, how does the value of $x$ vary with the value of $y$ on average. For example, when the value of $x$ increases, does the value of $y$ also increase? This could happen when $x$ represents the number of hours of sleep you get each night and $y$ is your average grade on an exam you take the next day. The opposite could arise when $x$ increases but we expect $y$ to go down. An example of this might be when $x$ is the number of hilarious jokes that a teacher tells in class and $y$ is the number of students who fall asleep in class. As the number of jokes increases, we might expect/hope that it keeps students' attention and keeps them from dozing. This generally process of considering how one variable changes when another variable changes is where the notion of covariance comes in. 
+
+In practice, what we really want to know is: when $x_i$ is above its average value in a sample ($\overline{x}$), how does $y_i$ change? Does it also tend to be above the sample average for $y$ ($\overline{y}$)? This is expressed in the general formular for covariance:
+
+
+$cov(x,y) = \frac{\sum(x_i - \overline{x})(y_i - \overline{y})}{N - 1}$
+
+While covariance can be a helpful value to work with in many settings, for most of what we do in this class, we will be using correlation coefficients instead of covariance. This is because covariance is an unnormalized value, which can make comparisons across different ranges of values difficult.
+
+
+
+### Correlation coefficient
+
+In order to standardize the covariance to a value the is easier to work with across ranges of values, we use the correlatoin coefficient. There are several version of this, depending on the type of data you are working with. The most basic version is the Pearson correlation coefficient. It is calculated by dividing the covariance by the standard deviations of your two variables of interest:
+
+$r = \frac{cov_{xy}}{s_xs_y} = \frac{\sum(x_i - \overline{x})(y_i - \overline{y})}{(N-1)s_xs_y}$
+
+This is a _bivariate_ correlation coefficient because it is looking at the correlation between _two variables_. There are also partial correlation coefficients, which look at the correlation between two variables whil controlling for other variables. 
+
+We can calculate the correlatoin between two variables using the `cor()` or `cor.test()` functions, which are part of base R. 
 
 
 We will use the RExam.dat for several examples in this section of the notes.
