@@ -16,7 +16,7 @@
 class: center, middle, inverse, title-slide
 
 # Week 4 Slides
-## Assumptions and correlations
+## Assumptions and Correlations
 ### Andrew Katz
 ### Department of Engineering Education <br><br> Virginia Tech
 ### 2021-02-09
@@ -36,6 +36,8 @@ class: center, middle, inverse, title-slide
 
 --
 ### Problem Set 1 is due next week :)
+
+* Let's take a minute to review it now...
 
 --
 
@@ -103,7 +105,7 @@ class: inverse, middle, center
 
 ---
 
-# Three Big Assumptions
+# Four Big Assumptions
 
 --
 
@@ -115,7 +117,11 @@ class: inverse, middle, center
 
 --
 
-3. Independence
+3. Interval data
+
+--
+
+4. Independence
 
 
 
@@ -230,6 +236,7 @@ qqnorm(x_non_norm)
 # Homogeneity of Variance
 
 * Variances of a variable should be the same across different groups
+
 --
 
 * The variance of one variable should be the same at all levels of the other variable
@@ -326,12 +333,12 @@ head(min_data)
 ## # A tibble: 6 x 2
 ##   discipline minutes
 ##   &lt;chr&gt;        &lt;dbl&gt;
-## 1 civ           79.7
-## 2 civ           72.1
-## 3 civ           78.9
-## 4 civ           74.6
-## 5 civ           90.0
-## 6 civ           67.8
+## 1 civ           69.4
+## 2 civ           95.0
+## 3 civ           77.2
+## 4 civ           75.6
+## 5 civ           66.4
+## 6 civ           88.1
 ```
 
 ]
@@ -347,14 +354,15 @@ leveneTest(minutes ~ discipline, data = min_data)
 ```
 
 ```
-## Warning in leveneTest.default(y = y, group = group, ...): group coerced to factor.
+## Warning in leveneTest.default(y = y, group = group, ...): group coerced to
+## factor.
 ```
 
 ```
 ## Levene's Test for Homogeneity of Variance (center = median)
-##       Df F value    Pr(&gt;F)    
-## group  1  15.662 0.0001434 ***
-##       98                      
+##       Df F value   Pr(&gt;F)   
+## group  1    9.31 0.002933 **
+##       98                    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -416,6 +424,7 @@ min_data %&gt;%
   * Logarithmic transformation
 
 --
+
 * Use non-parametric tests
 
 ---
@@ -440,7 +449,7 @@ class: inverse, middle, center
 --
 
 * Positive correlation 
-  * when one variable increases, the second variable increases on average
+  * When one variable increases, the second variable increases on average
   * Similarly, when one variable decreases, the second variable decreases on average
 
 --
@@ -499,7 +508,7 @@ class: inverse, middle, center
 
 ---
 
-### Correlation coefficient
+# Correlation coefficient
 
 --
 
@@ -545,11 +554,11 @@ class: inverse, middle, center
 
 --
 
-* P value tells you if that happens
+* `\(p\)` value tells you if that happens
 
 --
 
-* For r = -.3, you might see a confidence interval like (-0.25, 0.35) - the interval is symmetric about our r correlation coefficient - 95% of the time, that interval will contain the true value for the population
+* For `\(r\)` = -.3, you might see a confidence interval like (-0.25, 0.35) - the interval is symmetric about our `\(r\)` correlation coefficient - 95% of the time, that interval will contain the true value for the population
 
 
 
@@ -574,24 +583,24 @@ class: center, middle
 
 --
 
-* Values for r lie in [-1,1]
+* Values for `\(r\)` lie in [-1,1]
 
 --
 
 * Rules of thumb for interpretation:
-  * very small effect size: 0 &lt; |r| &lt; 0.1 
-  * small effect size: 0.1 &lt; |r| &lt; 0.3 
-  * medium effect size: 0.3 &lt; |r| &lt; 0.5 
-  * large effect size: 0.5 &lt; |r| &lt; 1
+  * very small effect size: 0 &lt; `\(\mid r\mid\)` &lt; 0.1 
+  * small effect size: 0.1 &lt; `\(\mid r\mid\)` &lt; 0.3 
+  * medium effect size: 0.3 &lt; `\(\mid r\mid\)` &lt; 0.5 
+  * large effect size: 0.5 &lt; `\(\mid r\mid\)` &lt; 1
 
 ---
 
-# Spearman's rho and Kendall's Tau
+# Spearman's Rho and Kendall's Tau
 
 .pull-left[
 
 
-### Spearmean's rho
+### Spearmean's Rho
 * Use when data are not normally distributed
 * Specify with `cor(method="spearman")`
 ]
@@ -608,11 +617,13 @@ class: center, middle
 
 ---
 
-# Point Biserial Correlation
+# Additional Options Not Discussed in Class
 
----
+* Point Biserial Correlation
 
-# What is Partial Correlation?
+--
+
+* Partial Correlation?
 
 
 

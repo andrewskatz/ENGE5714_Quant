@@ -1,6 +1,6 @@
 ---
 title: "Week 4 Slides"
-subtitle: "Assumptions and correlations"
+subtitle: "Assumptions and Correlations"
 author: "Andrew Katz"
 institute: "Department of Engineering Education <br><br> Virginia Tech"
 date: "2021-02-09"
@@ -33,6 +33,8 @@ xaringanExtra::use_panelset()
 
 --
 ### Problem Set 1 is due next week :)
+
+* Let's take a minute to review it now...
 
 --
 
@@ -100,7 +102,7 @@ class: inverse, middle, center
 
 ---
 
-# Three Big Assumptions
+# Four Big Assumptions
 
 --
 
@@ -112,7 +114,11 @@ class: inverse, middle, center
 
 --
 
-3. Independence
+3. Interval data
+
+--
+
+4. Independence
 
 
 
@@ -217,6 +223,7 @@ qqnorm(x_non_norm)
 # Homogeneity of Variance
 
 * Variances of a variable should be the same across different groups
+
 --
 
 * The variance of one variable should be the same at all levels of the other variable
@@ -382,6 +389,7 @@ min_data %>%
   * Logarithmic transformation
 
 --
+
 * Use non-parametric tests
 
 ---
@@ -406,7 +414,7 @@ class: inverse, middle, center
 --
 
 * Positive correlation 
-  * when one variable increases, the second variable increases on average
+  * When one variable increases, the second variable increases on average
   * Similarly, when one variable decreases, the second variable decreases on average
 
 --
@@ -465,7 +473,7 @@ $cov(x,y) = \frac{\sum(x_i - \overline{x})(y_i - \overline{y})}{N - 1}$
 
 ---
 
-### Correlation coefficient
+# Correlation coefficient
 
 --
 
@@ -511,11 +519,11 @@ $r = \frac{cov_{xy}}{s_xs_y} = \frac{\sum(x_i - \overline{x})(y_i - \overline{y}
 
 --
 
-* P value tells you if that happens
+* $p$ value tells you if that happens
 
 --
 
-* For r = -.3, you might see a confidence interval like (-0.25, 0.35) - the interval is symmetric about our r correlation coefficient - 95% of the time, that interval will contain the true value for the population
+* For $r$ = -.3, you might see a confidence interval like (-0.25, 0.35) - the interval is symmetric about our $r$ correlation coefficient - 95% of the time, that interval will contain the true value for the population
 
 
 
@@ -540,24 +548,24 @@ class: center, middle
 
 --
 
-* Values for r lie in [-1,1]
+* Values for $r$ lie in [-1,1]
 
 --
 
 * Rules of thumb for interpretation:
-  * very small effect size: 0 < |r| < 0.1 
-  * small effect size: 0.1 < |r| < 0.3 
-  * medium effect size: 0.3 < |r| < 0.5 
-  * large effect size: 0.5 < |r| < 1
+  * very small effect size: 0 < $\mid r\mid$ < 0.1 
+  * small effect size: 0.1 < $\mid r\mid$ < 0.3 
+  * medium effect size: 0.3 < $\mid r\mid$ < 0.5 
+  * large effect size: 0.5 < $\mid r\mid$ < 1
 
 ---
 
-# Spearman's rho and Kendall's Tau
+# Spearman's Rho and Kendall's Tau
 
 .pull-left[
 
 
-### Spearmean's rho
+### Spearmean's Rho
 * Use when data are not normally distributed
 * Specify with `cor(method="spearman")`
 ]
@@ -574,11 +582,13 @@ class: center, middle
 
 ---
 
-# Point Biserial Correlation
+# Additional Options Not Discussed in Class
 
----
+* Point Biserial Correlation
 
-# What is Partial Correlation?
+--
+
+* Partial Correlation?
 
 
 
