@@ -1,5 +1,20 @@
 # Week 4 Demo Script
 
+
+teacher_df <- read_csv("./data/actual teacher salaries.csv")
+principal_df <- read_csv("actual principal salaries.csv")
+
+health_df <- read_csv("health rankings.csv")
+
+stemh_df <- read_csv("STEMH degree percentages.csv")
+
+
+5+5
+
+
+
+## Another Worked Example ----
+
 # This script takes an incomplete subset of senior data from a .csv file, cleans it, 
 # computes factor scores, and prepares it for analysis.
 

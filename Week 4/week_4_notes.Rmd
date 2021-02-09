@@ -32,7 +32,7 @@ There are several tests for normality that we will discuss, which include either
 
 #### Visual check of normality
 
-You can accomplish this with a histogram or a q-q plot (which standards for quantile-quantile). 
+You can accomplish this with a histogram (e.g., `hist()` or `geom_histogram()` or a q-q plot `qplot()` (which stands for quantile-quantile).
 
 
 ### Homogeneity of variance
@@ -86,7 +86,11 @@ exam_df <- read.delim(file = "./data/RExam.dat", header = TRUE)
 
 ```
 
+With the data loaded into your working environment, see if you can:
 
+* Plot the distribution of exam scores
+* Calculate the correlation between numeracy and exam score
+* Try to plot the exam score distributions for the two universities separately
 
 ## Another worked example for cleaning and prelim analysis
 
