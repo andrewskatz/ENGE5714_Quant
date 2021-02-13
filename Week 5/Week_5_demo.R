@@ -5,77 +5,6 @@ require(psych)
 require(kableExtra)
 library(broom)
 
-getwd()
-setwd("G:/My Drive/AK Faculty/Teaching/ENGE 5714 - Quantitative Analysis Spring 2020/ENGE 5714 Quantitative Analysis - Shared materials/Week 5 - Regression I")
-list.files()
-
-
-### Teacher salary linear regression demo  ########
-
-
-file_path_prin <- "principalSalaries.csv"
-file_path_tea <- "teacherSalaries.csv"
-
-principal_Salaries <- read_csv(file_path_prin)
-teacher_Salaries <- read_csv(file_path_tea)
-
-publicSchools_principalSalaries <- principalSalaries %>% 
-  filter(str_detect(div_name,"Public")) %>%
-  select(div_num,Av14_16P)
-
-# convert the div_num column to numeric
-publicSchools_principalSalaries$div_num <- as.numeric(publicSchools.principalSalaries$div_num)
-
-
-publicSchools.teacherSalaries <- teacherSalaries %>% 
-  filter(str_detect(div_name,"Public")) %>% 
-  select(div_num,Av14_16T)
-
-publicSchools.teacherSalaries$div_num <- as.numeric(publicSchools.teacherSalaries$div_num)
-
-
-publicSchools.combinedSalaries <- inner_join(publicSchools.teacherSalaries,publicSchools.principalSalaries,by="div_num")
-
-# this section helps make tables for formatting in r or printing to csv file
-# to load into excel etc
-making.a.table <- describe(publicSchools.combinedSalaries$Av14_16P) %>%
-  select(mean,sd,skew,kurtosis)
-
-
-kable(making.a.table) %>% 
-  kable_styling("striped", full_width = F) 
-
-# table_path <- ""
-#write_csv(making.a.table, path = table_path)
-
-#mydf <- read_csv(file = table_path)
-
-# let's talk about running a linear model (simple regression) with the teacher 
-# salary data
-
-fit1 <- lm(Av14_16P ~ Av14_16T, data=publicSchools.combinedSalaries)
-
-summary(fit1)
-
-
-
-
-publicSchools.combinedSalaries %>% 
-  ggplot(aes(x = Av14_16T,y = Av14_16P)) +
-  geom_point() +
-  geom_smooth(method = "lm")
-
-
-publicSchools.combinedSalaries %>% 
-  ggplot(aes(x=div_num,y=Av14_16P)) +
-  geom_point() +
-  geom_point(aes(x=div_num,y=Av14_16T),colour='blue')
-
-
-
-
-
-
 
 ### data generation demo - one set sample size ##########
 
@@ -465,3 +394,74 @@ test_nest <- test_nest %>%
 
 # and look at the different models by just calling the data frame
 test_nest
+
+
+
+
+
+### Teacher salary linear regression demo  ########
+
+
+file_path_prin <- "./data/principalSalaries.csv"
+file_path_tea <- "./data/teacherSalaries.csv"
+
+principal_Salaries <- read_csv(file_path_prin)
+teacher_Salaries <- read_csv(file_path_tea)
+
+publicSchools_principalSalaries <- principalSalaries %>% 
+  filter(str_detect(div_name,"Public")) %>%
+  select(div_num,Av14_16P)
+
+# convert the div_num column to numeric
+publicSchools_principalSalaries$div_num <- as.numeric(publicSchools.principalSalaries$div_num)
+
+
+publicSchools.teacherSalaries <- teacherSalaries %>% 
+  filter(str_detect(div_name,"Public")) %>% 
+  select(div_num,Av14_16T)
+
+publicSchools.teacherSalaries$div_num <- as.numeric(publicSchools.teacherSalaries$div_num)
+
+
+publicSchools.combinedSalaries <- inner_join(publicSchools.teacherSalaries,publicSchools.principalSalaries,by="div_num")
+
+# this section helps make tables for formatting in r or printing to csv file
+# to load into excel etc
+making.a.table <- describe(publicSchools.combinedSalaries$Av14_16P) %>%
+  select(mean,sd,skew,kurtosis)
+
+
+kable(making.a.table) %>% 
+  kable_styling("striped", full_width = F) 
+
+# table_path <- ""
+#write_csv(making.a.table, path = table_path)
+
+#mydf <- read_csv(file = table_path)
+
+# let's talk about running a linear model (simple regression) with the teacher 
+# salary data
+
+fit1 <- lm(Av14_16P ~ Av14_16T, data=publicSchools.combinedSalaries)
+
+summary(fit1)
+
+
+
+
+publicSchools.combinedSalaries %>% 
+  ggplot(aes(x = Av14_16T,y = Av14_16P)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+
+publicSchools.combinedSalaries %>% 
+  ggplot(aes(x=div_num,y=Av14_16P)) +
+  geom_point() +
+  geom_point(aes(x=div_num,y=Av14_16T),colour='blue')
+
+
+
+
+
+
