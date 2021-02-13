@@ -137,7 +137,7 @@ class: inverse, middle, center
 $\lim_{n\to\infty} \frac{\overline{X_n} - \mu}{\frac{\sigma}{\sqrt{n}}} \sim \mathcal{N} (0, \,1)$ 
 
 --
-* Note that $\frac{\sigma}{n}$ is the standard error (which is the standard deviation of the sampling distribution of the sample mean). This is the same thing that we do when we need to center a random variable by first subtracting its mean and then dividing by its standard deviation: $\frac{x_i - \overline{x}}{s}$
+* Note that $\frac{\sigma}{\sqrt{n}}$ is the standard error (which is the standard deviation of the sampling distribution of the sample mean). This is the same thing that we do when we need to center a random variable by first subtracting its mean and then dividing by its standard deviation: $\frac{x_i - \overline{x}}{s}$
 
 --
 

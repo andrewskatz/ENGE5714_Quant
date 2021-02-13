@@ -1,17 +1,37 @@
 # Week 4 Demo Script
+library(tidyverse)
+
+teacher_df <- read_csv("./Week 4/data/actual teacher salaries.csv")
+principal_df <- read_csv("./Week 4/data/actual principal salaries.csv")
+
+health_df <- read_csv("./Week 4/data/health rankings.csv")
+
+stemh_df <- read_csv("./Week 4/data/STEMH degree percentages.csv")
 
 
-teacher_df <- read_csv("./data/actual teacher salaries.csv")
-principal_df <- read_csv("actual principal salaries.csv")
-
-health_df <- read_csv("health rankings.csv")
-
-stemh_df <- read_csv("STEMH degree percentages.csv")
+teacher_df
 
 
-5+5
+test_df <- teacher_df %>% 
+  na_if("Governor's Schools")
 
 
+test_df <- test_df %>% 
+  mutate(div_name = replace_na(div_name, -999))
+
+high_salary <- teacher_df %>% 
+  filter(FY2005T > 40000)
+
+is.na(teacher_df$FY2005T)
+
+no_na_2005t <- teacher_df %>% 
+  filter(!is.na(FY2005T))
+
+mean(teacher_df$FY2005T, na.rm = TRUE)
+
+mean(no_na_2005t$FY2005T)
+
+# != says "not equal to"
 
 ## Another Worked Example ----
 
