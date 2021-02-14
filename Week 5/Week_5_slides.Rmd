@@ -70,7 +70,7 @@ xaringanExtra::use_panelset()
 
 --
 
-## Demo in R
+### Demo in R
 
 --
 
@@ -163,17 +163,55 @@ $Y_i = (b_0 + b_1 * X_i) + \epsilon_i$
 
 # Finding Coefficient Values
 
--- 
+--
 
 * To find coefficient values, we use the method of least squares
 
--- 
+--
 
-* The basic philosophy is to find values for $b_0$ and $b_1$
+* The basic philosophy is to find values for $b_0$ and $b_1$ that minimize the distance between the actual observed outcome, $y_i$, and the estimated outcome, $\hat{y}_i$
+
+--
+
+* As a reminder, $\hat{y}_i$ is calculated as:  $\hat{y}_i = b_0 + b_1*X_i$ 
+
+---
+
+# Interpreting Coefficient Values
 
 
 ---
 
+# What Makes a Good Model?
+
+--
+
+* Short answer: Small sum of squares. Specifically, we want to minimize the squared distance between $y_i$ and $\hat{y}_i$
+
+--
+
+* In the book this is noted as $deviation = \sum(observed - model)^2$
+
+--
+
+* Longer answer: Think about three kinds of sums of squares:
+
+  1. Sum of squares total $SS_t$
+  2. Sum of squares residual $SS_R$
+  3. Sum of square model $SS_M$
+
+--
+
+* We are interested in reducing $SS_R$
+
+
+---
+
+# Interpreting measures of fit
+
+--
+
+* A higher $R^2$ value corresponds to a better fit
 
 
 ---
