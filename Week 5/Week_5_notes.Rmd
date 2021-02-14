@@ -1,0 +1,84 @@
+---
+title: "Week 5 notes"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Week 5 - Simple Regression
+
+
+This week we will start learning about linear regression. In particular, we focus on simple regression. These kinds of models involve one predictor variable and one continuous outcome variable. Next week we will move to models with multiple regression, which involves - you guessed it - multiple predictor variables. 
+
+
+
+## General Modeling Philosophy
+
+The general approach is to model the outcome variable as a function of some predictor(s) plus an error term. Mathematically, this looks like:
+
+$outcome_i = model + error_i$
+
+where the $i$ subscript refers to the $i^{th}$ person in the sample. 
+
+
+
+
+
+
+
+
+
+
+#### Review of the normal distribution and standardizing variables
+
+Just to review, let's think about normally distributed variables and the notion of centering and standardizing.
+
+First, we will generate some data by drawing `n` random numbers from a normal distribution with a mean and standard deviation that we will specify. 
+
+```{r}
+
+mean <- 5
+sd <- 3
+n <- 1000
+
+random_x <- rnorm(n = n, mean = mean, sd = sd)
+```
+
+We can then visualize those numbers 
+
+```{r}
+
+
+hist(random_x)
+
+
+```
+
+
+Now if we subtract the mean and plot the histogram, notice how the values have all basically shifted to the left along the x-axis.
+```{r}
+sample_mean <- mean(random_x)
+
+centered_x <- random_x - sample_mean
+
+hist(centered_x)
+
+```
+
+
+Finally, we can divide by the sample standard deviation, which should have the effect of either stretching or squishing the values along the x-axis (without changing their mean). Pay attention again to the values along the x-axis.
+
+```{r}
+sample_sd <- sd(random_x)
+
+standardized_x <- centered_x / sample_sd
+
+hist(standardized_x)
+
+```
+
+This final plot should remind you have the standard normal plot (with mean 0 and standard deviation 1). This is noted as $x \sim \mathcal{N}(0, 1)$ and is read as "x is distributed according to a normal distribution with a mean of 0 and variance of 1".
+
+
