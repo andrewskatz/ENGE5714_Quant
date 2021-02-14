@@ -16,7 +16,7 @@
 class: center, middle, inverse, title-slide
 
 # Week 5 Slides
-## Simple Linear Regression
+## Simple Regression
 ### Andrew Katz
 ### Department of Engineering Education <br><br> Virginia Tech
 ### 2021-02-16
@@ -101,7 +101,7 @@ class: inverse, middle, center
 
 --
 
-* Simple regression involves one predictor and one outcome
+* **Simple regression involves one predictor and one outcome**
 
 --
 
@@ -117,7 +117,7 @@ class: inverse, middle, center
 
 --
 
-The general approach is to model the outcome variable as a function of some predictor(s) plus an error term. Mathematically, this looks like:
+The general approach for the next several weeks is to model the outcome variable as a function of some predictor(s) plus an error term. Mathematically, this looks like:
 
 .center[
 `\(outcome_i = model + error_i\)`
@@ -162,6 +162,8 @@ In simple regression, the model looks like:
 
   * This accounts for the discrepancy between what the model predicts person `\(i\)`'s outcome variable will be and what it _actually_ is observed to be
 
+
+
 ---
 
 # Finding Coefficient Values
@@ -178,9 +180,40 @@ In simple regression, the model looks like:
 
 * As a reminder, `\(\hat{y}_i\)` is calculated as:  `\(\hat{y}_i = b_0 + b_1*X_i\)` 
 
+--
+
+* In a _frequestist_ paradigm this is done using maximum likelihood estimation
+  * The math for this is beyond the scope of this class
+
+--
+
+* Practically speaking, we use this kind of syntax in R: 
+.center[
+`lm(outcome ~ predictor, data = your_data)`
+]
+
+
 ---
 
 # Interpreting Coefficient Values
+
+.pull-left[
+
+* The intercept `\(b_0\)` is the value of the outcome when the value of the predictor is 0
+
+* A common strategy is to first center the `\(x_i\)` values by subtracting `\(\overline{x}\)` from each `\(x_i\)`
+
+* If you center your variables first, then the interpretation of `\(b_0\)` is the value of the outcome at an average value of the predictor
+
+]
+
+--
+
+.pull-right[
+
+* The slope `\(b_1\)` is the change in the outcome variable for a 1-unit change in the predictor variable
+
+]
 
 
 ---
@@ -208,6 +241,44 @@ In simple regression, the model looks like:
 * We are interested in reducing `\(SS_R\)`
 
 
+
+
+---
+# Good Models (cont.)
+
+* Another way of saying this: we want to explain as much of the variation in the data as possible
+
+--
+
+* The total variation is `\(SS_T\)`
+
+--
+
+* The model variation is `\(SS_M\)`
+
+--
+
+* If `\(SS_T\)` and `\(SS_M\)` are close to each other, then their ratio is close to 1
+
+--
+
+* This is how we calculate `\(R^2\)`:
+.center[
+`\(R^2 = \frac{SS_M}{SS_T}\)`
+]
+
+
+--
+
+* Note that `\(SS_T = SS_M + SS_R\)`, which is a fancy way of saying the total variance can be decomposed into explained + unexplained variance (where "explained" variance refers to the variance explained by the model)
+
+--
+
+* If we take the _mean sum of squares_, we get `\(MS_R\)` and `\(MS_M\)`, which are used to calculate the F statistic;
+
+
+
+
 ---
 
 # Interpreting measures of fit
@@ -216,6 +287,55 @@ In simple regression, the model looks like:
 
 * A higher `\(R^2\)` value corresponds to a better fit
 
+--
+
+* Look at the equation for `\(R^2\)`:
+
+.center[
+`\(R^2 = \frac{SS_M}{SS_T} = \frac{SS_T - SS_R}{SS_T} = 1 - \frac{SS_R}{SS_T}\)`
+]
+
+--
+
+* Takeaway: a smaller residual sum of squares corresponds to a higher `\(R^2\)` value
+
+
+---
+
+# Assessing Invidiaul Predictors in a Model
+
+--
+
+* The null model in regression is for each predictor to equal 0
+
+--
+
+* Our hypothesis testing is testing against this null hypothesis that `\(b_1 = 0\)`
+
+--
+
+* This means the alternative hypothesis is `\(b_1 \neq 0\)`
+
+--
+
+* We test whether we have good reason to reject the null hypothesis that `\(b_1 = 0\)` by calculating the t-statistic:
+.center[
+`\(t = \frac{b_{1, model} - b_{1, null}}{SE_{b_1}}\)`
+]
+
+--
+
+* This simplifies to 
+.center[
+`\(t = \frac{b_{1, model}}{SE_{b_1}}\)`
+]
+
+---
+
+class: center, middle, inverse
+
+# Demo 
+Sensitivity to sample size and noisy data
 
 ---
 
