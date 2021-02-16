@@ -8,6 +8,8 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(psych)
+library(kableExtra)
 ```
 
 There are two exercises for practicing regression in this rmd file. The first involves using two data sets provided to you. The second exercise involves generating your own data as part of the process of gaining some intuition about what kind of underlying data generating process (there's that term from week 2!) might be creating the data you actually observe in your sample.
@@ -83,6 +85,115 @@ Plot the principal salaries against the teacher salaries. Think about what kind 
 
 ```
 
+Example Solution
+
+
+### Teacher salary linear regression demo  ########
+
+
+```{r}
+
+file_path_prin <- "./data/principalSalaries.csv"
+file_path_tea <- "./data/teacherSalaries.csv"
+
+principal_salaries <- read_csv(file_path_prin)
+teacher_salaries <- read_csv(file_path_tea)
+
+```
+
+
+```{r}
+
+public_schools_principal_salaries <- principal_salaries %>% 
+  filter(str_detect(div_name,"Public")) %>%
+  select(div_num,Av14_16P)
+
+```
+# convert the div_num column to numeric
+
+
+```{r}
+
+public_schools_principal_salaries$div_num <- as.numeric(public_schools_principal_salaries$div_num)
+
+```
+
+```{r}
+
+public_schools_teacher_salaries <- teacher_salaries %>% 
+  filter(str_detect(div_name,"Public")) %>% 
+  select(div_num,Av14_16T)
+
+```
+
+
+```{r}
+
+public_schools_teacher_salaries$div_num <- as.numeric(public_schools_teacher_salaries$div_num)
+
+```
+
+
+```{r}
+
+combined_salaries <- inner_join(public_schools_teacher_salaries, 
+                                public_schools_principal_salaries,
+                                by="div_num")
+```
+
+
+This section helps make tables for formatting in r or printing to csv file to load into excel etc
+
+
+```{r}
+
+making_a_table <- describe(combined_salaries$Av14_16P) %>%
+  select(mean,sd,skew,kurtosis)
+
+```
+
+```{r}
+kable(making_a_table) %>% 
+  kable_styling("striped", full_width = F) 
+
+```
+
+# let's talk about running a linear model (simple regression) with the teacher 
+# salary data
+
+```{r}
+fit1 <- lm(Av14_16P ~ Av14_16T, data=combined_salaries)
+
+```
+
+
+```{r}
+summary(fit1)
+
+```
+
+
+
+```{r}
+combined_salaries %>% 
+  ggplot(aes(x = Av14_16T,y = Av14_16P)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(x = "Teacher salary",
+       y = "Principal salary",
+       title = "Teacher salary vs Principal salary")
+
+```
+
+
+
+
+
+
+
+
+
+
 ## Exercise 2 - Create Your Own Adventure
 
 For this exercise, first generate your own data by creating a series of outcome variable values and a series of predictor variable values. For each outcome you should have a predictor (and vice versa). That's just a long way of saying if you want to simulate having 50 observations then you should have 50 outcomes and 50 predictors.
@@ -91,7 +202,7 @@ You can generate your data in R using some of the functions we have used for gen
 
 Once you have generated this data set, try running a simple regression. This means that you should probably have a continuous outcome (no probably about that part) and a continuous predictor (this is a little more flexible, but for now it might be easiest to stick with this).
 
-### Step 1: Generating data 
+### Step 1: Generating data
 
 ```{r}
 # Your code here

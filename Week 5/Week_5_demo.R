@@ -6,7 +6,7 @@ require(kableExtra)
 library(broom)
 
 
-### data generation demo - one set sample size ##########
+### Data generation demo - one set sample size ##########
 
 
 #store the sample size that we want to use
@@ -47,11 +47,13 @@ demo_df <- tibble("x" = x,
                   "y_noise_sd_max" = y_noise_sd_max)
 
 #check out what demo_df looks like
-head(demo_df)
+head(demo_df, n = 10)
 
 # order by increasing x value
 demo_df <- demo_df %>% 
-  arrange(x)
+  arrange(desc(x))
+
+
 
 # check out what the arrange() function did
 head(demo_df)
@@ -142,7 +144,7 @@ test_nest <- test_nest %>%
   unnest(glance)
 
 
-
+test_nest
 
 
 
@@ -423,57 +425,56 @@ test_nest
 file_path_prin <- "./data/principalSalaries.csv"
 file_path_tea <- "./data/teacherSalaries.csv"
 
-principal_Salaries <- read_csv(file_path_prin)
-teacher_Salaries <- read_csv(file_path_tea)
+principal_salaries <- read_csv(file_path_prin)
+teacher_salaries <- read_csv(file_path_tea)
 
-publicSchools_principalSalaries <- principalSalaries %>% 
+public_schools_principal_salaries <- principal_salaries %>% 
   filter(str_detect(div_name,"Public")) %>%
   select(div_num,Av14_16P)
 
 # convert the div_num column to numeric
-publicSchools_principalSalaries$div_num <- as.numeric(publicSchools.principalSalaries$div_num)
+public_schools_principal_salaries$div_num <- as.numeric(public_schools_principal_salaries$div_num)
 
 
-publicSchools.teacherSalaries <- teacherSalaries %>% 
+public_schools_teacher_salaries <- teacher_salaries %>% 
   filter(str_detect(div_name,"Public")) %>% 
   select(div_num,Av14_16T)
 
-publicSchools.teacherSalaries$div_num <- as.numeric(publicSchools.teacherSalaries$div_num)
+public_schools_teacher_salaries$div_num <- as.numeric(public_schools_steacher_salaries$div_num)
 
 
-publicSchools.combinedSalaries <- inner_join(publicSchools.teacherSalaries,publicSchools.principalSalaries,by="div_num")
+combined_salaries <- inner_join(public_schools_teacher_salaries, 
+                                public_chools_principal_salaries,
+                                by="div_num")
 
 # this section helps make tables for formatting in r or printing to csv file
 # to load into excel etc
-making.a.table <- describe(publicSchools.combinedSalaries$Av14_16P) %>%
+making_a_table <- describe(combined_salaries$Av14_16P) %>%
   select(mean,sd,skew,kurtosis)
 
 
-kable(making.a.table) %>% 
+kable(making_a_table) %>% 
   kable_styling("striped", full_width = F) 
 
-# table_path <- ""
-#write_csv(making.a.table, path = table_path)
 
-#mydf <- read_csv(file = table_path)
 
 # let's talk about running a linear model (simple regression) with the teacher 
 # salary data
 
-fit1 <- lm(Av14_16P ~ Av14_16T, data=publicSchools.combinedSalaries)
+fit1 <- lm(Av14_16P ~ Av14_16T, data=combined_salaries)
 
 summary(fit1)
 
 
 
 
-publicSchools.combinedSalaries %>% 
+combined_salaries %>% 
   ggplot(aes(x = Av14_16T,y = Av14_16P)) +
   geom_point() +
   geom_smooth(method = "lm")
 
 
-publicSchools.combinedSalaries %>% 
+combined_salaries %>% 
   ggplot(aes(x=div_num,y=Av14_16P)) +
   geom_point() +
   geom_point(aes(x=div_num,y=Av14_16T),colour='blue')
