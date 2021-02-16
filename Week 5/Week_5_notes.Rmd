@@ -5,6 +5,11 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+require(tidyverse)
+require(psych)
+require(kableExtra)
+library(broom)
 ```
 
 # Week 5 - Simple Regression
@@ -80,5 +85,773 @@ hist(standardized_x)
 ```
 
 This final plot should remind you have the standard normal plot (with mean 0 and standard deviation 1). This is noted as $x \sim \mathcal{N}(0, 1)$ and is read as "x is distributed according to a normal distribution with a mean of 0 and variance of 1".
+
+
+
+
+## Modeling using linear regression
+
+
+
+This week we will start learning about linear regression. In particular, we focus on simple regression. These kinds of models involve one predictor variable and one continuous outcome variable. Next week we will move to models with multiple regression, which involves - you guessed it - multiple predictor variables. 
+
+
+
+### General Modeling Philosophy
+
+The general approach is to model the outcome variable as a function of some predictor(s) plus an error term. Mathematically, this looks like:
+
+$outcome_i = model + error_i$
+
+where the $i$ subscript refers to the $i^{th}$ person in the sample. 
+
+
+
+
+
+
+
+#### Review of the normal distribution and standardizing variables
+
+Just to review, let's think about normally distributed variables and the notion of centering and standardizing.
+
+First, we will generate some data by drawing `n` random numbers from a normal distribution with a mean and standard deviation that we will specify. 
+
+```{r}
+
+mean <- 5
+sd <- 3
+n <- 1000
+
+random_x <- rnorm(n = n, mean = mean, sd = sd)
+```
+
+We can then visualize those numbers. 
+
+```{r}
+
+
+hist(random_x)
+
+
+```
+
+
+Now if we subtract the mean and plot the histogram, notice how the values have all basically shifted to the left along the x-axis.
+```{r}
+sample_mean <- mean(random_x)
+
+centered_x <- random_x - sample_mean
+
+hist(centered_x)
+
+```
+
+
+Finally, we can divide by the sample standard deviation, which should have the effect of either stretching or squishing the values along the x-axis (without changing their mean). Pay attention again to the values along the x-axis.
+
+```{r}
+sample_sd <- sd(random_x)
+
+standardized_x <- centered_x / sample_sd
+
+hist(standardized_x)
+
+```
+
+This final plot should remind you have the standard normal plot (with mean 0 and standard deviation 1). This is noted as $x \sim \mathcal{N}(0, 1)$ and is read as "x is distributed according to a normal distribution with a mean of 0 and variance of 1".
+
+
+
+
+
+## Data generation demo - one set sample size ##########
+The following is a demo from class, found in the week_5_demo.R file
+
+
+
+```{r}
+#store the sample size that we want to use
+samp_size <- 100
+
+
+```
+
+```{r}
+# uniformly sample X values (values for our predictor variable) from 0 to 20 
+x <- round(runif(n = samp_size, min = 0, max = 30), digits = 1) # this gives samp_size number of random numbers
+
+```
+
+
+Store the noise values for our different test models
+
+
+```{r}
+sd_min <- 2 # low noise
+sd_med <- 6 # medium noise
+sd_max <- 12 # high noise
+
+
+```
+
+Generate the outcome variable values under different amounts of noise (the rnorm() function is what is generating noise here)
+
+```{r}
+
+y_noise_sd_none <- 3 + 2*x # this is the true relationship without any noise
+y_noise_sd_min <- 3 + 2*x + round(x = rnorm(n = samp_size, mean = 0, sd = sd_min), digits = 1)
+y_noise_sd_med <- 3 + 2*x + round(x = rnorm(n = samp_size, mean = 0, sd = sd_med), digits = 1)
+y_noise_sd_max <- 3 + 2*x + round(x = rnorm(n = samp_size, mean = 0, sd = sd_max), digits = 1)
+
+```
+
+
+Typical step 1: visualize! Let's plot each of these x values vs y
+```{r}
+
+plot(x, y_noise_sd_none)
+plot(x, y_noise_sd_min)
+plot(x, y_noise_sd_med)
+plot(x, y_noise_sd_max)
+
+```
+
+Let's put all of these vectors together into a data frame to make it easier to analyze later on
+Note, this is not a vital step for conducting the simple regression
+
+
+```{r}
+
+demo_df <- tibble("x" = x, 
+                  "y_noise_sd_none"=y_noise_sd_none, 
+                  "y_noise_sd_min" = y_noise_sd_min,
+                  "y_noise_sd_med" = y_noise_sd_med,
+                  "y_noise_sd_max" = y_noise_sd_max)
+
+```
+
+
+Check out what demo_df looks like
+
+```{r}
+
+head(demo_df)
+
+```
+
+Order by increasing x value
+
+```{r}
+
+demo_df <- demo_df %>% 
+  arrange(x)
+
+```
+
+Check out what the arrange() function did
+
+
+```{r}
+
+head(demo_df)
+
+
+```
+
+
+Let's make this a long df so that we can plot multiple standard deviation values together
+
+
+```{r}
+
+demo_df_long <- demo_df %>% 
+  pivot_longer(cols = starts_with("y_noise"),
+               names_to = "y_col",
+               values_to = "y_val"
+  )
+
+
+```
+
+
+Again, check on what this did
+
+
+```{r}
+
+head(demo_df_long)
+
+
+```
+
+Let's add in a column to note whether the value is from the min, med, max, or zero sd (noise) model
+
+
+```{r}
+
+demo_df_long <- demo_df_long %>% 
+  mutate(sd_val = case_when(str_detect(y_col, "sd_none") ~ 0,
+                            str_detect(y_col, "sd_min") ~ sd_min,
+                            str_detect(y_col, "sd_med") ~ sd_med,
+                            str_detect(y_col, "sd_max") ~ sd_max))
+
+
+```
+
+Use facet_grid to separate the plots out by 
+
+
+```{r}
+
+demo_df_long %>% 
+  ggplot(aes(x = x, y = y_val)) +
+  geom_point() +
+  facet_grid(.~y_col)
+
+
+```
+
+
+You can also automatically add in a line with the geom_smooth() function
+
+
+```{r}
+
+demo_df_long %>% 
+  ggplot(aes(x = x, y = y_val)) +
+  geom_point() +
+  geom_smooth(method = "lm") + 
+  facet_grid(.~y_col)
+
+
+
+```
+
+Now we can create a linear model for the data with minimum noise with the following command:
+
+
+```{r}
+
+fit_demo_min <- lm(y_noise_sd_min ~ x)
+
+
+```
+
+
+...and we can look at the summary of the model with:
+
+
+```{r}
+
+summary(fit_demo_min)
+
+
+```
+
+We can also look at model results with the glance() function from the broom package
+
+
+```{r}
+
+broom::glance(fit_demo_min)
+
+
+```
+
+We can create models for the med and max sd values as well and take a look at those with the summary() function once again
+
+```{r}
+
+fit_demo_med <- lm(y_noise_sd_med ~ x)
+summary(fit_demo_med)
+
+
+```
+
+```{r}
+
+fit_demo_max <- lm(y_noise_sd_max ~ x)
+summary(fit_demo_max)
+
+
+```
+
+
+Notice the increase in the standard error of the coefficient estimates as the noise in y values went up
+
+
+
+From a programming perspective, this was not very efficient because I just copied, pasted, and corrected these values.
+There is a better way to do this using lists (see below)
+
+
+
+Let's do some fancy stuff to make multiple models at once rather than having to write new lines for each model
+*Some of these ideas are taken from the R4DS book chapter 25
+
+
+```{r}
+
+test_nest <- demo_df_long %>% nest(data = -sd_val)
+
+
+linear_model <- function(df) {
+  lm(y_val ~ x, data = df)
+}
+
+
+models <- map(test_nest$data, linear_model)
+
+
+```
+
+
+```{r}
+
+summary(models[[2]])
+
+
+```
+
+```{r}
+
+summary(models[[3]])
+
+
+```
+
+```{r}
+
+summary(models[[4]])
+
+
+```
+
+We can also store the models as new columns in the nested dataframe
+
+
+```{r}
+
+test_nest <- test_nest %>% 
+  mutate(model = map(data, linear_model))
+
+
+```
+
+Finally, we can unnest the models to make it easier to compare them with each other in a data frame
+
+```{r}
+
+test_nest <- test_nest %>% 
+  mutate(glance = map(model, broom::glance)) %>% 
+  unnest(glance)
+
+
+```
+
+
+
+
+
+
+
+
+## Data generation demo - one set sample size; 
+The change from the past demo is that we are now sampling from integer values rather than continuous for the predictor 
+
+
+
+Store the sample size that we want to use
+
+```{r}
+
+samp_size <- 200
+
+
+```
+
+Instead of sampling uniformly from 0 to 20, this is to sample integers from 40 to 100 uniformly.
+We take "samp_size" number of samples. Replace = TRUE means we can get the same x value multiple times
+
+```{r}
+
+x <- sample(x = c(60:100), size = samp_size, replace = TRUE)
+
+
+```
+
+As before, store the noise values for our different test models
+
+```{r}
+
+sd_min <- 2
+sd_med <- 6
+sd_max <- 12
+
+y_noise_sd_none <- 3 + 2*x
+y_noise_sd_min <- 3 + 2*x + round(x = rnorm(n = samp_size, mean = 0, sd = sd_min), digits = 1)
+y_noise_sd_med <- 3 + 2*x + round(x = rnorm(n = samp_size, mean = 0, sd = sd_med), digits = 1)
+y_noise_sd_max <- 3 + 2*x + round(x = rnorm(n = samp_size, mean = 0, sd = sd_max), digits = 1)
+
+
+
+```
+
+Typical step 1: visualize! Let's plot each of these x values vs y
+
+```{r}
+
+plot(x, y_noise_sd_none)
+plot(x, y_noise_sd_min)
+plot(x, y_noise_sd_med)
+plot(x, y_noise_sd_max)
+
+
+```
+
+Let's put all of these vectors together into a data frame to make it easier to analyze later on.
+Note, this is not a vital step for conducting the simple regression
+
+```{r}
+
+demo_df <- tibble("x" = x, 
+                  "y_noise_sd_none"=y_noise_sd_none, 
+                  "y_noise_sd_min" = y_noise_sd_min,
+                  "y_noise_sd_med" = y_noise_sd_med,
+                  "y_noise_sd_max" = y_noise_sd_max)
+
+
+```
+Order by increasing x value
+
+
+```{r}
+
+demo_df <- demo_df %>% 
+  arrange(x)
+
+
+```
+
+Let's make this a long df so that we can plot multiple standard deviation values together
+
+```{r}
+
+demo_df_long <- demo_df %>% 
+  pivot_longer(cols = starts_with("y_noise"),
+               names_to = "y_col",
+               values_to = "y_val"
+  )
+
+
+```
+
+
+```{r}
+
+demo_df_long <- demo_df_long %>% 
+  mutate(sd_val = case_when(str_detect(y_col, "sd_none") ~ 0,
+                            str_detect(y_col, "sd_min") ~ sd_min,
+                            str_detect(y_col, "sd_med") ~ sd_med,
+                            str_detect(y_col, "sd_max") ~ sd_max))
+
+
+```
+
+
+And visualize the data, faceting by different noise
+```{r}
+
+demo_df_long %>% 
+  ggplot(aes(x = x, y = y_val)) +
+  geom_point() +
+  facet_grid(.~y_col)
+
+
+```
+
+And add in a line with `geom_smooth(method = 'lm')`
+```{r}
+
+demo_df_long %>% 
+  ggplot(aes(x = x, y = y_val)) +
+  geom_point() +
+  geom_smooth(method = "lm") + 
+  facet_grid(.~y_col)
+
+
+```
+
+Create a linear model and look at the summary.
+```{r}
+
+fit_demo_min <- lm(y_noise_sd_min ~ x)
+summary(fit_demo_min)
+
+
+```
+
+We can also look at model results with the glance() function from the broom package
+
+```{r}
+
+broom::glance(fit_demo_min)
+
+
+```
+
+We can create models for the med and max sd values as well and take a look at those with the summary() function once again.
+
+```{r}
+
+fit_demo_med <- lm(y_noise_sd_med ~ x)
+summary(fit_demo_med)
+
+
+```
+
+```{r}
+
+fit_demo_max <- lm(y_noise_sd_max ~ x)
+summary(fit_demo_max)
+
+
+```
+
+Notice the increase in the standard error of the coefficient estimates as the noise in y values went up
+
+
+
+From a programming perspective, this was not very efficient because I just copied, pasted, and corrected these values.
+There is a better way to do this using lists (see below)
+
+
+
+Let's do some fancy stuff to make multiple models at once rather than having to write new lines for each model
+*Some of these ideas are taken from the R4DS book chapter 25
+
+
+```{r}
+
+test_nest <- demo_df_long %>% nest(data = -sd_val)
+
+
+linear_model <- function(df) {
+  lm(y_val ~ x, data = df)
+}
+
+
+models <- map(test_nest$data, linear_model)
+
+
+```
+
+
+```{r}
+
+summary(models[[2]])
+summary(models[[3]])
+summary(models[[4]])
+
+
+```
+
+
+We can also store the models as new columns in the nested dataframe
+```{r}
+
+test_nest <- test_nest %>% 
+  mutate(model = map(data, linear_model))
+
+```
+
+
+Finally, we can unnest the models to make it easier to compare them with each other in a data frame
+
+
+```{r}
+
+test_nest <- test_nest %>% 
+  mutate(glance = map(model, broom::glance)) %>% 
+  unnest(glance)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Data generation with three different sample sizes
+
+
+Let's run the same demo but now have three different sample sizes - 10, 50, and 500
+
+First, store the sample sizes we want to use
+
+
+```{r remedy045}
+
+samp_sizes <- c(10, 50, 500)
+
+
+```
+Next, create a bookkeping column for ourselves to keep track of which sample size the future values will come from
+
+
+```{r}
+
+samp_size_col <- rep(x = c(10,50, 500), times = samp_sizes)
+
+
+```
+
+Calculate the total number of values we will need from the three samples combined
+
+```{r remedy046}
+
+tot_samp_size <- sum(samp_sizes)
+
+
+```
+
+Sample uniformly from 0 to 20
+
+
+```{r remedy047}
+
+x <- round(x = runif(n = tot_samp_size, min = 0, max = 20), digits = 1)
+
+
+```
+
+
+Store the standard deviations for the min, med, and max models
+
+```{r}
+
+sd_min <- 2
+sd_med <- 6
+sd_max <- 12
+
+
+```
+
+Calculate the y values for the different scenarios where there is no noise up to max noise
+
+
+```{r}
+
+y_noise_sd_none <- 3 + 2*x
+y_noise_sd_min <- 3 + 2*x + round(x = rnorm(n = tot_samp_size, mean = 0, sd = sd_min), digits = 1)
+y_noise_sd_med <- 3 + 2*x + round(x = rnorm(n = tot_samp_size, mean = 0, sd = sd_med), digits = 1)
+y_noise_sd_max <- 3 + 2*x + round(x = rnorm(n = tot_samp_size, mean = 0, sd = sd_max), digits = 1)
+
+
+```
+
+
+Typical step 1: visualize! Let's plot each of these x values vs y
+
+```{r}
+
+plot(x, y_noise_sd_none)
+plot(x, y_noise_sd_min)
+plot(x, y_noise_sd_med)
+plot(x, y_noise_sd_max)
+
+
+```
+Can we calculate the correlations between x and these different y values? (pro tip: yes)
+
+
+Let's put all of these vectors together into a data frame to make it easier to analyze later on
+Note, this is not a vital step for conducting the simple regression
+
+
+```{r}
+
+demo_df <- tibble("n" = samp_size_col,
+                  "x" = x, 
+                  "y_noise_sd_none"=y_noise_sd_none, 
+                  "y_noise_sd_min" = y_noise_sd_min,
+                  "y_noise_sd_med" = y_noise_sd_med,
+                  "y_noise_sd_max" = y_noise_sd_max)
+
+
+```
+
+Order by increasing x value
+
+```{r}
+
+demo_df <- demo_df %>% 
+  arrange(n, x)
+
+
+```
+Let's make this a long df so that we can plot multiple standard deviation values together
+
+```{r}
+
+demo_df_long <- demo_df %>% 
+  pivot_longer(cols = starts_with("y_noise"),
+               names_to = "y_col",
+               values_to = "y_val"
+  )
+
+demo_df_long <- demo_df_long %>% 
+  mutate(sd_val = case_when(str_detect(y_col, "sd_none") ~ 0,
+                            str_detect(y_col, "sd_min") ~ sd_min,
+                            str_detect(y_col, "sd_med") ~ sd_med,
+                            str_detect(y_col, "sd_max") ~ sd_max))
+
+
+
+```
+
+
+```{r}
+
+demo_df_long %>% 
+  ggplot(aes(x = x, y = y_val)) +
+  geom_point() +
+  facet_grid(n~y_col)
+
+
+```
+
+
+```{r}
+
+demo_df_long %>% 
+  ggplot(aes(x = x, y = y_val)) +
+  geom_point() +
+  geom_smooth(method = "lm") + 
+  facet_grid(n~y_col)
+
+```
+
+
+```{r}
+
+fit_demo_min <- lm(y_noise_sd_min ~ x)
+summary(fit_demo_min)
+
+```
+
+We
 
 
