@@ -7,9 +7,12 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
 ```
 
 There are two exercises for practicing regression in this rmd file. The first involves using two data sets provided to you. The second exercise involves generating your own data as part of the process of gaining some intuition about what kind of underlying data generating process (there's that term from week 2!) might be creating the data you actually observe in your sample.
+
+In the first exercise, there are instructions outlining each step to follow. The basic building blocks of the code are provided (commented out). There are also three hashtags (\#\#\#) in certain places, which you should replace with your own values.
 
 ## Exercise 1 - Teacher salary linear regression demo
 
@@ -45,32 +48,32 @@ teacher_salaries <- read_csv(file_path_tea)
 #### Join the teacher salaries and principal salaries into one dataframe by using an inner_join. You should think about which column to join on (i.e., which to pass to the by = "" argument within inner_join())
 
 ```{r}
-combined_salaries <- inner_join(###,
-                                ###,
-                                by=###)
+#combined_salaries <- inner_join(###, ###, by=###)
 
 ```
 
-This section helps make tables for formatting in r or printing to csv file to load into excel etc
+This section helps make tables for formatting in r or printing to csv file to load into excel etc. You should be able to run this by uncommenting the code in the following block.
 
 ```{r}
-making_a_table <- describe(combined_salaries$Av14_16P) %>%
-  select(mean,sd,skew,kurtosis)
+#making_a_table <- describe(combined_salaries$Av14_16P) %>%
+#  select(mean,sd,skew,kurtosis)
 ```
 
+This is an example of making a table in R markdown. You should be able to run this by uncommenting the code in the following block.
+
 ```{r}
-kable(making_a_table) %>% 
-  kable_styling("striped", full_width = F) 
+#kable(making_a_table) %>% 
+#  kable_styling("striped", full_width = F) 
 ```
 
-let's talk about running a linear model (simple regression) with the teacher
+Let's transition to running a linear model (simple regression) with the principal salaries as the outcome variable and the teacher salaries as the predictor.
 
-#### Create a linear model using the lm() function that models principal salary as a function of teacher salary (i.e., principal salary is the outcome variable). Replace the hashtags below
+#### Create a linear model using the lm() function that models principal salary as a function of teacher salary (i.e., principal salary is the outcome variable). Replace the hashtags below.
 
 ```{r}
-fit1 <- lm(### ~ ###, data= ###)
+#fit1 <- lm(### ~ ###, data= ###)
 
-summary(fit1)
+#summary(###)
 ```
 
 Plot the principal salaries against the teacher salaries. Think about what kind of plot makes the most sense.
@@ -83,3 +86,31 @@ Plot the principal salaries against the teacher salaries. Think about what kind 
 ## Exercise 2 - Create Your Own Adventure
 
 For this exercise, first generate your own data by creating a series of outcome variable values and a series of predictor variable values. For each outcome you should have a predictor (and vice versa). That's just a long way of saying if you want to simulate having 50 observations then you should have 50 outcomes and 50 predictors.
+
+You can generate your data in R using some of the functions we have used for generating data in demos (e.g., rep(), sample(), seq(), rnorm()) or manually in Excel, saving that CSV files, and importing it to R. A particularly useful way to do this might be to imagine your own research topic of interest and thinking of a setting where you might collect data yourself. Then imagine what those data might look like and generate an example data set based on that. These kinds of data simulation exercises are helpful for thinking about what you might expect to see in practice when you are actually collecting real data for your future projects.
+
+Once you have generated this data set, try running a simple regression. This means that you should probably have a continuous outcome (no probably about that part) and a continuous predictor (this is a little more flexible, but for now it might be easiest to stick with this).
+
+### Step 1: Generating data 
+
+```{r}
+# Your code here
+```
+
+### Steps 2: Importing and tidying data (if needed)
+
+```{r}
+# Your code here
+```
+
+Step 3: Linear Model
+
+```{r}
+# Your code here
+```
+
+Step 4: Plot the data
+
+```{r}
+# Your code here
+```

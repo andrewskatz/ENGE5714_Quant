@@ -13,17 +13,18 @@ library(broom)
 samp_size <- 100
 
 # uniformly sample X values (values for our predictor variable) from 0 to 20 
-x <- round(runif(n = samp_size, min = 0, max = 30), digits = 1)
+x <- round(runif(n = samp_size, min = 0, max = 30), digits = 1) # this gives samp_size number of random numbers
 
 
 
 # store the noise values for our different test models
-sd_min <- 2
-sd_med <- 6
-sd_max <- 12
+sd_min <- 2 # low noise
+sd_med <- 6 # medium noise
+sd_max <- 12 # high noise
+
 
 # generate the outcome variable values under different amounts of noise (the rnorm() function is what is generating noise here)
-y_noise_sd_none <- 3 + 2*x
+y_noise_sd_none <- 3 + 2*x # this is the true relationship without any noise
 y_noise_sd_min <- 3 + 2*x + round(x = rnorm(n = samp_size, mean = 0, sd = sd_min), digits = 1)
 y_noise_sd_med <- 3 + 2*x + round(x = rnorm(n = samp_size, mean = 0, sd = sd_med), digits = 1)
 y_noise_sd_max <- 3 + 2*x + round(x = rnorm(n = samp_size, mean = 0, sd = sd_max), digits = 1)
@@ -36,6 +37,7 @@ plot(x, y_noise_sd_min)
 plot(x, y_noise_sd_med)
 plot(x, y_noise_sd_max)
 
+
 # let's put all of these vectors together into a data frame to make it easier to analyze later on
 # note, this is not a vital step for conducting the simple regression
 demo_df <- tibble("x" = x, 
@@ -44,9 +46,15 @@ demo_df <- tibble("x" = x,
                   "y_noise_sd_med" = y_noise_sd_med,
                   "y_noise_sd_max" = y_noise_sd_max)
 
+#check out what demo_df looks like
+head(demo_df)
+
 # order by increasing x value
 demo_df <- demo_df %>% 
   arrange(x)
+
+# check out what the arrange() function did
+head(demo_df)
 
 # let's make this a long df so that we can plot multiple standard deviation values together
 demo_df_long <- demo_df %>% 
@@ -55,6 +63,9 @@ demo_df_long <- demo_df %>%
                values_to = "y_val"
   )
 
+# again, check on what this did
+head(demo_df_long)
+
 # let's add in a column to note whether the value is from the min, med, max, or zero sd (noise) model
 demo_df_long <- demo_df_long %>% 
   mutate(sd_val = case_when(str_detect(y_col, "sd_none") ~ 0,
@@ -62,11 +73,13 @@ demo_df_long <- demo_df_long %>%
                             str_detect(y_col, "sd_med") ~ sd_med,
                             str_detect(y_col, "sd_max") ~ sd_max))
 
+# use facet_grid to separate the plots out by 
 demo_df_long %>% 
   ggplot(aes(x = x, y = y_val)) +
   geom_point() +
   facet_grid(.~y_col)
 
+# you can also automatically add in a line with the geom_smooth() function
 demo_df_long %>% 
   ggplot(aes(x = x, y = y_val)) +
   geom_point() +
@@ -74,10 +87,14 @@ demo_df_long %>%
   facet_grid(.~y_col)
 
 
+
+# now we can create a linear model for the data with minimum noise with the following command:
 fit_demo_min <- lm(y_noise_sd_min ~ x)
+
+# and we can look at the summary of the model with:
 summary(fit_demo_min)
 
-# can also look at model results with the glance() function from the broom package
+# we can also look at model results with the glance() function from the broom package
 broom::glance(fit_demo_min)
 
 
@@ -132,7 +149,8 @@ test_nest <- test_nest %>%
 
 
 
-### data generation demo - one set sample size; sampling from integer values rather than continuous #######
+### data generation demo - one set sample size; 
+## The change from the past demo is that we are now sampling from integer values rather than continuous for the predictor #######
 
 
 

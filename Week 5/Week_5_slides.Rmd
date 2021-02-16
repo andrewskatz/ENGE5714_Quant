@@ -114,7 +114,11 @@ class: inverse, middle, center
 
 --
 
-The general approach for the next several weeks is to model the outcome variable as a function of some predictor(s) plus an error term. Mathematically, this looks like:
+The general approach for the next several weeks is to model the outcome variable as a function of some predictor(s) plus an error term. 
+
+--
+
+Mathematically, this looks like:
 
 .center[
 $outcome_i = model + error_i$
@@ -223,13 +227,13 @@ $Y_i = (b_0 + b_1 * X_i) + \epsilon_i$
 
 --
 
-* In the book this is noted as $deviation = \sum(observed - model)^2$
+* In the book this is noted as $deviation = \sum_{i=1}^{N}(observed_i - estimated_i)^2$
 
 --
 
 * Longer answer: Think about three kinds of sums of squares:
 
-  1. Sum of squares total $SS_t$
+  1. Sum of squares total $SS_T$
   2. Sum of squares residual $SS_R$
   3. Sum of square model $SS_M$
 
@@ -271,7 +275,11 @@ $R^2 = \frac{SS_M}{SS_T}$
 
 --
 
-* If we take the _mean sum of squares_, we get $MS_R$ and $MS_M$, which are used to calculate the F statistic;
+* If we take the _mean sum of squares_, we get $MS_R$ and $MS_M$, which are used to calculate the F statistic:
+
+.center[
+$F = \frac{MS_R}{MS_M}$
+]
 
 
 
