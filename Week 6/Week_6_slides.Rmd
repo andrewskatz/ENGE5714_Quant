@@ -1,0 +1,362 @@
+---
+title: "Week 6 Slides"
+subtitle: "Multiple Regression"
+author: "Andrew Katz"
+institute: "Department of Engineering Education <br><br> Virginia Tech"
+date: "2021-02-23"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r setup-chunk, echo = FALSE, message = FALSE}
+library(tidyverse)
+library(car)
+
+
+xaringanExtra::use_panelset()
+
+
+```
+
+
+---
+
+.center[
+
+# Week 6 Announcements
+
+]
+
+--
+### Problem Set 1 is being graded
+
+* I won't be able to release solutions until everyone has turned in their assignment
+
+--
+
+### Course notes in a book available at this URL: https://andrewskatz.github.io/test_course_note/
+
+--
+
+### Don't forget about the feedback surveys
+
+
+
+
+
+---
+
+.center[
+# Week 6 Reading Assignment
+
+## DSUR Chapter 7 (Finish chapter)  
+### Multiple Regression
+
+
+]
+
+
+
+---
+
+
+# Today's Plan
+
+### Review 7.6 - 7.11 of DSUR
+
+--
+
+### Demo in R
+
+--
+
+### Team practice in R
+
+---
+
+
+class: inverse, middle, center
+
+
+
+# Chapter Seven
+
+### Regression
+
+
+---
+
+# Introduction to Regression
+
+--
+
+* We will continue with regression this week
+
+--
+
+* Reminder: **Simple regression involves one predictor and one outcome**
+
+--
+
+* This week we move to multiple regression
+
+  * This involves multiple predictors (but still one continuous outcome)
+
+
+
+
+
+---
+
+# General Modeling Philosophy
+
+--
+
+The general approach for the next several weeks is to model the outcome variable as a function of some predictor(s) plus an error term. 
+
+--
+
+Mathematically, this looks like:
+
+.center[
+$outcome_i = model + error_i$
+]
+
+where the $i$ subscript refers to the $i^{th}$ person in the sample. 
+
+
+
+---
+
+# The Simple Regression Model
+
+--
+
+In simple regression, the model looks like:
+
+.center[
+$Y_i = (b_0 + b_1 * X_i) + \epsilon_i$
+
+]
+
+--
+
+* The $Y_i$ is the value of the outcome variable for person $i$
+
+--
+
+* $b_0$ and $b_1$ are the regression coefficients
+
+  * These are the things we are trying to find
+  
+  * They are the same for each person
+
+--
+  
+* The $X_i$ is the values of the predictor variable for person $i$
+
+--
+
+* The $\epsilon_i$ is the error term for person $i$
+
+  * This accounts for the discrepancy between what the model predicts person $i$'s outcome variable will be and what it _actually_ is observed to be
+
+
+
+---
+
+# Finding Coefficient Values
+
+--
+
+* To find coefficient values, we use the method of least squares
+
+--
+
+* The basic philosophy is to find values for $b_0$ and $b_1$ that minimize the distance between the actual observed outcome, $y_i$, and the estimated outcome, $\hat{y}_i$
+
+--
+
+* As a reminder, $\hat{y}_i$ is calculated as:  $\hat{y}_i = b_0 + b_1*X_i$ 
+
+--
+
+* In a _frequestist_ paradigm this is done using maximum likelihood estimation
+  * The math for this is beyond the scope of this class
+
+--
+
+* Practically speaking, we use this kind of syntax in R: 
+.center[
+`lm(outcome ~ predictor, data = your_data)`
+]
+
+
+---
+
+# Interpreting Coefficient Values
+
+.pull-left[
+
+* The intercept $b_0$ is the value of the outcome when the value of the predictor is 0
+
+* A common strategy is to first center the $x_i$ values by subtracting $\overline{x}$ from each $x_i$
+
+* If you center your variables first, then the interpretation of $b_0$ is the value of the outcome at an average value of the predictor
+
+]
+
+--
+
+.pull-right[
+
+* The slope $b_1$ is the change in the outcome variable for a 1-unit change in the predictor variable
+
+]
+
+
+---
+
+# What Makes a Good Model?
+
+--
+
+* Short answer: Small sum of squares. Specifically, we want to minimize the squared distance between $y_i$ and $\hat{y}_i$
+
+--
+
+* In the book this is noted as $deviation = \sum_{i=1}^{N}(observed_i - estimated_i)^2$
+
+--
+
+* Longer answer: Think about three kinds of sums of squares:
+
+  1. Sum of squares total $SS_T$
+  2. Sum of squares residual $SS_R$
+  3. Sum of square model $SS_M$
+
+--
+
+* We are interested in reducing $SS_R$
+
+
+
+
+---
+# Good Models (cont.)
+
+* Another way of saying this: we want to explain as much of the variation in the data as possible
+
+--
+
+* The total variation is $SS_T$
+
+--
+
+* The model variation is $SS_M$
+
+--
+
+* If $SS_T$ and $SS_M$ are close to each other, then their ratio is close to 1
+
+--
+
+* This is how we calculate $R^2$:
+.center[
+$R^2 = \frac{SS_M}{SS_T}$
+]
+
+
+--
+
+* Note that $SS_T = SS_M + SS_R$, which is a fancy way of saying the total variance can be decomposed into explained + unexplained variance (where "explained" variance refers to the variance explained by the model)
+
+--
+
+* If we take the _mean sum of squares_, we get $MS_R$ and $MS_M$, which are used to calculate the F statistic:
+
+.center[
+$F = \frac{MS_R}{MS_M}$
+]
+
+
+
+
+---
+
+# Interpreting measures of fit
+
+--
+
+* A higher $R^2$ value corresponds to a better fit
+
+--
+
+* Look at the equation for $R^2$:
+
+.center[
+$R^2 = \frac{SS_M}{SS_T} = \frac{SS_T - SS_R}{SS_T} = 1 - \frac{SS_R}{SS_T}$
+]
+
+--
+
+* Takeaway: a smaller residual sum of squares corresponds to a higher $R^2$ value
+
+
+---
+
+# Assessing Invidiaul Predictors in a Model
+
+--
+
+* The null model in regression is for each predictor to equal 0
+
+--
+
+* Our hypothesis testing is testing against this null hypothesis that $b_1 = 0$
+
+--
+
+* This means the alternative hypothesis is $b_1 \neq 0$
+
+--
+
+* We test whether we have good reason to reject the null hypothesis that $b_1 = 0$ by calculating the t-statistic:
+.center[
+$t = \frac{b_{1, model} - b_{1, null}}{SE_{b_1}}$
+]
+
+--
+
+* This simplifies to 
+.center[
+$t = \frac{b_{1, model}}{SE_{b_1}}$
+]
+
+---
+
+class: center, middle, inverse
+
+# Demo 
+Sensitivity to sample size and noisy data
+
+---
+
+class: center, middle, inverse
+
+# Start working in R
+
+
+---
+
+
+
+
+
+
+
+
