@@ -1,0 +1,228 @@
+---
+title: "Week_6_demo"
+author: "Katz"
+date: "2/21/2021"
+output: html_document
+---
+### Script for class discussion on multiple regression
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(psych)
+library(kableExtra)
+library(broom)
+```
+
+
+
+
+### Explore the child aggression data set #########
+
+```{r remedy001}
+
+ca_df <- read.table("ChildAggression.dat", header = TRUE)
+
+```
+
+# method 1 for quickly getting summary statistics for the data you have, using the built-in summary() function
+summary(ca_df)
+
+# method 2, using the describe() function from the psych package
+describe(ca_df)
+
+# spot check: where do the "se" values come from?
+
+
+# now that we have seen some of the numbers, let's try to visualize some of these data
+# let's try to visualize the data while we're at it
+ca_df %>% 
+  ggplot(aes(x = Aggression)) +
+  geom_histogram()
+
+# we could do this for each of our variables or we could try something a little fancier
+# by using the pivot_longer() function to make a longer dataframe and plot everything at once
+
+
+# first, create the long dataframe. After running this command, it's a good idea to view the new data frame
+# to make sure this did what you intended
+ca_df_long <- ca_df %>% 
+  pivot_longer(cols = Aggression:Parenting_Style, names_to = "variable_name", values_to = "variable_value")
+
+# after making sure everything looks in order, run the same plot command with the addition of a facet
+# note that the fill = variable_name tells R to color the plot with different colors by variable_name and the theme(...) tells R to get rid of the legend that automatically shows up
+
+
+```{r}
+
+ca_df_long %>% 
+  ggplot(aes(x = variable_value, fill = variable_name)) +
+  geom_histogram() +
+  facet_wrap(variable_name ~.) +
+  theme(legend.position = "none")
+```
+
+
+From this we should be able to see that everything is normally distributed and appears to be standardized
+
+Let's try a different kind of visualization: the empirical cumulative distribution function (eCDF) (sounds fancy, but it's not bad)
+
+```{r}
+
+ca_df_long %>% 
+  ggplot(aes(x = variable_value)) +
+  stat_ecdf(geom = "point") +
+  facet_wrap(variable_name ~.) 
+
+
+```
+
+It looks like a bunch of distorted s shapes. In order to understand what is going on here, we should take a brief detour into the world of cumulative distribution functions (CDFs), eCDFs, and eventually QQ plots. This detour is at the end of the markdown file. 
+
+
+
+
+
+
+
+
+Now we can try a third way of visualizing our data - QQ plots!
+
+As before, we can plot each variable with separate calls or plot them all together with the long data frame
+
+```{r}
+
+ca_df %>% 
+  ggplot(aes(sample=Aggression)) +
+  stat_qq() +
+  stat_qq_line()
+
+
+```
+
+
+```{r}
+
+ca_df_long %>% 
+  ggplot(aes(sample=variable_value)) +
+  stat_qq() +
+  stat_qq_line() +
+  facet_wrap(variable_name ~ .)
+
+
+```
+
+### Multiple regression ######
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Detour: Cumulative Distribution Function (CDF), empirical CDF, and QQ Plot Discussion
+
+Our goal here is to visualize the cumulative distribution function for a normal distribution as a stepping stone toward undestanding QQ plots. We will use plots of the empirical cumulative distribution function (eCDF)
+
+
+As a way to visualize our data. Although we have not discussed eCDFs before, they are another tool you can use to visualize the distribution of quantitative data.
+
+We will also look at the effect of sample size on the kinds of plots that we may make when visualizing the distribution of data. 
+
+
+First, let's generate some data to help us see what these concepts are all about. 
+
+**Note** that We are generating data to make things easier on ourselves - we know the underlying data-generating process. So that lets us form an expectation of what *should* happen. These kinds of toy examples can be helpful for building an intuition about these concepts that we can then use in our own work.
+
+```{r}
+df_1 <- tibble(x = round(rnorm(n = 25, mean = 0, sd = 1), digits = 1), samp_size = rep(x = 25, times = 25))
+df_2 <- tibble(x = round(rnorm(n = 50, mean = 0, sd = 1), digits = 1), samp_size = rep(x = 50, times = 50))
+df_3 <- tibble(x = round(rnorm(n = 100, mean = 0, sd = 1), digits = 1), samp_size = rep(x = 100, times = 100))
+df_4 <- tibble(x = round(rnorm(n = 200, mean = 0, sd = 1), digits = 1), samp_size = rep(x = 200, times = 200))
+df_5 <- tibble(x = round(rnorm(n = 500, mean = 0, sd = 1), digits = 1), samp_size = rep(x = 500, times = 500))
+
+```
+
+Combine the generated data together into one data frame to make it easy to plot everything in one ggplot call
+
+
+```{r}
+
+sample_df <- bind_rows(df_1, df_2, df_3, df_4, df_5)
+
+
+```
+# look at the 
+
+
+```{r}
+
+sample_df %>% 
+  ggplot(aes(x)) +
+  stat_ecdf(geom = "point") +
+  facet_grid(samp_size~.)
+
+
+```
+
+```{r}
+
+sample_df %>% 
+  ggplot(aes(x)) +
+  geom_histogram() +
+  facet_grid(samp_size~.)
+
+
+```
+
+
+
+In class, this should lead to a discussion about how to find quantiles now let's try to look at some QQ plots. 
+
+```{r}
+df_1 %>% 
+  ggplot(aes(sample=x)) +
+  stat_qq() +
+  stat_qq_line()
+```
+
+Let's try to wrap our heads around what is going on by looking at sorted versions of df_1 values
+
+
+```{r}
+
+head(df_1 %>% arrange(x))
+
+```
+
+Let's also look at the other end of the dataframe. We can do this either using arrange(desc(x)) or tail instead of head
+Confirm that they're basically two ways of accomplishing the same objective.
+
+
+```{r}
+
+head(df_1 %>% arrange(desc(x)))
+tail(df_1 %>% arrange(x))
+
+
+```
+
+
+End detour
+
+
+
+
+
+
