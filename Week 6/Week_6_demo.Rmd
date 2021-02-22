@@ -19,38 +19,57 @@ library(broom)
 
 ### Explore the child aggression data set #########
 
-```{r remedy001}
+```{r}
 
 ca_df <- read.table("ChildAggression.dat", header = TRUE)
 
 ```
 
-# method 1 for quickly getting summary statistics for the data you have, using the built-in summary() function
+Method 1 for quickly getting summary statistics for the data you have, using the built-in summary() function
+
+
+```{r}
 summary(ca_df)
+```
 
-# method 2, using the describe() function from the psych package
+Method 2, using the describe() function from the psych package
+
+```{r}
 describe(ca_df)
+```
 
-# spot check: where do the "se" values come from?
+Spot check: where do the "se" values come from?
 
 
 # now that we have seen some of the numbers, let's try to visualize some of these data
 # let's try to visualize the data while we're at it
+
+
+```{r}
+
 ca_df %>% 
   ggplot(aes(x = Aggression)) +
   geom_histogram()
 
-# we could do this for each of our variables or we could try something a little fancier
-# by using the pivot_longer() function to make a longer dataframe and plot everything at once
+
+```
 
 
-# first, create the long dataframe. After running this command, it's a good idea to view the new data frame
-# to make sure this did what you intended
+We could do this for each of our variables or we could try something a little fancier by using the pivot_longer() function to make a longer dataframe and plot everything at once
+
+
+First, create the long dataframe. After running this command, it's a good idea to view the new data frame to make sure this did what you intended
+
+
+```{r}
 ca_df_long <- ca_df %>% 
   pivot_longer(cols = Aggression:Parenting_Style, names_to = "variable_name", values_to = "variable_value")
 
-# after making sure everything looks in order, run the same plot command with the addition of a facet
-# note that the fill = variable_name tells R to color the plot with different colors by variable_name and the theme(...) tells R to get rid of the legend that automatically shows up
+```
+
+After making sure everything looks in order, run the same plot command with the addition of a facet.
+
+Note that the fill = variable_name tells R to color the plot with different colors by variable_name and the theme(...) tells R to get rid of the legend that automatically shows up
 
 
 ```{r}
@@ -112,10 +131,250 @@ ca_df_long %>%
 
 ```
 
-### Multiple regression ######
+
+
+## Multiple regression
+
+
+Let's create a model of child aggression as a function of parenting style and sibling aggression
+```{r}
+model_fam <- lm(Aggression ~ Parenting_Style + Sibling_Aggression, data = ca_df)
+```
+
+Run the summary on the model
+```{r}
+summary(model_fam)
+```
+
+Also run View() to see more about the structure of model_fam and see which data are stored in it
+```{r}
+View(model_fam)
+```
+
+This will be helpful later when we want to plot the residuals of the model
+
+
+Let's create another model of child aggression as a function of computer games and television
+
+```{r}
+model_screens <- lm(Aggression ~ Computer_Games + Television, data = ca_df)
+
+summary(model_screens)
+```
+
+Now let's see what the full model looks like with all five predictors
+```{r}
+model_all <- lm(Aggression ~ Parenting_Style + Sibling_Aggression + Diet + Computer_Games + Television, 
+                data = ca_df)
+summary(model_all)
+```
+
+We can get the output from the summary() function but as a tibble instead:
+```{r}
+broom::tidy(model_all, conf.int = TRUE)
+```
+
+We can also get summary statistics like the R^2, F-statistics, and AIC from the glance() function in the Broom package
+```{r}
+broom::glance(model_all)
+```
+
+Let's stop here to interpret what the model output is telling us(specifically, the coefficient estimates, the standard errors, the p values, and the R^2 values).
+
+Notice the Television p value and standard errors (especially how the estimate is so close to zero, and its 95% confidence interval crosses 0)
 
 
 
+
+We can also have R handle factors automatically in a regression model for us
+First, we will generate a new factor for the child aggression data - the handedness of the child (left vs right)
+This code generates a random handedness for each of the 666 students and assigns it to a new column in ca_df
+
+```{r}
+handed_levels <- c("left", "right")
+handed_vector <- sample(handed_levels, size = nrow(ca_df), replace = TRUE, prob = c(0.4, 0.6))
+ca_df$Handedness <- handed_vector
+```
+
+Check to make sure we have all the predictor names correct to add into the linear model
+
+```{r}
+names(ca_df)
+model_all_3 <- lm(Aggression ~ Parenting_Style + Sibling_Aggression + Television + Computer_Games + Diet + Handedness, data = ca_df)
+```
+
+Check the model summary and notice how the Handedness predictor variable was handled.
+ 
+```{r}
+summary(model_all_3)
+
+lm(Aggression ~ ., data=ca_df)
+```
+
+
+
+
+
+### Assumption testing #######
+
+Note: A lot of the things we are doing here can be accomplished with the augment() function in the broom package
+
+Check for correlation between adjacent residual terms using Durbin-Watson test 
+
+```{r}
+dwt(model_all)
+```
+
+
+
+Now let's go back and check for influential cases following the procedure Field does in the textbook
+
+```{r}
+ca_df$residuals <- resid(model_all) # notice how this is the same as looking at View(model_all) and then residuals or model_all$residuals
+model_all$residuals
+ca_df$standardized.residuals <- rstandard(model_all)
+ca_df$studentized.residuals <- rstudent(model_all)
+ca_df$cooks.distance <- cooks.distance(model_all)
+ca_df$dfbeta <- dfbeta(model_all)
+ca_df$dffit <- dffits(model_all)
+ca_df$leverage <- hatvalues(model_all)
+ca_df$covariance.ratios <- covratio(model_all)
+```
+
+Now that we have all of the extra model fit statistics calculated, we can add a new olumn using a different method than what he does in the textbook (but this accomplishes the same task).
+
+We are using a combination of mutate() and case_when() instead of the traditional logical test subsetting that we see in the bookon pp. 289-290
+
+```{r}
+ca_df <- ca_df %>% 
+  mutate(large.residual = case_when(standardized.residuals > 2 | standardized.residuals < -2 ~ TRUE,
+                                    abs(standardized.residuals) <= 2 ~ FALSE))
+```
+
+Now let's just look at the observations where there was a large residual (absolute value > 2)
+
+```{r}
+ca_df %>% filter(large.residual == TRUE)
+```
+
+There's a problem here because we don't preserve observation numbers. In general, it might be a good idea to give each observation an ID with something like
+
+```{r}
+dim(ca_df)[1]
+```
+
+```{r}
+ca_df <- ca_df %>% 
+  mutate(ID = seq(1:dim(ca_df)[1]))
+```
+
+In the tidyverse, there is an even simpler way to do this with the rowid_to_column() function!
+
+```{r}
+ca_df <- ca_df %>% 
+  rowid_to_column(var = "participant_id")
+```
+
+Now we can run the filter again and see which observations have large residuals
+
+```{r}
+ca_df %>% filter(large.residual == TRUE)
+```
+
+
+
+
+Plot the residuals against the fitted values
+```{r}
+ca_df$fitted <- model_all$fitted.values
+```
+
+First, plot the distribution of the residuals by themselves
+
+```{r}
+histogram <- ca_df %>% 
+  ggplot(aes(x = studentized.residuals)) +
+  geom_histogram(aes(y = ..density..)) +
+  labs(x = "Studentized Residuals",
+       y = "Density")
+histogram
+```
+
+Now let's add a normal density on top of that for comparison
+
+```{r}
+histogram + stat_function(fun = dnorm, 
+                          args = list(mean = mean(ca_df$studentized.residuals, na.rm = TRUE), 
+                                      sd = sd(ca_df$studentized.residuals, na.rm = TRUE)), 
+                          color = "blue", size = 1)
+```
+
+Second, plot the residuals against the fitted values to make sure there are no systematic patterns
+
+```{r}
+ca_df %>% 
+  ggplot(aes(x = fitted, y = studentize)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(x = "Fitted Residual",
+       y = "Studentized Residual")
+```
+
+We can also skip all the fancy code from the book and use the plot() function on the model.
+
+R knows that this means we want to plot four fit plots
+
+```{r}
+par(mfrow=c(2,2)) # this changes the arrangement for the plots to show two rows and two columns of plots
+```
+
+
+```{r}
+plot(model_all)
+par(mfrow=c(1,1)) # this changes the plotting arrangement back to the default of one plot at a time
+```
+
+Note that we could also create a model that uses all our covariates as predictors with the following call
+
+```{r}
+model_all_2 <- lm(Aggression ~ ., data=ca_df)
+```
+
+Inspect the results to make sure it is giving the same results as before
+
+```{r}
+plot(model_all_2)
+summary(model_all_2)
+```
+
+
+
+
+Check how augment() works and which parts of the above it replicates
+
+```{r}
+augmented_model_all <- augment(model_all)
+```
+
+
+```{r}
+ca_df_long %>% 
+  ggplot(aes(x = variable_value, fill = variable_name)) +
+  geom_histogram(position = "identity", alpha = 0.5)
+```
+
+####
+
+kable()
+
+str(describe(ca_df))
+
+whatever <- describe(ca_df)
+
+kable(dt) %>% kable_styling(bootstrap_options = c("striped", "hover"))
+
+
+str(dt)
 
 
 

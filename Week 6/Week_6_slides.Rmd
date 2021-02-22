@@ -68,6 +68,11 @@ xaringanExtra::use_panelset()
 
 ### Review 7.6 - 7.11 of DSUR
 
+
+--
+
+### Review sample papers
+
 --
 
 ### Demo in R
@@ -185,7 +190,7 @@ $Y_i = (b_0 + b_1 * X_i) + \epsilon_i$
 
 --
 
-* In a _frequestist_ paradigm this is done using maximum likelihood estimation
+* In a _frequentist_ paradigm this is done using maximum likelihood estimation
   * The math for this is beyond the scope of this class
 
 --
@@ -309,7 +314,7 @@ $R^2 = \frac{SS_M}{SS_T} = \frac{SS_T - SS_R}{SS_T} = 1 - \frac{SS_R}{SS_T}$
 
 ---
 
-# Assessing Invidiaul Predictors in a Model
+# Assessing Individual Predictors in a Model
 
 --
 
@@ -336,6 +341,93 @@ $t = \frac{b_{1, model} - b_{1, null}}{SE_{b_1}}$
 .center[
 $t = \frac{b_{1, model}}{SE_{b_1}}$
 ]
+
+
+---
+
+# Multiple regression basics
+
+--
+
+* We now have a model with multiple predictors. Mathematically, this looks like:
+
+.center[
+$Y_i = (b_0 + b_1 * X_{1i} + b_2 * X_{2i} + \dots + b_n * X_{ni}) + \epsilon_i$
+
+]
+
+--
+
+* We still have the same considerations for sums of squares, e.g., $SS_T$, and trying to minimize $SS_R$
+
+--
+
+* Another way to think about this is that we are trying to explain as much variance in the outcome as possible
+
+--
+
+* As with simple regression, $R^2$ is the metric we will use to tell us how well our model fits
+  * Except we pay attention to the adjusted $R^2$ which penalizes more complex models
+
+---
+
+# Additional measures of fit
+
+--
+
+* ## Akaike Information Criteria (AIC)
+.center[
+$AIC = n  \ln{\frac{SSE}{n}} + 2k$
+]
+
+* We are trying to reduce AIC
+
+* There are no general rules of thumb for "good" or "bad" fit
+
+--
+
+* ## Bayesian Information Criteria (BIC)
+
+* Beyond the scope of our class
+
+---
+
+# Methods of multiple regression
+
+--
+
+* Hierarchical
+
+
+--
+
+* Forced entry
+
+--
+
+* Stepwise
+  * Forward
+  * Backward
+
+
+
+---
+
+# Assessing model accuracy: Diagnostics
+
+
+---
+
+# Robust regression: bootstrapping
+
+
+
+
+
+---
+
+# Dummy Predictors
+
 
 ---
 
