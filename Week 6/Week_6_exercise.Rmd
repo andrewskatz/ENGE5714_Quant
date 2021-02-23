@@ -72,7 +72,7 @@ Next, try creating a more complicated model to test how multiple predictors affe
 ```
 
 
-Check your residuals for outliers and other model diagnostics. Try using the code in the book or in the `Week_6_demo.Rmd` file
+Check your residuals for outliers and other model diagnostics. Try using the code in the book or in the `Week_6_demo.Rmd` file. You should try the Durbin Watson test for independent errors, looking at residuals, identifying potential influential cases, and multicollinearity (with the Variance Inflation Factor) or looking at a correlation matrix (be careful with this second option since you may have categorical predictors).
 
 ```{r}
 

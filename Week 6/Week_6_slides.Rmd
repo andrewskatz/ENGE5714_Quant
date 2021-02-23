@@ -344,6 +344,13 @@ $t = \frac{b_{1, model}}{SE_{b_1}}$
 
 
 ---
+class: center, inverse, middle
+
+# Regression: The Sequel
+
+---
+
+
 
 # Multiple regression basics
 
@@ -375,18 +382,18 @@ $Y_i = (b_0 + b_1 * X_{1i} + b_2 * X_{2i} + \dots + b_n * X_{ni}) + \epsilon_i$
 
 --
 
-* ## Akaike Information Criteria (AIC)
+### Akaike Information Criteria (AIC)
 .center[
 $AIC = n  \ln{\frac{SSE}{n}} + 2k$
 ]
 
-* We are trying to reduce AIC
+  * We are trying to reduce AIC
 
-* There are no general rules of thumb for "good" or "bad" fit
+  * There are no general rules of thumb for "good" or "bad" fit
 
 --
 
-* ## Bayesian Information Criteria (BIC)
+### Bayesian Information Criteria (BIC)
 
 * Beyond the scope of our class
 
@@ -413,11 +420,6 @@ $AIC = n  \ln{\frac{SSE}{n}} + 2k$
 
 ---
 
-# Assessing model accuracy: Diagnostics
-
-
----
-
 # Checking assumptions
 
 --
@@ -431,7 +433,7 @@ $AIC = n  \ln{\frac{SSE}{n}} + 2k$
 --
 
 * No perfect multicollinearity
-  * Variance Inflation Factor
+  * Variance Inflation Factor with `car::vif()`
 
 --
 
@@ -444,7 +446,7 @@ $AIC = n  \ln{\frac{SSE}{n}} + 2k$
 --
 
 * Independent errors
-
+  * Durbin Watson test with `car::dwt()`
 --
 
 * Normally distributed errors
@@ -453,7 +455,7 @@ $AIC = n  \ln{\frac{SSE}{n}} + 2k$
 --
 
 * Independence
-  * Durbin Watson test
+  
 
 --
 
@@ -475,6 +477,37 @@ $AIC = n  \ln{\frac{SSE}{n}} + 2k$
 
 .pull-right[
 * Data splitting
+
+]
+
+
+---
+
+# Outliers and influential cases
+
+.pull-left[
+### Outliers
+
+* residuals `resid()`
+
+* standardized residuals `rstandard()`
+
+* studentized residuals `rstudent()`
+
+]
+
+.pull-right[
+### Influential Cases
+
+* Cook's distance with `cooks.distance`
+
+* DFBeta with `dfbeta()`
+
+* DFFit with `dffits()`
+
+* hatvalues (leverage) with `hatvalues()`
+
+* covariance ratio `covratio()`
 
 ]
 

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 6 Slides</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Andrew Katz" />
+    <meta name="date" content="2021-02-23" />
+    <script src="libs/header-attrs-2.6/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link href="libs/panelset-0.2.4/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset-0.2.4/panelset.js"></script>
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 6 Slides
+## Multiple Regression
+### Andrew Katz
+### Department of Engineering Education <br><br> Virginia Tech
+### 2021-02-23
+
+---
+
+
+
+
+---
+
+.center[
+
+# Week 6 Announcements
+
+]
+
+--
+### Problem Set 1 is being graded
+
+* I won't be able to release solutions until everyone has turned in their assignment
+
+--
+
+### Course notes in a book available at this URL: https://andrewskatz.github.io/test_course_note/
+
+--
+
+### Don't forget about the feedback surveys
+
+
+
+
+
+---
+
+.center[
+# Week 6 Reading Assignment
+
+## DSUR Chapter 7 (Finish chapter)  
+### Multiple Regression
+
+
+]
+
+
+
+---
+
+
+# Today's Plan
+
+### Review 7.6 - 7.11 of DSUR
+
+
+--
+
+### Review sample papers
+
+--
+
+### Demo in R
+
+--
+
+### Team practice in R
+
+---
+
+
+class: inverse, middle, center
+
+
+
+# Chapter Seven
+
+### Regression
+
+
+---
+
+# Introduction to Regression
+
+--
+
+* We will continue with regression this week
+
+--
+
+* Reminder: **Simple regression involves one predictor and one outcome**
+
+--
+
+* This week we move to multiple regression
+
+  * This involves multiple predictors (but still one continuous outcome)
+
+
+
+
+
+---
+
+# General Modeling Philosophy
+
+--
+
+The general approach for the next several weeks is to model the outcome variable as a function of some predictor(s) plus an error term. 
+
+--
+
+Mathematically, this looks like:
+
+.center[
+`\(outcome_i = model + error_i\)`
+]
+
+where the `\(i\)` subscript refers to the `\(i^{th}\)` person in the sample. 
+
+
+
+---
+
+# The Simple Regression Model
+
+--
+
+In simple regression, the model looks like:
+
+.center[
+`\(Y_i = (b_0 + b_1 * X_i) + \epsilon_i\)`
+
+]
+
+--
+
+* The `\(Y_i\)` is the value of the outcome variable for person `\(i\)`
+
+--
+
+* `\(b_0\)` and `\(b_1\)` are the regression coefficients
+
+  * These are the things we are trying to find
+  
+  * They are the same for each person
+
+--
+  
+* The `\(X_i\)` is the values of the predictor variable for person `\(i\)`
+
+--
+
+* The `\(\epsilon_i\)` is the error term for person `\(i\)`
+
+  * This accounts for the discrepancy between what the model predicts person `\(i\)`'s outcome variable will be and what it _actually_ is observed to be
+
+
+
+---
+
+# Finding Coefficient Values
+
+--
+
+* To find coefficient values, we use the method of least squares
+
+--
+
+* The basic philosophy is to find values for `\(b_0\)` and `\(b_1\)` that minimize the distance between the actual observed outcome, `\(y_i\)`, and the estimated outcome, `\(\hat{y}_i\)`
+
+--
+
+* As a reminder, `\(\hat{y}_i\)` is calculated as:  `\(\hat{y}_i = b_0 + b_1*X_i\)` 
+
+--
+
+* In a _frequentist_ paradigm this is done using maximum likelihood estimation
+  * The math for this is beyond the scope of this class
+
+--
+
+* Practically speaking, we use this kind of syntax in R: 
+.center[
+`lm(outcome ~ predictor, data = your_data)`
+]
+
+
+---
+
+# Interpreting Coefficient Values
+
+.pull-left[
+
+* The intercept `\(b_0\)` is the value of the outcome when the value of the predictor is 0
+
+* A common strategy is to first center the `\(x_i\)` values by subtracting `\(\overline{x}\)` from each `\(x_i\)`
+
+* If you center your variables first, then the interpretation of `\(b_0\)` is the value of the outcome at an average value of the predictor
+
+]
+
+--
+
+.pull-right[
+
+* The slope `\(b_1\)` is the change in the outcome variable for a 1-unit change in the predictor variable
+
+]
+
+
+---
+
+# What Makes a Good Model?
+
+--
+
+* Short answer: Small sum of squares. Specifically, we want to minimize the squared distance between `\(y_i\)` and `\(\hat{y}_i\)`
+
+--
+
+* In the book this is noted as `\(deviation = \sum_{i=1}^{N}(observed_i - estimated_i)^2\)`
+
+--
+
+* Longer answer: Think about three kinds of sums of squares:
+
+  1. Sum of squares total `\(SS_T\)`
+  2. Sum of squares residual `\(SS_R\)`
+  3. Sum of square model `\(SS_M\)`
+
+--
+
+* We are interested in reducing `\(SS_R\)`
+
+
+
+
+---
+# Good Models (cont.)
+
+* Another way of saying this: we want to explain as much of the variation in the data as possible
+
+--
+
+* The total variation is `\(SS_T\)`
+
+--
+
+* The model variation is `\(SS_M\)`
+
+--
+
+* If `\(SS_T\)` and `\(SS_M\)` are close to each other, then their ratio is close to 1
+
+--
+
+* This is how we calculate `\(R^2\)`:
+.center[
+`\(R^2 = \frac{SS_M}{SS_T}\)`
+]
+
+
+--
+
+* Note that `\(SS_T = SS_M + SS_R\)`, which is a fancy way of saying the total variance can be decomposed into explained + unexplained variance (where "explained" variance refers to the variance explained by the model)
+
+--
+
+* If we take the _mean sum of squares_, we get `\(MS_R\)` and `\(MS_M\)`, which are used to calculate the F statistic:
+
+.center[
+`\(F = \frac{MS_R}{MS_M}\)`
+]
+
+
+
+
+---
+
+# Interpreting measures of fit
+
+--
+
+* A higher `\(R^2\)` value corresponds to a better fit
+
+--
+
+* Look at the equation for `\(R^2\)`:
+
+.center[
+`\(R^2 = \frac{SS_M}{SS_T} = \frac{SS_T - SS_R}{SS_T} = 1 - \frac{SS_R}{SS_T}\)`
+]
+
+--
+
+* Takeaway: a smaller residual sum of squares corresponds to a higher `\(R^2\)` value
+
+
+---
+
+# Assessing Individual Predictors in a Model
+
+--
+
+* The null model in regression is for each predictor to equal 0
+
+--
+
+* Our hypothesis testing is testing against this null hypothesis that `\(b_1 = 0\)`
+
+--
+
+* This means the alternative hypothesis is `\(b_1 \neq 0\)`
+
+--
+
+* We test whether we have good reason to reject the null hypothesis that `\(b_1 = 0\)` by calculating the t-statistic:
+.center[
+`\(t = \frac{b_{1, model} - b_{1, null}}{SE_{b_1}}\)`
+]
+
+--
+
+* This simplifies to 
+.center[
+`\(t = \frac{b_{1, model}}{SE_{b_1}}\)`
+]
+
+
+---
+class: center, inverse, middle
+
+# Regression: The Sequel
+
+---
+
+
+
+# Multiple regression basics
+
+--
+
+* We now have a model with multiple predictors. Mathematically, this looks like:
+
+.center[
+`\(Y_i = (b_0 + b_1 * X_{1i} + b_2 * X_{2i} + \dots + b_n * X_{ni}) + \epsilon_i\)`
+
+]
+
+--
+
+* We still have the same considerations for sums of squares, e.g., `\(SS_T\)`, and trying to minimize `\(SS_R\)`
+
+--
+
+* Another way to think about this is that we are trying to explain as much variance in the outcome as possible
+
+--
+
+* As with simple regression, `\(R^2\)` is the metric we will use to tell us how well our model fits
+  * Except we pay attention to the adjusted `\(R^2\)` which penalizes more complex models
+
+---
+
+# Additional measures of fit
+
+--
+
+### Akaike Information Criteria (AIC)
+.center[
+`\(AIC = n  \ln{\frac{SSE}{n}} + 2k\)`
+]
+
+  * We are trying to reduce AIC
+
+  * There are no general rules of thumb for "good" or "bad" fit
+
+--
+
+### Bayesian Information Criteria (BIC)
+
+* Beyond the scope of our class
+
+---
+
+# Methods of multiple regression
+
+--
+
+* Hierarchical
+
+
+--
+
+* Forced entry
+
+--
+
+* Stepwise
+  * Forward
+  * Backward
+
+
+
+---
+
+# Checking assumptions
+
+--
+
+* Continuous or categorical predictors
+
+--
+
+* Non-zero variance
+
+--
+
+* No perfect multicollinearity
+  * Variance Inflation Factor with `car::vif()`
+
+--
+
+* Predictors uncorrelated with external variables
+
+--
+
+* Homoskedasticity 
+
+--
+
+* Independent errors
+  * Durbin Watson test with `car::dwt()`
+--
+
+* Normally distributed errors
+  * Plot fitted values vs residuals
+
+--
+
+* Independence
+  
+
+--
+
+* Linearity
+
+
+---
+
+# Model cross validation
+
+--
+
+.pull-left[
+
+* Adjusted `\(R^2\)`
+]
+
+--
+
+.pull-right[
+* Data splitting
+
+]
+
+
+---
+
+# Outliers and influential cases
+
+.pull-left[
+### Outliers
+
+* residuals `resid()`
+
+* standardized residuals `rstandard()`
+
+* studentized residuals `rstudent()`
+
+]
+
+.pull-right[
+### Influential Cases
+
+* Cook's distance with `cooks.distance`
+
+* DFBeta with `dfbeta()`
+
+* DFFit with `dffits()`
+
+* hatvalues (leverage) with `hatvalues()`
+
+* covariance ratio `covratio()`
+
+]
+
+
+---
+
+# Robust regression: bootstrapping
+
+
+
+
+
+---
+
+# Dummy Predictors
+
+
+
+---
+
+class: center, middle, inverse
+
+# Demo 
+Full example with Child Aggression data
+
+---
+
+class: center, middle, inverse
+
+# Sample Paper
+
+---
+
+class: center, middle, inverse
+
+# Week 6 Exercise
+
+
+---
+
+
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

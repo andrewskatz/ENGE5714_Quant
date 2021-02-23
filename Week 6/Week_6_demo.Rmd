@@ -224,6 +224,12 @@ Check for correlation between adjacent residual terms using Durbin-Watson test
 
 dwt(model_all)
 ```
+Check for multicollinearity.
+```{r}
+
+car::vif(model_all)
+
+```
 
 
 
