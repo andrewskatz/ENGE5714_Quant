@@ -399,7 +399,7 @@ df_5 <- tibble(x = round(rnorm(n = 500, mean = 0, sd = 1), digits = 1), samp_siz
 
 ```
 
-Combine the generated data together into one data frame to make it easy to plot everything in one ggplot call
+Combine the generated data together into one data frame to make it easy to plot everything in one ggplot call.
 
 
 ```{r}
@@ -408,7 +408,9 @@ sample_df <- bind_rows(df_1, df_2, df_3, df_4, df_5)
 
 
 ```
-# look at the 
+
+
+Look at the empirical CDFs
 
 
 ```{r}
@@ -468,7 +470,7 @@ End detour
 
 
 
-Generating exercise data
+### Generating data for student happiness exercise.
 
 We are going to student happiness scores on a scale from 0 to 100 as a function of their time spent outdoors, time spent on Zoom, class standing, and department. 
 
@@ -503,7 +505,10 @@ pop_df <- pop_df %>%
          electrical = case_when(discipline == "electrical" ~ 1,
                            TRUE ~ 0))
 
+```
 
+With the predictors generated, we can now generate the happiness scores. 
+```{r}
 #pop_df <- pop_df %>% 
 #  mutate(happiness = 50 + -.2*(min_zoom+runif(n = 1, min = 10, max = 30)) + .1 * min_outdoors + 4*civil -.3 * mechanical)
 
@@ -525,22 +530,41 @@ pop_df$happiness <- b_0 + b_out*(pop_df$min_outdoors + rnorm(pop_size, 0, 40)) +
   b_masters*pop_df$masters +
   b_phd*pop_df$phd + round(rnorm(n = pop_size, mean = 0, sd = 10), 0)
 
+
+```
+
+We will save the full population dataset. That is what we will start with in class
+
+```{r}
+
+pop_df %>% write_csv("./data/student_happiness.csv")
+
+```
+
+Now we create a sample of students by sampling from the population dataframe.
+
+```{r}
+
 samp_df <- sample_n(pop_df, size = 200)
 
 ```
 
 
+First, we can start with a very simple model with only one predictor.
+
 ```{r}
 
-samp_df %>% write_csv("./data/student_happiness.csv")
+happiness_zoom <- lm(happiness ~ min_zoom, data = samp_df)
+summary(happiness_zoom)
 
 ```
 
+Next, we can look at what happens with a more complex model with multiple predictors. Pay attention to how the $R^2$ value changes.
 
 ```{r}
 
-happiness_model <- lm(happiness ~ min_outdoors + min_zoom + civil + mechanical + electrical + undergrad + masters + phd, data = pop_df)
-summary(happiness_model)
+happiness_all <- lm(happiness ~ min_outdoors + min_zoom + civil + mechanical + electrical + undergrad + masters + phd, data = samp_df)
+summary(happiness_all)
 
 ```
 
