@@ -1,0 +1,53 @@
+---
+title: "Week_6_exercise"
+author: "Katz"
+date: "2/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(broom)
+library(car)
+library(psych)
+```
+
+
+## For this exercise, you will be working with the student_happiness.csv file.
+
+This file contains simulated data with several variables. The scenario is the following: 
+You are interested in studying engineering student well being. One dimension of student health is their mental health. In particular, you have a measure of student happiness. This will be your outcome variable.
+
+You have reason to believe that there are several factors that can contribute to a person's happiness. In particular, you believe that their class standing (e.g., undergrad, masters, phd), discipline (you only sampled mechanical, civil, and electrical engineering students), time spent outdoors, and time spent on zoom all play a role in a student's happiness. Sooo you go out and survey students, collecting each of these variables in addition to giving them a series of questions that let you calculate their happiness score. The composite score is what you now have in your student_happiness.csv file.
+
+The objective here is to model the outcome as a function of the different predictors that you have. There will be a little less scaffolding than last week, but you can follow the class example in the Week_6_demo if you get stuck or can't think of what to do next...
+
+
+First, it's probably a good idea to load in the data...
+```{r}
+
+```
+
+
+Next, it's never a bad idea to start summarizing what you have. You can try visualizing things with geom_bar() or geom_point() (as appropriate) or make summary tables with things like group_by() and summarize() or count().
+
+```{r}
+
+```
+
+Now, it's probably time to start creating your model (or models...?)
+
+```{r}
+
+```
+
+
+Check your residuals for outliers and other model diagnostics
+
+```{r}
+
+```
+
+
+

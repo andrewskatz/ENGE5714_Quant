@@ -12,6 +12,7 @@ library(tidyverse)
 library(psych)
 library(kableExtra)
 library(broom)
+library(car)
 ```
 
 
@@ -21,7 +22,7 @@ library(broom)
 
 ```{r}
 
-ca_df <- read.table("ChildAggression.dat", header = TRUE)
+ca_df <- read.table("./data/ChildAggression.dat", header = TRUE)
 
 ```
 
@@ -146,15 +147,11 @@ Run the summary on the model
 summary(model_fam)
 ```
 
-Also run View() to see more about the structure of model_fam and see which data are stored in it
-```{r}
-View(model_fam)
-```
 
-This will be helpful later when we want to plot the residuals of the model
+This will be helpful later when we want to plot the residuals of the model.
 
 
-Let's create another model of child aggression as a function of computer games and television
+Let's create another model of child aggression as a function of computer games and television.
 
 ```{r}
 model_screens <- lm(Aggression ~ Computer_Games + Television, data = ca_df)
@@ -186,8 +183,10 @@ Notice the Television p value and standard errors (especially how the estimate i
 
 
 
-We can also have R handle factors automatically in a regression model for us
-First, we will generate a new factor for the child aggression data - the handedness of the child (left vs right)
+We can also have R handle factors automatically in a regression model for us.
+
+First, we will generate a new factor for the child aggression data - the handedness of the child (left vs right).
+
 This code generates a random handedness for each of the 666 students and assigns it to a new column in ca_df
 
 ```{r}
@@ -196,7 +195,7 @@ handed_vector <- sample(handed_levels, size = nrow(ca_df), replace = TRUE, prob 
 ca_df$Handedness <- handed_vector
 ```
 
-Check to make sure we have all the predictor names correct to add into the linear model
+Check to make sure we have all the predictor names correct to add into the linear model.
 
 ```{r}
 names(ca_df)
@@ -215,19 +214,20 @@ lm(Aggression ~ ., data=ca_df)
 
 
 
-### Assumption testing #######
+### Assumption testing
 
 Note: A lot of the things we are doing here can be accomplished with the augment() function in the broom package
 
 Check for correlation between adjacent residual terms using Durbin-Watson test 
 
 ```{r}
+
 dwt(model_all)
 ```
 
 
 
-Now let's go back and check for influential cases following the procedure Field does in the textbook
+Now let's go back and check for influential cases following the procedure Field does in the textbook.
 
 ```{r}
 ca_df$residuals <- resid(model_all) # notice how this is the same as looking at View(model_all) and then residuals or model_all$residuals
@@ -254,7 +254,8 @@ ca_df <- ca_df %>%
 Now let's just look at the observations where there was a large residual (absolute value > 2)
 
 ```{r}
-ca_df %>% filter(large.residual == TRUE)
+ca_df %>% filter(large.residual == TRUE) %>% head()
+
 ```
 
 There's a problem here because we don't preserve observation numbers. In general, it might be a good idea to give each observation an ID with something like
@@ -278,7 +279,7 @@ ca_df <- ca_df %>%
 Now we can run the filter again and see which observations have large residuals
 
 ```{r}
-ca_df %>% filter(large.residual == TRUE)
+ca_df %>% filter(large.residual == TRUE) %>% view()
 ```
 
 
@@ -287,6 +288,7 @@ ca_df %>% filter(large.residual == TRUE)
 Plot the residuals against the fitted values
 ```{r}
 ca_df$fitted <- model_all$fitted.values
+
 ```
 
 First, plot the distribution of the residuals by themselves
@@ -313,7 +315,7 @@ Second, plot the residuals against the fitted values to make sure there are no s
 
 ```{r}
 ca_df %>% 
-  ggplot(aes(x = fitted, y = studentize)) +
+  ggplot(aes(x = fitted, y = studentized.residuals)) +
   geom_point() +
   geom_smooth(method = "lm") +
   labs(x = "Fitted Residual",
@@ -362,22 +364,6 @@ ca_df_long %>%
   ggplot(aes(x = variable_value, fill = variable_name)) +
   geom_histogram(position = "identity", alpha = 0.5)
 ```
-
-####
-
-kable()
-
-str(describe(ca_df))
-
-whatever <- describe(ca_df)
-
-kable(dt) %>% kable_styling(bootstrap_options = c("striped", "hover"))
-
-
-str(dt)
-
-
-
 
 
 
@@ -480,6 +466,83 @@ tail(df_1 %>% arrange(x))
 
 End detour
 
+
+
+Generating exercise data
+
+We are going to student happiness scores on a scale from 0 to 100 as a function of their time spent outdoors, time spent on Zoom, class standing, and department. 
+
+
+```{r}
+
+pop_size <- 5000
+sample_size <- 200
+
+
+pop_df <- tibble(standing = rep(c("undergrad", "masters", "phd"), 
+                 times = c(pop_size/2, pop_size/4, pop_size/4)))
+
+pop_df$discipline <- rep(c("mechanical", "civil", "electrical"), 
+                         length.out = pop_size)
+
+pop_df$min_outdoors <- round(runif(n = pop_size, min = 0, max = 300), 0)
+
+pop_df$min_zoom <- round(runif(n = pop_size, min = 0, max = 400), 0)
+
+pop_df <- pop_df %>% 
+  mutate(undergrad = case_when(standing == "undergrad" ~ 1,
+                           TRUE ~ 0),
+         masters = case_when(standing == "masters" ~ 1,
+                           TRUE ~ 0),
+         phd = case_when(standing == "phd" ~ 1,
+                           TRUE ~ 0),
+         civil = case_when(discipline == "civil" ~ 1,
+                           TRUE ~ 0),
+         mechanical = case_when(discipline == "mechanical" ~ 1,
+                           TRUE ~ 0),
+         electrical = case_when(discipline == "electrical" ~ 1,
+                           TRUE ~ 0))
+
+
+#pop_df <- pop_df %>% 
+#  mutate(happiness = 50 + -.2*(min_zoom+runif(n = 1, min = 10, max = 30)) + .1 * min_outdoors + 4*civil -.3 * mechanical)
+
+b_0 <- 50
+b_out <- 0.03
+b_zoom <- -0.05
+b_civ <- 6
+b_mech <- 2
+b_ele <- -3
+b_under <- 5
+b_masters <- -2
+b_phd <- 10
+
+pop_df$happiness <- b_0 + b_out*(pop_df$min_outdoors + rnorm(pop_size, 0, 40)) +
+  b_zoom*(pop_df$min_zoom + rnorm(pop_size, 0, 40)) + 
+  b_civ*(pop_df$civil + rnorm(pop_size, 0, 2)) + 
+  b_mech*pop_df$mechanical +
+  b_ele*pop_df$electrical + b_under * pop_df$undergrad + 
+  b_masters*pop_df$masters +
+  b_phd*pop_df$phd + round(rnorm(n = pop_size, mean = 0, sd = 10), 0)
+
+samp_df <- sample_n(pop_df, size = 200)
+
+```
+
+
+```{r}
+
+samp_df %>% write_csv("./data/student_happiness.csv")
+
+```
+
+
+```{r}
+
+happiness_model <- lm(happiness ~ min_outdoors + min_zoom + civil + mechanical + electrical + undergrad + masters + phd, data = pop_df)
+summary(happiness_model)
+
+```
 
 
 

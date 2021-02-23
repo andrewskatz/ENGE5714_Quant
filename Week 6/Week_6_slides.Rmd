@@ -418,6 +418,69 @@ $AIC = n  \ln{\frac{SSE}{n}} + 2k$
 
 ---
 
+# Checking assumptions
+
+--
+
+* Continuous or categorical predictors
+
+--
+
+* Non-zero variance
+
+--
+
+* No perfect multicollinearity
+  * Variance Inflation Factor
+
+--
+
+* Predictors uncorrelated with external variables
+
+--
+
+* Homoskedasticity 
+
+--
+
+* Independent errors
+
+--
+
+* Normally distributed errors
+  * Plot fitted values vs residuals
+
+--
+
+* Independence
+  * Durbin Watson test
+
+--
+
+* Linearity
+
+
+---
+
+# Model cross validation
+
+--
+
+.pull-left[
+
+* Adjusted $R^2$
+]
+
+--
+
+.pull-right[
+* Data splitting
+
+]
+
+
+---
+
 # Robust regression: bootstrapping
 
 
@@ -429,18 +492,25 @@ $AIC = n  \ln{\frac{SSE}{n}} + 2k$
 # Dummy Predictors
 
 
+
 ---
 
 class: center, middle, inverse
 
 # Demo 
-Sensitivity to sample size and noisy data
+Full example with Child Aggression data
 
 ---
 
 class: center, middle, inverse
 
-# Start working in R
+# Sample Paper
+
+---
+
+class: center, middle, inverse
+
+# Week 6 Exercise
 
 
 ---
