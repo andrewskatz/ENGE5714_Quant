@@ -1,0 +1,46 @@
+---
+title: "Week 7 Slides"
+subtitle: "Logistic Regression"
+author: "Andrew Katz"
+institute: "Department of Engineering Education <br><br> Virginia Tech"
+date: "2021-03-02"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r setup-chunk, echo = FALSE, message = FALSE}
+library(tidyverse)
+library(car)
+
+
+xaringanExtra::use_panelset()
+
+
+```
+
+
+---
+
+.center[
+
+# Week 7 Announcements
+
+]
+
+--
+### Problem Set 1 is being graded
+
+* I won't be able to release solutions until everyone has turned in their assignment
+
+--
+
+### Course notes in a book available at this URL: https://andrewskatz.github.io/test_course_note/
+
+--
+
+### Don't forget about the feedback surveys
+
