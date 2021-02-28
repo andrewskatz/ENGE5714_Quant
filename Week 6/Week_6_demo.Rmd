@@ -36,7 +36,7 @@ summary(ca_df)
 Method 2, using the describe() function from the psych package
 
 ```{r}
-describe(ca_df)
+psych::describe(ca_df)
 ```
 
 Spot check: where do the "se" values come from?
@@ -223,6 +223,7 @@ Check for correlation between adjacent residual terms using Durbin-Watson test
 ```{r}
 
 dwt(model_all)
+
 ```
 Check for multicollinearity.
 ```{r}
@@ -237,7 +238,7 @@ Now let's go back and check for influential cases following the procedure Field 
 
 ```{r}
 ca_df$residuals <- resid(model_all) # notice how this is the same as looking at View(model_all) and then residuals or model_all$residuals
-model_all$residuals
+#model_all$residuals
 ca_df$standardized.residuals <- rstandard(model_all)
 ca_df$studentized.residuals <- rstudent(model_all)
 ca_df$cooks.distance <- cooks.distance(model_all)
@@ -556,7 +557,9 @@ samp_df <- sample_n(pop_df, size = 200)
 ```
 
 
-First, we can start with a very simple model with only one predictor.
+
+
+On the modeling side, we can first start with a very simple model with only one predictor.
 
 ```{r}
 
@@ -574,6 +577,14 @@ summary(happiness_all)
 
 ```
 
+An alternative way of writing the full model
+
+```{r}
+happiness_all <- lm(happiness ~ min_outdoors + min_zoom + discipline + standing, data = samp_df)
+summary(happiness_all)
+
+
+```
 
 
 

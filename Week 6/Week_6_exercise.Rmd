@@ -27,7 +27,7 @@ The objective here is to model the outcome as a function of the different predic
 First, it's probably a good idea to load in the data...
 ```{r}
 
-# happiness_df <- read_csv("YOUR PATH HERE")
+# pop_df <- read_csv("YOUR PATH HERE")
 
 ```
 
@@ -47,7 +47,7 @@ Next, it's never a bad idea to start summarizing what you have. You can try visu
 
 ```{r}
 
-# samp_df %>% 
+# sample_df %>% 
 
 ```
 

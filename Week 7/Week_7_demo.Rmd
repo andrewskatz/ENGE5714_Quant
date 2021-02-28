@@ -1,0 +1,489 @@
+---
+title: "Week 7 Demo"
+author: "Katz"
+date: "3/02/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(broom)
+library(psych)
+
+```
+
+# Week 7 - logistic regression
+
+
+
+To study how to run a logistic regression model in R, we are going to create simulate some data.
+
+NOTE: Simulating data is a good way to get a sense of how the model works since you already know the data-generate process that you are trying to characterize with the model. This means you already know the "ground truth". In practice, we do not have this luxury when we run our studies - it is this "ground truth" that we're looking for. 
+Nonetheless, it can be helpful to remove one piece of uncertainty when learning the technical aspects by using data that are already characterized because you made them.
+
+We will proceed through several rounds of data generation to see how the model may vary.
+
+
+### Round 1 - no systematic variation in outcomes #####
+
+```{r}
+disciplines <- c("civil", "mechanical", "electrical", "systems")
+disciplines_prob <- c(0.25, 0.3, 0.35, 0.1)
+
+
+know_engineer <- c("immediate_fam", "distant_fam", "friend", "none")
+know_engineer_prob <- c(0.2, 0.4, 0.3, 0.1)
+
+
+persistence <- c("yes", "no")
+persistence_prob <- c(0.8, 0.2)
+
+```
+
+Now we will generate the actual sample of 500 students
+
+```{r}
+samp_size <- 500
+
+disc_samp <- sample(x = disciplines, size = samp_size, prob = disciplines_prob, replace = TRUE)
+know_samp <- sample(x = know_engineer, size = samp_size, prob = know_engineer_prob, replace = TRUE)
+pers_samp <- sample(x = persistence, size = samp_size, prob = persistence_prob, replace = TRUE)
+
+
+samp_df <- tibble(discipline = disc_samp,
+                  know_eng = know_samp,
+                  persist = pers_samp,
+                  gpa = round(rnorm(n = samp_size, mean = 3, sd = 0.3), 2))
+```
+
+
+Up to now, we have simulated the data collection process. This is the point where we would typically be cleaning the data and starting our analysis 
+
+
+First, add in a new binary column for the persistence variable (coding "yes" as 1 and "no" as 0)
+
+```{r}
+samp_df <- samp_df %>% 
+  mutate(persist_bin = case_when(persist == "yes" ~ 1,
+                                 persist == "no" ~ 0))
+
+```
+
+Second, get a sense of the distributions of some of the variables in our model
+
+```{r}
+str(samp_df)
+table(samp_df$persist)
+
+describe(samp_df)
+
+table(samp_df$discipline)
+
+xtabs(~ discipline + persist_bin, data = samp_df)
+```
+
+Third, model the outcome (persistence) as a function of three predictor variables (discipline, knowing an engineering, and gpa)
+
+```{r}
+model <- glm(persist_bin ~ discipline + know_eng + gpa, data = samp_df, family = binomial())
+summary(model)
+tidy(model)
+```
+
+Since we generated the data without any relationships between the predictors and the binary outcome, we do not expect any of the predictor variables to be statistically significant. Sometimes there will be a significant predictor, but that emphasizes the idea p values are not necessarily the most reliable indicator of importance.
+
+
+
+
+### Round 2 - systematic varation in outcomes as a function of discipline
+
+Now, to introduce some systematic variation, we will change the probabilities of persistence (the outcome variable we are modeling) as a function of major but not as a function of the other two predictors
+
+```{r}
+disciplines <- c("civil", "mechanical", "electrical", "systems")
+disciplines_prob <- c(0.25, 0.3, 0.35, 0.1)
+
+
+know_engineer <- c("immediate_fam", "distant_fam", "friend", "none")
+know_engineer_prob <- c(0.2, 0.4, 0.3, 0.1)
+
+```
+
+We generate the actual data here.
+```{r}
+samp_size <- 5000
+
+disc_samp_2 <- sample(x = disciplines, size = samp_size, prob = disciplines_prob, replace = TRUE)
+know_samp_2 <- sample(x = know_engineer, size = samp_size, prob = know_engineer_prob, replace = TRUE)
+#pers_samp_2 <- sample(x = persistence, size = samp_size, prob = persistence_prob, replace = TRUE)
+
+```
+
+Now we will combine our data into one dataframe.
+
+```{r}
+samp_df_2 <- tibble(discipline = disc_samp_2,
+                  know_eng = know_samp_2,
+                  gpa = round(rnorm(n = samp_size, mean = 3, sd = 0.3), 2))
+
+```
+
+
+Now we want to have some different outcomes whose probabilities vary by discipline. We'll create a new column called persist_prob that describes the probability of persisting from year one to year two (e.g., 0.6 means there is a 0.6 prob of a student persisting)
+
+```{r}
+samp_df_2 <- samp_df_2 %>% 
+  mutate(persist_prob = case_when(discipline == "civil" ~ 0.6,
+                             discipline == "mechanical" ~ 0.7,
+                             discipline == "electrical" ~ 0.8,
+                             discipline == "systems" ~ 0.9))
+```
+
+We will create a vector that samples depending on the value of the persistence probability at that index. That value varies depending on the discipline for that student at that index value in the vector.
+
+```{r}
+persist_outcome <- modify(.x = samp_df_2$persist_prob, .f = ~rbinom(n = 1, size = 1, prob = .x))
+```
+
+Now we add that persistence outcome column to our dataframe 
+```{r}
+samp_df_2$persist_bin <- persist_outcome
+```
+
+Up to now, we have simulated the data collection process. This is the point where we would typically be cleaning the data and starting our analysis, 
+
+```{r}
+str(samp_df_2)
+```
+
+Let's check on the distribution of persistence by major. xtabs() is a function that creates a contingency table (more on that in 2 weeks)
+```{r}
+xtabs(~ persist_bin + discipline, data=samp_df_2)
+```
+
+Or we can use `describe()`
+```{r}
+describe(samp_df_2)
+```
+
+Or even use `table()`
+```{r}
+table(samp_df_2$discipline)
+```
+
+Now, model the outcome (persistence) as a function of three predictor variables (discipline, knowing an engineering, and gpa)
+
+```{r}
+model_2 <- glm(persist_bin ~ discipline + know_eng + gpa, data = samp_df_2, family = binomial())
+```
+
+And examine the model output with either `summary()`...
+```{r}
+summary(model_2)
+```
+
+...or `tidy()`
+```{r}
+tidy(model_2)
+```
+
+
+
+
+
+### Round 3 - systematic varation in outcomes as a function of discipline and gpa
+
+Now, to introduce some systematic variation, we will change the probabilities of persistence (the outcome variable we are modeling) as a function of major and gpa but not as a function of knowing an engineer.
+
+
+```{r}
+disciplines <- c("civil", "mechanical", "electrical", "systems")
+disciplines_prob <- c(0.25, 0.3, 0.35, 0.1)
+
+know_engineer <- c("immediate_fam", "distant_fam", "friend", "none")
+know_engineer_prob <- c(0.2, 0.4, 0.3, 0.1)
+
+```
+
+Simulate the dataf or disciplines, knowing an engineer, and the persistence outcome
+
+```{r}
+samp_size <- 500
+
+disc_samp_3 <- sample(x = disciplines, size = samp_size, prob = disciplines_prob, replace = TRUE)
+know_samp_3 <- sample(x = know_engineer, size = samp_size, prob = know_engineer_prob, replace = TRUE)
+pers_samp_3 <- sample(x = persistence, size = samp_size, prob = persistence_prob, replace = TRUE)
+```
+
+And combine all the generated data into one dataframe with `tibble()`.
+```{r}
+samp_df_3 <- tibble(discipline = disc_samp_3,
+                  know_eng = know_samp_3,
+                  persist = pers_samp_3)
+```
+
+
+Up to now, we have simulated the data collection process. This is the point where we would typically be cleaning the data and starting out analysis 
+
+To run the logistic regression, we need our outcome coded as 0/1, not no/yes to address this, we add in a new binary column for the persistence variable (coding "yes" as 1 and "no" as 0)
+
+```{r}
+samp_df_3 <- samp_df_3 %>% 
+  mutate(persist_bin = case_when(persist == "yes" ~ 1,
+                                 persist == "no" ~ 0))
+```
+                    
+Now, since we want to look at the potential effect of gpa on persistence, we create a bookkeeping column for gpa_mean for students who do and do not persist to year two.
+
+```{r}
+samp_df_3 <- samp_df_3 %>% 
+  mutate(gpa_mean = case_when(persist == "yes" ~ 3.4,
+                              persist == "no" ~ 3.0))
+```
+
+Simulate the gpa data
+```{r}
+gpa_vec <- round(modify(.x = samp_df_3$gpa_mean, .f = ~rnorm(n = 1, mean = .x, sd = .2)), 2)
+```
+
+Add the simulated data back to our data frame
+```{r}
+samp_df_3$gpa <- gpa_vec
+```
+
+
+
+Up to now, we have simulated the data collection process. This is the point where we would typically be cleaning the data and starting our analysis 
+
+Check the structure of the dataframe to make sure it looks as expected
+```{r}
+str(samp_df_3)
+```
+
+Let's check on the distribution of persistence by major. xtabs() is a function that creates a contingency table (more on that in 2 weeks)
+```{r}
+xtabs(~ persist_bin + discipline, data=samp_df_3)
+```
+...or with `describe()`...
+
+```{r}
+describe(samp_df_3)
+```
+...or with `table()`.
+```{r}
+table(samp_df_3$discipline)
+```
+
+Check the distribution of the gpa values by discipline, just to make sure
+
+```{r}
+samp_df_3 %>% 
+  ggplot(aes(x = gpa, fill = discipline)) +
+  geom_histogram(alpha = 0.2, position = "identity")
+# be sure to put alpha before position
+```
+
+```{r}
+samp_df_3 %>% 
+  ggplot(aes(x = gpa, fill = persist)) +
+  geom_histogram(alpha = 0.2, position = "identity")
+```
+
+
+Now, model the outcome (persistence) as a function of three predictor variables (discipline, knowing an engineering, and gpa)
+
+```{r}
+model_3 <- glm(persist_bin ~ discipline + know_eng + gpa, data = samp_df_3, family = binomial())
+```
+And examine the results with `summary()` or `tidy()`
+
+```{r}
+summary(model_3)
+tidy(model_3)
+```
+
+
+### Round 4 - gpa and persistence vary by discipline
+
+
+```{r}
+disciplines <- c("civil", "mechanical", "electrical", "systems")
+disciplines_prob <- c(0.25, 0.3, 0.35, 0.1)
+
+know_engineer <- c("immediate_fam", "distant_fam", "friend", "none")
+know_engineer_prob <- c(0.2, 0.4, 0.3, 0.1)
+```
+
+Simulate the data for disciplines, knowing an engineer, and the persistence outcome
+```{r}
+samp_size <- 500
+
+student_id <- seq(samp_size)
+disc_samp_4 <- sample(x = disciplines, size = samp_size, prob = disciplines_prob, replace = TRUE)
+know_samp_4 <- sample(x = know_engineer, size = samp_size, prob = know_engineer_prob, replace = TRUE)
+pers_samp_4 <- sample(x = persistence, size = samp_size, prob = persistence_prob, replace = TRUE)
+```
+
+Combine these all together in `tibble()`.
+```{r}
+samp_df_4 <- tibble(sid = student_id,
+                    discipline = disc_samp_4,
+                    know_eng = know_samp_4)
+```
+
+Up to now, we have simulated the data collection process. This is the point where we would typically be cleaning the data and starting out analysis 
+
+
+#### Start the data analysis for logistic regression here
+
+Now, since we want to look at the potential effect of gpa on persistence, we create a bookkeeping column for gpa_mean for students who do and do not persist to year two.
+```{r}
+samp_df_4 <- samp_df_4 %>% 
+  mutate(gpa_mean = case_when(discipline == "civil" ~ 3.0,
+                              discipline == "electrical" ~ 3.15,
+                              discipline == "mechanical" ~ 3.3,
+                              discipline == "systems" ~ 3.45))
+```
+
+
+Simulate the gpa data.
+```{r}
+gpa_vec <- round(modify(.x = samp_df_4$gpa_mean, .f = ~rnorm(n = 1, mean = .x, sd = .1)), 2)
+```
+
+Add the simulated data back to our data frame
+```{r}
+samp_df_4$gpa <- gpa_vec
+```
+
+
+We will create a vector that samples depending on the value of the persistence probability at that index.
+
+That value varies depending on the discipline for that student at that index value in the vector.
+
+Now we want to have some different outcomes whose probabilities vary by discipline. We'll create a new column called.
+
+persist_prob that describes the probability of persisting from year one to year two (e.g., 0.6 means there is a 0.6 prob of a student persisting)
+```{r}
+samp_df_4 <- samp_df_4 %>% 
+  mutate(persist_prob = case_when(discipline == "civil" ~ 0.6,
+                                  discipline == "mechanical" ~ 0.7,
+                                  discipline == "electrical" ~ 0.8,
+                                  discipline == "systems" ~ 0.9))
+```
+
+
+```{r}
+persist_outcome <- modify(.x = samp_df_4$persist_prob, .f = ~rbinom(n = 1, size = 1, prob = .x))
+```
+
+Now we add that persistence outcome column to our dataframe 
+
+```{r}
+samp_df_4$persist_bin <- persist_outcome
+```
+
+
+
+
+
+
+Up to now, we have simulated the data collection process. This is the point where we would typically be cleaning the data and starting our analysis 
+
+
+Check the structure of the dataframe to make sure it looks as expected.
+```{r}
+str(samp_df_4)
+```
+
+Let's check on the distribution of persistence by major. xtabs() is a function that creates a contingency table (more on that in 2 weeks).
+```{r}
+xtabs(~ persist_bin + discipline, data=samp_df_4)
+
+```
+
+```{r}
+describe(samp_df_4)
+```
+
+```{r}
+table(samp_df_4$discipline)
+```
+
+Check the distribution of the gpa values by discipline, just to make sure.
+```{r}
+samp_df_4 %>% 
+  ggplot(aes(x = gpa, fill = discipline)) +
+  geom_histogram(alpha = 0.2, position = "identity")
+```
+
+* be sure to put alpha before position
+
+```{r}
+samp_df_4 %>% 
+  ggplot(aes(x = gpa, fill = as_factor(persist_bin))) +
+  geom_histogram(alpha = 0.2, position = "identity")
+```
+
+
+Now, model the outcome (persistence) as a function of three predictor variables (discipline, knowing an engineering, and gpa)
+
+
+```{r}
+model_4 <- glm(persist_bin ~ discipline + know_eng + gpa, data = samp_df_4, family = binomial())
+summary(model_4)
+tidy(model_4)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Interlude looking at poisson distribution
+```{r}
+n <- 10000
+set.seed(123)
+
+
+x_samp_5 <- rpois(n, lambda = 5)
+hist(x_samp_5)
+```
+
+```{r}
+x_samp_10 <- rpois(n, lambda = 10)
+hist(x_samp_10)
+```
+
+
+```{r}
+param_vect <- rep(c(1, 2, 3, 4, 5, 6), each = n)
+samp_vect <- modify(.x = param_vect, .f = ~ rpois(n = 1, lambda = .x))
+```
+
+
+```{r}
+samp_df <- tibble(param_val = param_vect,
+                  sample_val = samp_vect)
+```
+
+```{r}
+samp_df %>%
+  ggplot(aes(x = sample_val)) +
+  geom_histogram() +
+  facet_grid(param_val ~ .)
+```
