@@ -74,7 +74,7 @@ burnout_df %>% pivot_longer(cols = loc:pastoral,
                             names_to = "variable", 
                             values_to = "value") %>% 
   ggplot(aes(x = value)) +
-  geom_histogramcolor = "white" +
+  geom_histogram(color = "white") +
   facet_grid(burnout~variable, 
              scales = "free") +
   labs(x = "Value",
