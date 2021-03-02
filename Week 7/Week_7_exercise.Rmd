@@ -1,16 +1,9 @@
 ---
 title: "Week 7 Exercise"
 author: "Katz"
-date: "2/28/2021"
+date: "3/02/2021"
 output: html_document
 ---
----
-title: "Week 7 Example Solution"
-author: "Katz"
-date: "3/2/2021"
-output: html_document
----
-
 
 
 ```{r setup, include=FALSE}
