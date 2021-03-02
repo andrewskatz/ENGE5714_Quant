@@ -34,7 +34,7 @@ xaringanExtra::use_panelset()
 --
 ### Problem Set 1 is being graded
 
-* I won't be able to release solutions until everyone has turned in their assignment
+* I won't be releasing solutions aside from the sample plots. If you have questions about your assignment, please let me know and we can arrange a time to meet. 
 
 --
 
@@ -43,4 +43,104 @@ xaringanExtra::use_panelset()
 --
 
 ### Don't forget about the feedback surveys
+
+---
+
+# Today's plan
+
+--
+
+* Chapter 7 review
+
+--
+
+* Logistic regression discussion
+
+--
+
+* Discuss sample paper
+
+--
+
+* Logistic regression demo
+
+--
+
+* Exercise in R
+
+
+---
+class: center, inverse, middle
+
+# Linear Regression Review
+
+---
+
+class: center, inverse, middle
+
+# Logistic Regression
+
+
+---
+
+
+# Why Logistic Regression?
+
+
+---
+
+# Modeling Binary Outcomes
+
+
+---
+
+# Maximum Likelihood Estimation
+
+
+---
+
+# Assessing the Model:
+
+--
+
+.pull-left[
+Deviance statistics
+]
+
+
+
+.pull-right[
+$R^2$  
+]
+
+
+---
+
+
+# What is an Odds Ratio?
+
+
+---
+
+# What are the different methods of logistic regression?
+
+
+---
+
+Assumptions
+
+1. Linearity
+
+
+2. Independence of errors
+
+
+3. Multicollinearity
+
+
+---
+
+# What are interactions?
+
+
 
