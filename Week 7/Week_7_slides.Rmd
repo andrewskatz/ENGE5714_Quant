@@ -94,12 +94,19 @@ class: center, inverse, middle
 
 ---
 
+
+# What is an Odds Ratio?
+
+
+
+---
+
 # Maximum Likelihood Estimation
 
 
 ---
 
-# Assessing the Model:
+# Assessing the Model
 
 --
 
@@ -114,10 +121,6 @@ $R^2$
 ]
 
 
----
-
-
-# What is an Odds Ratio?
 
 
 ---
@@ -127,7 +130,7 @@ $R^2$
 
 ---
 
-Assumptions
+# Assumptions
 
 1. Linearity
 
