@@ -37,7 +37,7 @@ Explore the data you have by using `head()`, with summary statistics and `descri
 
 burnout_df %>% 
   ggplot(aes(x = cope)) +
-  geom_histogram() +
+  geom_histogram(color="white") +
   labs(x = "Cope Scores",
        y = "Frequency",
        title = "Histogram of Participant Cope Scores") +
@@ -53,7 +53,7 @@ burnout_df %>% pivot_longer(cols = loc:pastoral,
                             names_to = "variable", 
                             values_to = "value") %>% 
   ggplot(aes(x = value)) +
-  geom_histogram() +
+  geom_histogram(color = "white") +
   facet_wrap(.~variable, 
              scales = "free") +
   labs(x = "Value",
@@ -74,7 +74,7 @@ burnout_df %>% pivot_longer(cols = loc:pastoral,
                             names_to = "variable", 
                             values_to = "value") %>% 
   ggplot(aes(x = value)) +
-  geom_histogram() +
+  geom_histogramcolor = "white" +
   facet_grid(burnout~variable, 
              scales = "free") +
   labs(x = "Value",
