@@ -1,0 +1,168 @@
+---
+title: "Week 7 Example Solution"
+author: "Katz"
+date: "3/2/2021"
+output: html_document
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(broom)
+library(psych)
+
+```
+
+This week we will be using a dataset on faculty burnout (to complement the prior examples of student stress and burnout, recognizing that we're all in this together...). This is from the textbook, Smart Alex's Task 2. I am copying those instructions here:
+
+"Recent research has shown that lecturers are among the most stressed workers.
+A researcher wanted to know exactly what it was about being a lecturer that
+created this stress and subsequent burnout. She took 467 lecturers and administered several questionnaires to them that measured: Burnout (burnt out or not), Perceived Control (high score = low perceived control), Coping Style (high score = high ability to cope with stress), Stress from Teaching (high score = teaching creates a lot of stress for the person), Stress from Research (high score = research creates a lot of stress for the person) and Stress from Providing Pastoral Care (high score = providing pastoral care creates a lot of stress for the person). The outcome of interest was burnout, and Cooper, Sloan, and Williams’s (1988) model of stress indicates that perceived control and coping style are important predictors of this variable. The remaining predictors were measured to see the unique contribution of different aspects of a lecturer’s work to their burnout. Can you help her out by conducting a logistic regression to see which factors predict burnout? The data are in Burnout.dat."
+
+
+
+As usual, start by reading in the data.
+```{r}
+
+burnout_df <- read.delim("Burnout.dat")
+
+```
+
+
+Explore the data you have by using `head()`, with summary statistics and `describe()`, and exploratory plots.
+
+```{r}
+
+burnout_df %>% 
+  ggplot(aes(x = cope)) +
+  geom_histogram(color="white") +
+  labs(x = "Cope Scores",
+       y = "Frequency",
+       title = "Histogram of Participant Cope Scores") +
+  theme(plot.title = element_text(hjust=0.5)) #this last line centers your title
+
+```
+
+If you want a challenge, see if you can use pivot_longer() to plot all variables at once (hint: this might be difficult with the binary outcome variable `burnout`)
+
+```{r}
+
+burnout_df %>% pivot_longer(cols = loc:pastoral, 
+                            names_to = "variable", 
+                            values_to = "value") %>% 
+  ggplot(aes(x = value)) +
+  geom_histogram(color = "white") +
+  facet_wrap(.~variable, 
+             scales = "free") +
+  labs(x = "Value",
+       y = "Frequency",
+       title = "Histograms of predictor variables")
+  
+
+```
+
+Make a few observations about the distribution of your predictor variables
+
+It can also be a good idea to look at the distributions of your predictors across each level of the outcome variable
+
+```{r}
+
+
+burnout_df %>% pivot_longer(cols = loc:pastoral, 
+                            names_to = "variable", 
+                            values_to = "value") %>% 
+  ggplot(aes(x = value)) +
+  geom_histogram(color = "white") +
+  facet_grid(burnout~variable, 
+             scales = "free") +
+  labs(x = "Value",
+       y = "Frequency",
+       title = "Histograms of predictor variables")
+
+```
+
+Now you can start thinking about modeling the outcome...
+
+Start with a simple model with two predictors you think might be most likely to be associated with the outcome.
+
+But first, you will need to recode the outcome variable. You can do that in a couple of ways. If you use `as.factor()` then you may have less control over which is the "no" and which is "yes", but you can try it and see...
+
+```{r}
+burnout_df <- burnout_df %>% mutate(burnout_factor = as.factor(burnout))
+```
+
+You can also recode it more explicitly as 0 and 1.
+
+```{r}
+burnout_df <- burnout_df %>% 
+  mutate(burnout_bin = case_when(burnout == "Burnt Out" ~ 1,
+                                 burnout == "Not Burnt Out" ~ 0))
+```
+
+```{r}
+
+burnout_df %>% pivot_longer(cols = loc:pastoral, 
+                            names_to = "variable", 
+                            values_to = "value") %>% 
+  ggplot(aes(x = value)) +
+  geom_histogram(color = "white") +
+  facet_grid(burnout_bin~variable, 
+             scales = "free") +
+  labs(x = "Value",
+       y = "Frequency",
+       title = "Histograms of predictor variables")
+
+```
+
+
+Now that you have recoded the outcome variable, you can make your simple model. Note that I have written the `burnout_bin` variable here rather than the original `burnout` variable.
+
+```{r}
+
+simple_model <- glm(burnout_bin ~ pastoral + cope, 
+                    data = burnout_df,
+                    family = binomial(link = "logit"))
+
+```
+
+Now, look at the results of your model...
+
+```{r}
+
+summary(simple_model)
+
+```
+
+
+What do the coefficient values tell you? Write a few sentences practicing your interpretation. Also, what does the deviance tell you?
+
+* Your observations here *
+
+
+
+
+Now try this again with a more complex model.
+
+```{r}
+
+complex_model <- glm(burnout_bin ~ teaching + research + loc + cope + pastoral, 
+                    data = burnout_df,
+                    family = binomial(link = "logit"))
+
+```
+
+
+Again, look at the model results.
+
+```{r}
+
+summary(complex_model)
+```
+
+
+And now repeat the exercise of writing down your observations about the coefficients, what they mean, and what the deviance means (especially when compared with your simpler model)
+
+
+* Your observations here *
