@@ -43,10 +43,11 @@ For your first step, try visualizing the verbal and math scores using histograms
 ```{r}
 
 sat_df %>% ggplot(aes(x = verbal)) +
-  geom_histogram() +
+  geom_histogram(color = "white") +
   labs(title = "Simulated SAT Verbal Histogram",
        x = "Verbal Score",
        y = "Count")
+
 ```
 
 2. Math scores
@@ -54,7 +55,7 @@ sat_df %>% ggplot(aes(x = verbal)) +
 
 
 sat_df %>% ggplot(aes(x = math)) +
-  geom_histogram() +
+  geom_histogram(color = "white") +
   labs(title = "Simulated SAT Math Histogram",
        x = "Math Score",
        y = "Count")
@@ -66,14 +67,32 @@ Alternatively, try to plot these together by either making a long data set or ju
 
 ```{r}
 sat_df %>% ggplot() +
-  geom_histogram(aes(x = math, fill = "red"), alpha = 0.2) +
+  geom_histogram(aes(x = math, fill = "red"), color = "white", alpha = 0.2) +
   labs(title = "Simulated SAT Scores Histogram",
        x = "SAT Score",
        y = "Count") +
-  geom_histogram(aes(x = verbal, fill = "blue"), alpha = 0.2) +
+  geom_histogram(aes(x = verbal, fill = "blue"), color = "white", alpha = 0.2) +
   scale_fill_manual(name = "Category", values = c("blue", "red"), labels = c("verbal", "math"))
 
 ```
+
+You should also try doing this with a boxplot. I give you the code for this first version since it involves a `pivot_longer()`, but you should see if you can replicate it for the next rounds on your own.
+
+```{r}
+sat_df %>% 
+  pivot_longer(cols = c("verbal", "math"), 
+               names_to = "variable",
+               values_to = "score") %>% 
+  ggplot(aes(x = variable, y = score)) +
+  geom_boxplot() +
+  labs(x = "SAT Test Section",
+       y = "Section Score",
+       title = "Distribution of SAT Math and Verbal Scores")
+
+
+```
+
+
 
 Looking at the histogram, we can see that there appears to be a systematic difference in the scores. Running a t-test will help us see if that initial observation is statistically correct. 
 
@@ -86,8 +105,26 @@ sat_t_test
 
 ```
 
+```{r}
+
+(t <- sat_t_test$statistic[[1]]) # wrapping this in parentheses prints out the value of t at the same time that it stores the value of t
+
+(df <- sat_t_test$parameter[[1]])
+
+(r <- sqrt(t^2/(t^2 + df)))
+round(r,3)
+r^2
+```
+
+
+
+
 
 We see there was a statistically significant difference, but now let's try changing the distributions and see what happens.
+
+
+### Round 2
+
 
 First, we'll change make the means very close together and see how sensitive the test is to that
 
@@ -106,9 +143,13 @@ sat_math_2_capped <- modify(.x = sat_math_2, .f = ~min(800, .x))
 sat_df_2 <- tibble(id = student_id,
                  verbal = sat_verbal_2_capped,
                  math = sat_math_2_capped)
+```
 
+
+
+```{r}
 sat_df_2 %>% ggplot(aes(x = verbal)) +
-  geom_histogram() +
+  geom_histogram(color = "white") +
   labs(title = "Simulated SAT Verbal Histogram",
        x = "Verbal Score",
        y = "Count")
@@ -117,7 +158,7 @@ sat_df_2 %>% ggplot(aes(x = verbal)) +
 ```{r}
 
 sat_df_2 %>% ggplot(aes(x = math)) +
-  geom_histogram() +
+  geom_histogram(color = "white") +
   labs(title = "Simulated SAT Math Histogram",
        x = "Math Score",
        y = "Count")
@@ -129,12 +170,27 @@ Alternatively, we could plot these together by either making a long data set or 
 
 ```{r}
 sat_df_2 %>% ggplot() +
-  geom_histogram(aes(x = math, fill = "red"), alpha = 0.2) +
+  geom_histogram(aes(x = math, fill = "red"), color = "white", alpha = 0.2) +
   labs(title = "Simulated SAT Scores Histogram",
        x = "SAT Score",
        y = "Count") +
-  geom_histogram(aes(x = verbal, fill = "blue"), alpha = 0.2) +
+  geom_histogram(aes(x = verbal, fill = "blue"), color = "white", alpha = 0.2) +
   scale_fill_manual(name = "Category", values = c("blue", "red"), labels = c("verbal", "math"))
+
+```
+
+You should also try doing this with a boxplot.
+
+```{r}
+sat_df_2 %>% 
+  pivot_longer(cols = c("verbal", "math"), 
+               names_to = "variable",
+               values_to = "score") %>% 
+  ggplot(aes(x = variable, y = score)) +
+  geom_boxplot() +
+  labs(x = "SAT Test Section",
+       y = "Section Score",
+       title = "Distribution of SAT Math and Verbal Scores")
 
 ```
 
@@ -150,6 +206,23 @@ sat_t_test_2
 ```
 
 
+Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$
+
+```{r}
+
+(t <- sat_t_test_2$statistic[[1]]) # wrapping this in parentheses prints out the value of t at the same time that it stores the value of t
+
+(df <- sat_t_test_2$parameter[[1]])
+
+(r <- sqrt(t^2/(t^2 + df)))
+round(r,3)
+r^2
+```
+
+
+
+
+### Round 3
 
 
 Let's try a third test - this time we'll change the sample size to be 25 students rather than 1000
@@ -170,16 +243,21 @@ sat_math_3_capped <- modify(.x = sat_math_3, .f = ~min(800, .x))
 sat_df_3 <- tibble(id = student_id_3,
                  verbal = sat_verbal_3_capped,
                  math = sat_math_3_capped)
+```
 
+
+```{r}
 sat_df_3 %>% ggplot(aes(x = verbal)) +
-  geom_histogram() +
+  geom_histogram(color = "white") +
   labs(title = "Simulated SAT Verbal Histogram",
        x = "Verbal Score",
        y = "Count")
+```
 
 
+```{r}
 sat_df_3 %>% ggplot(aes(x = math)) +
-  geom_histogram() +
+  geom_histogram(color = "white") +
   labs(title = "Simulated SAT Math Histogram",
        x = "Math Score",
        y = "Count")
@@ -191,14 +269,31 @@ Alternatively, we could plot these together by either making a long data set or 
 
 ```{r}
 sat_df_3 %>% ggplot() +
-  geom_histogram(aes(x = math, fill = "red"), alpha = 0.2) +
+  geom_histogram(aes(x = math, fill = "red"), color = "white", alpha = 0.2) +
   labs(title = "Simulated SAT Scores Histogram",
        x = "SAT Score",
        y = "Count") +
-  geom_histogram(aes(x = verbal, fill = "blue"), alpha = 0.2) +
+  geom_histogram(aes(x = verbal, fill = "blue"), color = "white", alpha = 0.2) +
   scale_fill_manual(name = "Category", values = c("blue", "red"), labels = c("verbal", "math"))
 
 ```
+
+Try making a boxplot instead of histogram.
+
+```{r}
+sat_df_3 %>% 
+  pivot_longer(cols = c("verbal", "math"), 
+               names_to = "variable",
+               values_to = "score") %>% 
+  ggplot(aes(x = variable, y = score)) +
+  geom_boxplot() +
+  labs(x = "SAT Test Section",
+       y = "Section Score",
+       title = "Distribution of SAT Math and Verbal Scores")
+
+```
+
+
 
 Looking at the histogram, we can see that there appears to be a systematic difference in the scores. Running a t-test will help us see if that initial observation is statistically correct.Since we will be comparing verbal and math scores for each student, this will be a dependent samples (or paired samples) t-test
 
@@ -208,6 +303,33 @@ sat_t_test_3 <- t.test(sat_df_3$verbal, sat_df_3$math, paired = TRUE) # don't fo
 sat_t_test_3
 
 ```
+
+
+
+Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$
+
+```{r}
+
+(t <- sat_t_test_3$statistic[[1]]) # wrapping this in parentheses prints out the value of t at the same time that it stores the value of t
+
+(df <- sat_t_test_3$parameter[[1]])
+
+(r <- sqrt(t^2/(t^2 + df)))
+round(r,3)
+r^2
+```
+
+
+
+
+
+
+
+
+
+
+
+### Round 4
 
 
 Now we see that the statistically significant difference is gone. How about if we go back to having a large difference in the means
@@ -227,17 +349,22 @@ sat_math_4_capped <- modify(.x = sat_math_4, .f = ~min(800, .x))
 sat_df_4 <- tibble(id = student_id_4,
                    verbal = sat_verbal_4_capped,
                    math = sat_math_4_capped)
+```
 
+
+```{r}
 # visualize the distributions of scores
 sat_df_4 %>% ggplot(aes(x = verbal)) +
-  geom_histogram() +
+  geom_histogram(color = "white") +
   labs(title = "Simulated SAT Verbal Histogram",
        x = "Verbal Score",
        y = "Count")
+```
 
 
+```{r}
 sat_df_4 %>% ggplot(aes(x = math)) +
-  geom_histogram() +
+  geom_histogram(color = "white") +
   labs(title = "Simulated SAT Math Histogram",
        x = "Math Score",
        y = "Count")
@@ -248,14 +375,35 @@ Alternatively, we could plot these together by either making a long data set or 
 
 ```{r}
 sat_df_4 %>% ggplot() +
-  geom_histogram(aes(x = math, fill = "red"), alpha = 0.2) +
+  geom_histogram(aes(x = math, fill = "red"), color = "white", alpha = 0.2) +
   labs(title = "Simulated SAT Scores Histogram",
        x = "SAT Score",
        y = "Count") +
-  geom_histogram(aes(x = verbal, fill = "blue"), alpha = 0.2) +
+  geom_histogram(aes(x = verbal, fill = "blue"), color = "white", alpha = 0.2) +
   scale_fill_manual(name = "Category", values = c("blue", "red"), labels = c("verbal", "math"))
 
 ```
+
+Try a boxplot instead
+
+```{r}
+
+sat_df_4 %>% 
+  pivot_longer(cols = c("verbal", "math"), 
+               names_to = "variable",
+               values_to = "score") %>% 
+  ggplot(aes(x = variable, y = score)) +
+  geom_boxplot() +
+  labs(x = "SAT Test Section",
+       y = "Section Score",
+       title = "Distribution of SAT Math and Verbal Scores")
+
+```
+
+
+
+
+
 
 Looking at the histogram, we can see that there appears to be a systematic difference in the scores. Running a t-test will help us see if that initial observation is statistically correct. 
 Since we will be comparing verbal and math scores for each student, this will be a dependent samples (or paired samples) t-test
@@ -267,4 +415,20 @@ sat_t_test_4
 ```
 
 
+
 We should see that the t-test will pick up differences between means if there is a sufficiently large difference.
+
+
+
+Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$
+
+```{r}
+
+(t <- sat_t_test_4$statistic[[1]]) # wrapping this in parentheses prints out the value of t at the same time that it stores the value of t
+
+(df <- sat_t_test_4$parameter[[1]])
+
+(r <- sqrt(t^2/(t^2 + df)))
+round(r,3)
+r^2
+```

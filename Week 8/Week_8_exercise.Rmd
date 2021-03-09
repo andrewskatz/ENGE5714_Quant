@@ -92,7 +92,7 @@ Now look at the results stored in your `sat_t_test` model by simply calling it.
 
 ```
 
-Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$
+Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$ and that you can get the value of $t$ from `sat_t_test$statistic[[1]]` and the value of $df$ from `sat_t_test$parameter[[1]]`
 
 ```{r}
 
@@ -173,6 +173,15 @@ Alternatively, we could plot these together by either making a long data set or 
 ```
 
 
+You should also try doing this with a boxplot.
+
+```{r}
+###
+
+```
+
+
+
 Looking at the histogram, we can see that there appears to be a systematic difference in the scores. Running a t-test will help us see if that initial observation is statistically correct. 
 
 Since we will be comparing verbal and math scores for each student, this will be a dependent samples (or paired samples) t-test.
@@ -183,7 +192,7 @@ Since we will be comparing verbal and math scores for each student, this will be
 
 ```
 
-Now look at the results stored in your `sat_t_test` model by simply calling it.
+Now look at the results stored in your `sat_t_test_2` model by simply calling it.
 
 
 ```{r}
@@ -193,7 +202,7 @@ Now look at the results stored in your `sat_t_test` model by simply calling it.
 ```
 
 
-Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$
+Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$ and that you can get the value of $t$ from `sat_t_test_2$statistic[[1]]` and the value of $df$ from `sat_t_test_2$parameter[[1]]`
 
 ```{r}
 
@@ -272,6 +281,15 @@ Alternatively, we could plot these together by either making a long data set or 
 
 ```
 
+You should also try doing this with a boxplot.
+
+```{r}
+###
+
+```
+
+
+
 Looking at the histogram, we can see that there appears to be a systematic difference in the scores. Running a t-test will help us see if that initial observation is statistically correct.Since we will be comparing verbal and math scores for each student, this will be a dependent samples (or paired samples) t-test
 
 ```{r}
@@ -279,7 +297,7 @@ Looking at the histogram, we can see that there appears to be a systematic diffe
 
 ```
 
-Now look at the results stored in your `sat_t_test` model by simply calling it.
+Now look at the results stored in your `sat_t_test_3` model by simply calling it.
 
 
 ```{r}
@@ -288,7 +306,8 @@ Now look at the results stored in your `sat_t_test` model by simply calling it.
 ```
 
 
-Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$
+Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$ and that you can get the value of $t$ from `sat_t_test_3$statistic[[1]]` and the value of $df$ from `sat_t_test_3$parameter[[1]]`
+
 
 ```{r}
 
@@ -370,6 +389,16 @@ Alternatively, we could plot these together by either making a long data set or 
 
 ```
 
+
+You should also try doing this with a boxplot.
+
+```{r}
+###
+
+```
+
+
+
 Looking at the histogram, we can see that there appears to be a systematic difference in the scores. Running a t-test will help us see if that initial observation is statistically correct. 
 Since we will be comparing verbal and math scores for each student, this will be a dependent samples (or paired samples) t-test
 
@@ -378,7 +407,7 @@ Since we will be comparing verbal and math scores for each student, this will be
 
 ```
 
-Now look at the results stored in your `sat_t_test` model by simply calling it.
+Now look at the results stored in your `sat_t_test_4` model by simply calling it.
 
 ```{r}
 ###
@@ -386,7 +415,7 @@ Now look at the results stored in your `sat_t_test` model by simply calling it.
 ```
 
 
-Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$
+Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$ and that you can get the value of $t$ from `sat_t_test_4$statistic[[1]]` and the value of $df$ from `sat_t_test_4$parameter[[1]]`
 
 ```{r}
 
