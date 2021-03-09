@@ -1,4 +1,4 @@
-### Week 9 - Comparing means (t-test) demos 
+### Week 8 - Comparing means (t-test) demos 
 
 
 library(tidyverse)

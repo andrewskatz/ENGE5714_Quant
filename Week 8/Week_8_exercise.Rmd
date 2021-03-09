@@ -1,0 +1,365 @@
+---
+title: "Week 8 Exercise"
+author: "Dr. Katz"
+date: "3/9/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(broom)
+```
+
+For this week's exercise, we will be looking at differences in students' SAT scores.
+
+We will simulate data that we might have where a dependent samples t-test would be appropriate. 
+
+We are going to simulate the scenario where we have student SAT scores on both the verbal section and math section.
+
+```{r}
+samp_size <- 1000
+
+student_id <- seq(samp_size)
+sat_verbal <- round(rnorm(n = samp_size, mean = 620, sd = 55), 0)
+sat_math <- round(rnorm(n = samp_size, mean = 700, sd = 40), 0)
+
+sat_verbal_capped <- modify(.x = sat_verbal, .f = ~ min(800, .x))
+sat_math_capped <- modify(.x = sat_math, .f = ~min(800, .x))
+
+sat_df <- tibble(id = student_id,
+                 verbal = sat_verbal_capped,
+                 math = sat_math_capped)
+
+```
+
+Up to now, we only simulated data and stored it in a dataframe called sat_df. 
+
+For your first step, try visualizing the verbal and math scores using histograms.
+
+1. Verbal scores
+```{r}
+
+# sat_df %>% ggplot(aes(x = ###)) +
+#   geom_histogram() +
+#   labs(title = "Simulated SAT Verbal Histogram",
+#        x = "Verbal Score",
+#        y = "Count")
+
+```
+
+2. Math scores
+```{r}
+
+
+# sat_df %>% ggplot(aes(x = ###)) +
+#   geom_histogram() +
+#   labs(title = "Simulated SAT Math Histogram",
+#        x = "Math Score",
+#        y = "Count")
+
+```
+
+
+Alternatively, try to plot these together by either making a long data set or just overlaying histograms and modifying transparency (the alpha parameter).
+
+```{r}
+# sat_df %>% ggplot() +
+#   geom_histogram(aes(x = ###, fill = "red"), alpha = 0.2) +
+#   labs(title = "Simulated SAT Scores Histogram",
+#        x = "SAT Score",
+#        y = "Count") +
+#   geom_histogram(aes(x = ###, fill = "blue"), alpha = 0.2) +
+#   scale_fill_manual(name = "Category", values = c("blue", "red"), labels = c("verbal", "math"))
+
+```
+
+Looking at the histogram, we can see that there appears to be a systematic difference in the scores. Running a t-test will help us see if that initial observation is statistically correct. 
+
+Since we will be comparing verbal and math scores for each student, this will be a dependent samples (or paired samples) t-test.
+
+```{r}
+#sat_t_test <- t.test(###, ###, paired = ###) 
+  
+```
+
+Now look at the results stored in your `sat_t_test` model by simply calling it.
+
+```{r}
+
+###
+
+```
+
+
+Add a few sentences here practicing the style of write up described in Chapter 9 for discussing results.
+
+
+
+
+
+
+### Round 2
+
+We see there was a statistically significant difference, but now let's try changing the distributions and see what happens.
+
+First, we'll change make the means very close together and see how sensitive the test is to that
+
+```{r}
+samp_size <- 1000
+
+student_id_2 <- seq(samp_size)
+sat_verbal_2 <- round(rnorm(n = samp_size, mean = 690, sd = 55), 0)
+sat_math_2 <- round(rnorm(n = samp_size, mean = 700, sd = 40), 0)
+
+# let's cap the simulated scores at 800
+sat_verbal_2_capped <- modify(.x = sat_verbal_2, .f = ~ min(800, .x))
+sat_math_2_capped <- modify(.x = sat_math_2, .f = ~min(800, .x))
+
+
+sat_df_2 <- tibble(id = student_id,
+                 verbal = sat_verbal_2_capped,
+                 math = sat_math_2_capped)
+
+```
+
+Up to now, we only simulated data and stored it in a dataframe called sat_df. 
+
+For your first step, try visualizing the verbal and math scores using histograms.
+
+1. Verbal scores
+
+```{r}
+# sat_df_2 %>% ggplot(aes(x = ###)) +
+#   geom_histogram() +
+#   labs(title = "Simulated SAT Verbal Histogram",
+#        x = "Verbal Score",
+#        y = "Count")
+```
+
+2. Math scores
+
+```{r}
+
+# sat_df_2 %>% ggplot(aes(x = ###)) +
+#   geom_histogram() +
+#   labs(title = "Simulated SAT Math Histogram",
+#        x = "Math Score",
+#        y = "Count")
+
+```
+
+
+Alternatively, we could plot these together by either making a long data set or just overlaying histograms and modifying transparency (the alpha parameter).
+
+```{r}
+# sat_df_2 %>% ggplot() +
+#   geom_histogram(aes(x = ###, fill = "red"), alpha = 0.2) +
+#   labs(title = "Simulated SAT Scores Histogram",
+#        x = "SAT Score",
+#        y = "Count") +
+#   geom_histogram(aes(x = ###, fill = "blue"), alpha = 0.2) +
+#   scale_fill_manual(name = "Category", values = c("blue", "red"), labels = c("verbal", "math"))
+
+```
+
+
+Looking at the histogram, we can see that there appears to be a systematic difference in the scores. Running a t-test will help us see if that initial observation is statistically correct. 
+
+Since we will be comparing verbal and math scores for each student, this will be a dependent samples (or paired samples) t-test.
+
+```{r}
+#sat_t_test_2 <- t.test(###, ###, paired = TRUE) 
+
+
+```
+
+Now look at the results stored in your `sat_t_test` model by simply calling it.
+
+
+```{r}
+
+###
+
+```
+
+
+Add a few sentences here practicing the style of write up described in Chapter 9 for discussing results.
+
+
+
+
+
+
+
+### Round 3
+
+Let's try a third test - this time we'll change the sample size to be 25 students rather than 1000
+
+
+```{r}
+samp_size <- 25
+
+student_id_3 <- seq(samp_size)
+sat_verbal_3 <- round(rnorm(n = samp_size, mean = 690, sd = 55), 0)
+sat_math_3 <- round(rnorm(n = samp_size, mean = 700, sd = 40), 0)
+
+# cap the scores at 800
+sat_verbal_3_capped <- modify(.x = sat_verbal_3, .f = ~ min(800, .x))
+sat_math_3_capped <- modify(.x = sat_math_3, .f = ~min(800, .x))
+
+
+
+sat_df_3 <- tibble(id = student_id_3,
+                 verbal = sat_verbal_3_capped,
+                 math = sat_math_3_capped)
+
+```
+
+Up to now, we only simulated data and stored it in a dataframe called sat_df. 
+
+For your first step, try visualizing the verbal and math scores using histograms.
+
+1. Verbal scores
+
+```{r}
+# sat_df_3 %>% ggplot(aes(x = ###)) +
+#   geom_histogram() +
+#   labs(title = "Simulated SAT Verbal Histogram",
+#        x = "Verbal Score",
+#        y = "Count")
+
+```
+
+2. Math scores
+```{r}
+# sat_df_3 %>% ggplot(aes(x = ###)) +
+#   geom_histogram() +
+#   labs(title = "Simulated SAT Math Histogram",
+#        x = "Math Score",
+#        y = "Count")
+
+
+```
+
+Alternatively, we could plot these together by either making a long data set or just overlaying histograms and modifying transparency (the alpha parameter)
+
+```{r}
+# sat_df_3 %>% ggplot() +
+#   geom_histogram(aes(x = ###, fill = "red"), alpha = 0.2) +
+#   labs(title = "Simulated SAT Scores Histogram",
+#        x = "SAT Score",
+#        y = "Count") +
+#   geom_histogram(aes(x = ###, fill = "blue"), alpha = 0.2) +
+#   scale_fill_manual(name = "Category", values = c("blue", "red"), labels = c("verbal", "math"))
+
+```
+
+Looking at the histogram, we can see that there appears to be a systematic difference in the scores. Running a t-test will help us see if that initial observation is statistically correct.Since we will be comparing verbal and math scores for each student, this will be a dependent samples (or paired samples) t-test
+
+```{r}
+#sat_t_test_3 <- t.test(###, ###, paired = ###) 
+
+```
+
+Now look at the results stored in your `sat_t_test` model by simply calling it.
+
+
+```{r}
+###
+
+```
+
+
+Add a few sentences here practicing the style of write up described in Chapter 9 for discussing results.
+
+
+
+
+
+
+
+
+
+
+### Round 4
+
+Now we see that the statistically significant difference is gone. How about if we go back to having a large difference in the means
+
+```{r}
+samp_size <- 25
+
+student_id_4 <- seq(samp_size)
+sat_verbal_4 <- round(rnorm(n = samp_size, mean = 620, sd = 55), 0)
+sat_math_4 <- round(rnorm(n = samp_size, mean = 700, sd = 40), 0)
+
+#cap the scores at 800
+sat_verbal_4_capped <- modify(.x = sat_verbal_4, .f = ~ min(800, .x))
+sat_math_4_capped <- modify(.x = sat_math_4, .f = ~min(800, .x))
+
+
+sat_df_4 <- tibble(id = student_id_4,
+                   verbal = sat_verbal_4_capped,
+                   math = sat_math_4_capped)
+
+
+```
+
+Up to now, we only simulated data and stored it in a dataframe called sat_df. 
+
+For your first step, try visualizing the verbal and math scores using histograms.
+
+1. Verbal scores
+
+```{r}
+# sat_df_4 %>% ggplot(aes(x = ###)) +
+#   geom_histogram() +
+#   labs(title = "Simulated SAT Verbal Histogram",
+#        x = "Verbal Score",
+#        y = "Count")
+
+```
+
+2. Math scores
+
+```{r}
+# sat_df_4 %>% ggplot(aes(x = ###)) +
+#   geom_histogram() +
+#   labs(title = "Simulated SAT Math Histogram",
+#        x = "Math Score",
+#        y = "Count")
+
+```
+
+Alternatively, we could plot these together by either making a long data set or just overlaying histograms and modifying transparency (the alpha parameter)
+
+```{r}
+
+# sat_df_4 %>% ggplot() +
+#   geom_histogram(aes(x = ###, fill = "red"), alpha = 0.2) +
+#   labs(title = "Simulated SAT Scores Histogram",
+#        x = "SAT Score",
+#        y = "Count") +
+#   geom_histogram(aes(x = ###, fill = "blue"), alpha = 0.2) +
+#   scale_fill_manual(name = "Category", values = c("blue", "red"), labels = c("verbal", "math"))
+
+```
+
+Looking at the histogram, we can see that there appears to be a systematic difference in the scores. Running a t-test will help us see if that initial observation is statistically correct. 
+Since we will be comparing verbal and math scores for each student, this will be a dependent samples (or paired samples) t-test
+
+```{r}
+#sat_t_test_4 <- t.test(###, ###, paired = ###) 
+
+```
+
+Now look at the results stored in your `sat_t_test` model by simply calling it.
+
+```{r}
+###
+
+```
+
+
+We should see that the t-test will pick up differences between means if there is a sufficiently large difference.
