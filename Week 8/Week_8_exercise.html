@@ -241,7 +241,10 @@ sat_df &lt;- tibble(id = student_id,
 <pre class="r"><code>#sat_t_test &lt;- t.test(###, ###, paired = ###) </code></pre>
 <p>Now look at the results stored in your <code>sat_t_test</code> model by simply calling it.</p>
 <pre class="r"><code>###</code></pre>
+<p>Calculate an effect size. Remember that <span class="math inline">\(r = \sqrt{\frac{t^2}{t^2 + df}}\)</span></p>
+<pre class="r"><code>###</code></pre>
 <p>Add a few sentences here practicing the style of write up described in Chapter 9 for discussing results.</p>
+<p>Remember that the standard script is to report the sample mean <em>M</em> and standard error <em>SE</em> and that you can calculate the standard error as <span class="math inline">\(SE = \frac{s}{\sqrt{N}}\)</span> where <span class="math inline">\(s\)</span> is the standard deviation of that group in the sample and <span class="math inline">\(N\)</span> is the number of observations in that group.</p>
 <div id="round-2" class="section level3">
 <h3>Round 2</h3>
 <p>We see there was a statistically significant difference, but now let’s try changing the distributions and see what happens.</p>
@@ -290,6 +293,8 @@ sat_df_2 &lt;- tibble(id = student_id,
 <p>Since we will be comparing verbal and math scores for each student, this will be a dependent samples (or paired samples) t-test.</p>
 <pre class="r"><code>#sat_t_test_2 &lt;- t.test(###, ###, paired = TRUE) </code></pre>
 <p>Now look at the results stored in your <code>sat_t_test</code> model by simply calling it.</p>
+<pre class="r"><code>###</code></pre>
+<p>Calculate an effect size. Remember that <span class="math inline">\(r = \sqrt{\frac{t^2}{t^2 + df}}\)</span></p>
 <pre class="r"><code>###</code></pre>
 <p>Add a few sentences here practicing the style of write up described in Chapter 9 for discussing results.</p>
 </div>
@@ -341,6 +346,8 @@ sat_df_3 &lt;- tibble(id = student_id_3,
 <pre class="r"><code>#sat_t_test_3 &lt;- t.test(###, ###, paired = ###) </code></pre>
 <p>Now look at the results stored in your <code>sat_t_test</code> model by simply calling it.</p>
 <pre class="r"><code>###</code></pre>
+<p>Calculate an effect size. Remember that <span class="math inline">\(r = \sqrt{\frac{t^2}{t^2 + df}}\)</span></p>
+<pre class="r"><code>###</code></pre>
 <p>Add a few sentences here practicing the style of write up described in Chapter 9 for discussing results.</p>
 </div>
 <div id="round-4" class="section level3">
@@ -389,6 +396,8 @@ sat_df_4 &lt;- tibble(id = student_id_4,
 <p>Looking at the histogram, we can see that there appears to be a systematic difference in the scores. Running a t-test will help us see if that initial observation is statistically correct. Since we will be comparing verbal and math scores for each student, this will be a dependent samples (or paired samples) t-test</p>
 <pre class="r"><code>#sat_t_test_4 &lt;- t.test(###, ###, paired = ###) </code></pre>
 <p>Now look at the results stored in your <code>sat_t_test</code> model by simply calling it.</p>
+<pre class="r"><code>###</code></pre>
+<p>Calculate an effect size. Remember that <span class="math inline">\(r = \sqrt{\frac{t^2}{t^2 + df}}\)</span></p>
 <pre class="r"><code>###</code></pre>
 <p>We should see that the t-test will pick up differences between means if there is a sufficiently large difference.</p>
 </div>

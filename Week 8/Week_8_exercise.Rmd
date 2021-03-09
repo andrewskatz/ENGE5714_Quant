@@ -92,10 +92,18 @@ Now look at the results stored in your `sat_t_test` model by simply calling it.
 
 ```
 
+Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$
+
+```{r}
+
+###
+
+```
+
 
 Add a few sentences here practicing the style of write up described in Chapter 9 for discussing results.
 
-
+Remember that the standard script is to report the sample mean _M_ and standard error _SE_ and that you can calculate the standard error as $SE = \frac{s}{\sqrt{N}}$ where $s$ is the standard deviation of that group in the sample and $N$ is the number of observations in that group.
 
 
 
@@ -185,6 +193,14 @@ Now look at the results stored in your `sat_t_test` model by simply calling it.
 ```
 
 
+Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$
+
+```{r}
+
+###
+
+```
+
 Add a few sentences here practicing the style of write up described in Chapter 9 for discussing results.
 
 
@@ -271,6 +287,14 @@ Now look at the results stored in your `sat_t_test` model by simply calling it.
 
 ```
 
+
+Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$
+
+```{r}
+
+###
+
+```
 
 Add a few sentences here practicing the style of write up described in Chapter 9 for discussing results.
 
@@ -361,5 +385,13 @@ Now look at the results stored in your `sat_t_test` model by simply calling it.
 
 ```
 
+
+Calculate an effect size. Remember that $r = \sqrt{\frac{t^2}{t^2 + df}}$
+
+```{r}
+
+###
+
+```
 
 We should see that the t-test will pick up differences between means if there is a sufficiently large difference.
