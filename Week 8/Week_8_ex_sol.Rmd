@@ -83,7 +83,7 @@ sat_df %>%
   pivot_longer(cols = c("verbal", "math"), 
                names_to = "variable",
                values_to = "score") %>% 
-  ggplot(aes(x = variable, y = score)) +
+  ggplot(aes(x = score, y = variable)) +
   geom_boxplot() +
   labs(x = "SAT Test Section",
        y = "Section Score",

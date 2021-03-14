@@ -1,4 +1,4 @@
-### Shiny app for weeek 8 v1
+### Shiny app for week 8 v1
 
 
 

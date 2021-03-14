@@ -1,0 +1,601 @@
+---
+title: "Week 9"
+author: "Dr. Katz"
+date: "3/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(car)
+library(multcomp)
+library(broom)
+library(psych)
+library(purrr)
+library(sjstats)
+library(pwr)
+
+```
+
+
+Week 9 demo - Analysis of variance (ANOVA)
+
+
+## Demo 1: ANOVA with homogeneous variances
+
+
+As usual, we will start with generate data to use in demos
+
+
+We are going to simulate average weekly hours spent on work outside of class for students in different disciplines this means the outcome variable will be average weekly hours spent on work outside of class the factor (predictor variable) will be student major. 
+
+We will look at seven majors. Another way of saying this is that we have one factor with seven levels.
+
+### Data generation 
+
+#### Method 1: Create a dataframe with all the descriptive stats for each group
+
+For this approach, we will create samples directly - underlying population in this case parameterized by rnorm (so we are not creating our own population)
+
+```{r}
+disciplines <- c("chemical_eng", "chemistry", "biomedical_eng", "biology", "business", "architecture", "philosophy")
+
+n <- c(50, 60, 65, 35, 50, 45, 70)
+disc_mean <- c(30, 25, 28, 18, 15, 40, 19)
+disc_sd <- c(3, 4, 4, 3.2, 3.8, 3.4, 4.1)
+
+
+student_id <- seq(length(rep(n, n)))
+student_disc <- rep(x = disciplines, n)
+disc_mean_vect <- rep(disc_mean, n)
+disc_sd_vect <- rep(disc_sd, n)
+
+study_hrs <- round(modify2(.x = disc_mean_vect, .y = disc_sd_vect, .f = ~ rnorm(n = 1, mean = .x, sd= .y)), 1)
+
+data_gen_df <- tibble(student_id, discipline = student_disc, disc_mean_vect, disc_sd_vect, study_hrs)
+
+
+```
+
+
+
+
+
+#### Method 2: Create population first and then sample from the population to create the disciplinary samples
+
+For this method, we start with information about the populations of the different groups
+
+```{r}
+disciplines <- c("chemical_eng", "chemistry", "biomedical_eng", "biology", "business", "architecture", "philosophy")
+
+pop_n <- c(1000, 1500, 1250, 1300, 1400, 1500, 1450) # create populations with different sizes
+#pop_n <- rep(x = 1000, times = length(disciplines)) # assume each population is 1000 students big
+pop_disc_mean <- c(30, 25, 28, 18, 15, 40, 19)
+pop_disc_sd <- c(3, 4, 4, 3.2, 3.8, 3.4, 4.1)
+
+
+pop_disc_name_vect <- rep(x = disciplines, times = pop_n)
+pop_disc_mean_vect <- rep(x = pop_disc_mean, times = pop_n)
+pop_disc_sd_vect <- rep(x = pop_disc_sd, times = pop_n)
+pop_study_hrs_vect <- modify2(.x = pop_disc_mean_vect, .y = pop_disc_sd_vect, .f = ~rnorm(n = 1, mean = .x, sd = .y))
+
+
+pop_data_df <- tibble(discipline = pop_disc_name_vect, 
+                      pop_disc_mean = pop_disc_mean_vect, 
+                      pop_disc_sd = pop_disc_sd_vect,
+                      pop_study_hrs = pop_study_hrs_vect)
+```
+
+### Check descriptive statistics
+
+As usual, we want to get a sense of the data we are working with, so we start with looking at descriptive stats
+
+#### Method 1: Use group_by() and summarize()
+
+```{r}
+pop_data_df %>% 
+  group_by(discipline) %>% 
+  summarize(n = n(),
+            mean = mean(pop_study_hrs),
+            sd = sd(pop_study_hrs))
+
+### method 2: use describe.by()
+describe.by(pop_data_df, group = "discipline")
+
+# visualize the population data to make sure created correctly
+pop_data_df %>% 
+  ggplot(aes(x = pop_study_hrs, fill = discipline)) +
+  geom_histogram() + 
+  facet_grid(discipline ~ .)
+
+```
+
+
+### Draw samples from populations
+
+
+```{r}
+
+samp_n <- c(50, 60, 65, 35, 50, 45, 70)
+
+samp_size_arc <- 50
+samp_size_bio <- 60
+samp_size_bme <- 65
+samp_size_cheg <- 35
+samp_size_bus <- 50
+samp_size_phi <- 45
+samp_size_chem <- 70
+
+
+samp_arc_df <- pop_data_df %>% 
+  filter(discipline == "architecture") %>% 
+  sample_n(samp_size_arc)
+
+samp_bio_df <- pop_data_df %>% 
+  filter(discipline == "biology") %>% 
+  sample_n(samp_size_bio)
+
+samp_bme_df <- pop_data_df %>% 
+  filter(discipline == "biomedical_eng") %>% 
+  sample_n(samp_size_bme)
+
+samp_bus_df <- pop_data_df %>% 
+  filter(discipline == "business") %>% 
+  sample_n(samp_size_bus)
+
+samp_cheg_df <- pop_data_df %>% 
+  filter(discipline == "chemical_eng") %>% 
+  sample_n(samp_size_cheg)
+
+samp_chem_df <- pop_data_df %>% 
+  filter(discipline == "chemistry") %>% 
+  sample_n(samp_size_chem)
+
+samp_phi_df <- pop_data_df %>% 
+  filter(discipline == "philosophy") %>% 
+  sample_n(samp_size_phi)
+
+```
+
+Combine the sample dfs into one main data df
+
+```{r}
+data_gen_df <- bind_rows(list(samp_arc_df, samp_bio_df, samp_bme_df, samp_bus_df, samp_cheg_df, samp_chem_df, samp_phi_df))
+
+
+# rename pop_study_hrs to study_hrs
+data_gen_df <- data_gen_df %>% rename(study_hrs = pop_study_hrs)
+
+# round the study_hrs to one decimal place
+data_gen_df <- data_gen_df %>% 
+  mutate(study_hrs = round(study_hrs, 1))
+```
+
+Visualize the data
+
+```{r}
+data_gen_df %>% 
+  ggplot(aes(x = study_hrs, fill = discipline)) +
+  geom_histogram() + 
+  facet_grid(discipline ~ .)
+
+
+```
+
+
+We could also look at first-year, second-year, third-year, and fourth-year. This would mean that we have a second factor with four levels.
+
+With the data that we have, we will now do some exploratory work (mostly visualizing and looking at descriptive statistics)
+
+```{r}
+describe(data_gen_df)
+```
+
+To look at output by level of the discipline factor, we have a few options...
+
+Method 1: use describe.by() from the psych package
+
+```{r}
+describe.by(x = data_gen_df, group = "discipline")
+```
+
+
+Method 2: use summarize() from tidyverse to create a much sparser version with only select descriptive stats
+```{r}
+data_gen_df %>% 
+  group_by(discipline) %>% 
+  summarize(n = n(),
+            mean = mean(study_hrs),
+            sd = sd(study_hrs))
+```
+
+Next, let's say we want to visualize the outcome variable distribution
+
+Method 1: histogram
+```{r}
+data_gen_df %>% 
+  ggplot(aes(x = study_hrs, fill = discipline)) +
+  geom_histogram() + 
+  facet_grid(discipline ~ .) +
+  labs(title = "Histogram of student average weekly study hours by major",
+       x ="Study hours",
+       y = "Count") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+Method 2: boxplots
+```{r}
+data_gen_df %>% 
+  ggplot(aes(x = discipline, y = study_hrs)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of student average weekly study hours by major",
+       x ="Major",
+       y = "Average student study hours") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+
+
+### Running ANOVA model
+
+
+First, make sure student_disc is a factor
+
+```{r}
+str(data_gen_df)
+data_gen_df$discipline <- as.factor(data_gen_df$discipline)
+str(data_gen_df)
+```
+
+Once we have done that, we can run the model
+
+```{r}
+study_hrs_aov <- aov(study_hrs ~ discipline, data = data_gen_df)
+summary(study_hrs_aov)
+tidy(study_hrs_aov) # use this if you want to have a table of the output
+
+```
+
+Plot the results of the anova
+```{r}
+plot(study_hrs_aov)
+```
+
+### Checking assumptions
+
+Remember that the main assumptions for ANOVA are:
+1. homogeneity of variance (levene's test)
+To test this, we can make boxplots to quickly visualize - use plot(model) to see residuals vs fitted plot (as on p. 441)
+
+We should also use Levene's test of homogeneity of variances
+
+```{r}
+leveneTest(data_gen_df$study_hrs, data_gen_df$discipline, center = mean)
+```
+
+We can use Welch's test for scenarios of heterogeneous variances across groups (if Levene's test failed)
+
+```{r}
+oneway.test(study_hrs ~ discipline, data = data_gen_df)
+```
+
+### Post hoc comparisons 
+In the event where the ANOVA model suggested that we can reject the null hypothesis, we then want to follow up and see which group differences were statistically significant. There are several different versions for doing this:
+
+
+#### Bonferroni; Holm
+Use   `Use pairwise.t.test(p.adjust.method = "bonferroni")`
+```{r}
+
+pairwise.t.test(data_gen_df$study_hrs, data_gen_df$discipline, p.adjust.method = "bonferroni")
+```
+
+#### Tukey and Dunnett 
+
+Let's use Tukey's method for our post hoc multiple comparisons
+```{r}
+post_hocs <- glht(study_hrs_aov, linfct = mcp(discipline = "Tukey"))
+summary(post_hocs)
+confint(post_hocs) # notice where there are confidence intervals that contain 0 - those should correspond to the comparisons that were not statistically significant at p < 0.05
+```
+
+
+### Effect sizes (using functions from sjstats package)
+We will also want to calculate effect sizes of the differences
+
+```{r}
+eta_sq(study_hrs_aov)
+```
+
+```{r}
+omega_sq(study_hrs_aov)
+```
+
+Finally, we can get all the output at once using `anova_stats`
+```{r}
+anova_stats(study_hrs_aov)
+```
+
+
+
+
+
+
+## Demo 2: Heterogeneous variances
+
+Let's say that we did not have homogeneous variances
+
+Now that we have generated some data where the variances between the groups are fairly homogeneous, let's see what happens when the variances...vary. 
+
+
+Start with information about the populations of the different groups.
+
+```{r}
+disciplines <- c("chemical_eng", "chemistry", "biomedical_eng", "biology", "business", "architecture", "philosophy")
+
+pop_n <- c(1000, 1500, 1250, 1300, 1400, 1500, 1450) # create populations with different sizes
+#pop_n <- rep(x = 1000, times = length(disciplines)) # assume each population is 1000 students big
+pop_disc_mean <- c(30, 25, 28, 18, 15, 40, 19)
+pop_disc_sd <- c(3, 4, 4, 3.2, 3.8, 3.4, 4.1)
+
+
+pop_disc_name_vect <- rep(x = disciplines, times = pop_n)
+pop_disc_mean_vect <- rep(x = pop_disc_mean, times = pop_n)
+pop_disc_sd_vect <- rep(x = pop_disc_sd, times = pop_n)
+pop_study_hrs_vect <- modify2(.x = pop_disc_mean_vect, .y = pop_disc_sd_vect, .f = ~rnorm(n = 1, mean = .x, sd = .y))
+
+
+pop_data_df <- tibble(discipline = pop_disc_name_vect, 
+                      pop_disc_mean = pop_disc_mean_vect, 
+                      pop_disc_sd = pop_disc_sd_vect,
+                      pop_study_hrs = pop_study_hrs_vect)
+
+```
+
+### Check descriptive statistics
+
+#### Method 1: Use group_by() and summarize()
+```{r}
+pop_data_df %>% 
+  group_by(discipline) %>% 
+  summarize(n = n(),
+            mean = mean(pop_study_hrs),
+            sd = sd(pop_study_hrs))
+```
+
+### Method 2: Use describe.by()
+```{r}
+describe.by(pop_data_df, group = "discipline")
+```
+
+Visualize the population data to make sure created correctly
+```{r}
+pop_data_df %>% 
+  ggplot(aes(x = pop_study_hrs, fill = discipline)) +
+  geom_histogram() + 
+  facet_grid(discipline ~ .)
+```
+
+Draw samples from populations
+
+```{r}
+samp_n <- c(50, 60, 65, 35, 50, 45, 70)
+
+samp_size_arc <- 50
+samp_size_bio <- 60
+samp_size_bme <- 65
+samp_size_cheg <- 35
+samp_size_bus <- 50
+samp_size_phi <- 45
+samp_size_chem <- 70
+
+
+samp_arc_df <- pop_data_df %>% 
+  filter(discipline == "architecture") %>% 
+  sample_n(samp_size_arc)
+
+samp_bio_df <- pop_data_df %>% 
+  filter(discipline == "biology") %>% 
+  sample_n(samp_size_bio)
+
+samp_bme_df <- pop_data_df %>% 
+  filter(discipline == "biomedical_eng") %>% 
+  sample_n(samp_size_bme)
+
+samp_bus_df <- pop_data_df %>% 
+  filter(discipline == "business") %>% 
+  sample_n(samp_size_bus)
+
+samp_cheg_df <- pop_data_df %>% 
+  filter(discipline == "chemical_eng") %>% 
+  sample_n(samp_size_cheg)
+
+samp_chem_df <- pop_data_df %>% 
+  filter(discipline == "chemistry") %>% 
+  sample_n(samp_size_chem)
+
+samp_phi_df <- pop_data_df %>% 
+  filter(discipline == "philosophy") %>% 
+  sample_n(samp_size_phi)
+
+
+# combine the sample dfs into one main data df
+data_gen_df <- bind_rows(list(samp_arc_df, samp_bio_df, samp_bme_df, samp_bus_df, samp_cheg_df, samp_chem_df, samp_phi_df))
+
+
+# rename pop_study_hrs to study_hrs
+data_gen_df <- data_gen_df %>% rename(study_hrs = pop_study_hrs)
+
+# round the study_hrs to one decimal place
+data_gen_df <- data_gen_df %>% 
+  mutate(study_hrs = round(study_hrs, 1))
+
+```
+
+
+
+Visualize the data
+
+```{r}
+data_gen_df %>% 
+  ggplot(aes(x = study_hrs, fill = discipline)) +
+  geom_histogram() + 
+  facet_grid(discipline ~ .)
+```
+
+
+We could also look at first-year, second-year, third-year, and fourth-year. This would mean that we have a second factor with four levels.
+
+With the data that we have, we will now do some exploratory work (mostly visualizing and looking at descriptive statistics)
+
+```{r}
+describe(data_gen_df)
+```
+
+To look at output by level of the discipline factor
+Method 1: use describe.by() from the psych package
+```{r}
+describe.by(x = data_gen_df, group = "discipline")
+```
+
+
+Method 2: use summarize() from tidyverse to create a much sparser version with only select descriptive stats
+```{r}
+data_gen_df %>% 
+  group_by(discipline) %>% 
+  summarize(n = n(),
+            mean = mean(study_hrs),
+            sd = sd(study_hrs))
+```
+
+Visualize the outcome variable distribution
+
+Method 1: histogram
+```{r}
+data_gen_df %>% 
+  ggplot(aes(x = study_hrs, fill = discipline)) +
+  geom_histogram() + 
+  facet_grid(discipline ~ .) +
+  labs(title = "Histogram of student average weekly study hours by major",
+       x ="Study hours",
+       y = "Count") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+Method 2: boxplots
+
+```{r}
+data_gen_df %>% 
+  ggplot(aes(x = discipline, y = study_hrs)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of student average weekly study hours by major",
+       x ="Major",
+       y = "Average student study hours") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+
+### Running ANOVA model 
+Now we can run the ANOVA model using `aov()`
+```{r}
+study_hrs_aov <- aov(study_hrs ~ discipline, data = data_gen_df)
+summary(study_hrs_aov)
+```
+
+### Assumption checks
+We should check assumptions of the model
+
+#### Homogeneity of variance (levene's test)
+To test for homogeneity of variancy, we can make boxplots to quickly visualize use plot(model) to see residuals vs fitted plot (as on p. 441) and use Levene's Test
+
+```{r}
+#leveneTest()
+```
+
+#### Welch's test for heterogeneous variances across groups
+```{r}
+#oneway.test()
+```
+
+### post hoc comparisons ----
+
+
+#### Bonferroni; Holm
+```{r}
+#pairwise.t.test(p.adjust.method = "bonferroni")
+```
+
+#### Tukey and Dunnett 
+```{r}
+#glht()
+```
+
+#### effect sizes
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Aside: Generating random numbers from various distributions
+
+```{r}
+x <- rbinom(n = 500, size = 8, prob = 0.5)
+hist(x)
+
+y <- pmin(rpois(n = 500, lambda = 3), 5)
+hist(y)
+
+
+
+samp_tib <- tibble(x = round(rnorm(n = 50, mean = 3, sd = 2), 1),
+                   y = round(runif(n = 50, min = 5, max = 15), 1))
+
+
+total_samples <- 30
+
+samp_size_1 <- 10
+
+samp_size_2 <- 11
+
+samp_size_3 <- 9
+
+samp_idx <- sample(x = length(samp_tib$x), size = total_samples, replace = FALSE)
+
+tot_samp_tib <- samp_tib[samp_idx, ]
+
+samp_tib_1 <- tot_samp_tib[1:samp_size_1, ]
+
+samp_tib_2 <- tot_samp_tib[(samp_size_1+1):(samp_size_2+samp_size_1), ]
+
+samp_tib_3 <- tot_samp_tib[(total_samples-samp_size_3+1):total_samples,]
+
+
+sample(10, size = 2, replace = FALSE)
+
+
+
+
+income_options <- c("below_20", "20_to_40", "40_to_100", "greater_100")
+income <- factor(sample(income_options, 100, TRUE), 
+                 levels = income_options, ordered = TRUE)
+
+mean_ls <- c(30, 60, 70, 75)
+ls <- mean_ls[income] + rnorm(100, sd = 7)
+dat <- data.frame(income, ls)
+
+```

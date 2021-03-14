@@ -17,7 +17,7 @@ library(broom)
 
 
 
-### Demo 1 - comparing salary data for chemical engineering and civil engineering #####
+### Demo 1 - comparing salary data for chemical engineering and environmental engineering #####
 
 
 First, let's generate some data so that we know the underlying data-generating process that we use statistical tests to characterize.
@@ -35,7 +35,7 @@ chem_eng_df <- tibble(id = seq(group_size),
                       discipline = "chemical")
 chem_eng_df %>% 
   ggplot(aes(x= salary)) +
-  geom_histogram() +
+  geom_histogram(color = "white") +
   theme_bw()
 
 
@@ -44,7 +44,7 @@ env_eng_df <- tibble(id = seq(group_size),
                       discipline = "environmental")
 env_eng_df %>% 
   ggplot(aes(x= salary)) +
-  geom_histogram() +
+  geom_histogram(color = "white") +
   theme_bw()
 ```
 
