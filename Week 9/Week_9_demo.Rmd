@@ -502,8 +502,15 @@ data_gen_df %>%
 
 
 
-### Running ANOVA model 
-Now we can run the ANOVA model using `aov()`
+### Estimating ANOVA model 
+```{r}
+str(data_gen_df)
+data_gen_df$discipline <- as.factor(data_gen_df$discipline)
+str(data_gen_df)
+```
+
+
+Now we can estimate the ANOVA model using `aov()`
 ```{r}
 study_hrs_aov <- aov(study_hrs ~ discipline, data = data_gen_df)
 summary(study_hrs_aov)
@@ -514,30 +521,57 @@ We should check assumptions of the model
 
 #### Homogeneity of variance (levene's test)
 To test for homogeneity of variancy, we can make boxplots to quickly visualize use plot(model) to see residuals vs fitted plot (as on p. 441) and use Levene's Test
-
 ```{r}
-#leveneTest()
+leveneTest(data_gen_df$study_hrs, data_gen_df$discipline, center = mean)
 ```
 
-#### Welch's test for heterogeneous variances across groups
+We can use Welch's test for scenarios of heterogeneous variances across groups (if Levene's test failed)
+
 ```{r}
-#oneway.test()
+oneway.test(study_hrs ~ discipline, data = data_gen_df)
 ```
 
-### post hoc comparisons ----
+
+### Post hoc comparisons 
+In the event where the ANOVA model suggested that we can reject the null hypothesis, we then want to follow up and see which group differences were statistically significant. There are several different versions for doing this:
 
 
 #### Bonferroni; Holm
+Use   `Use pairwise.t.test(p.adjust.method = "bonferroni")`
 ```{r}
-#pairwise.t.test(p.adjust.method = "bonferroni")
+
+pairwise.t.test(data_gen_df$study_hrs, data_gen_df$discipline, p.adjust.method = "bonferroni")
 ```
 
 #### Tukey and Dunnett 
+
+Let's use Tukey's method for our post hoc multiple comparisons
 ```{r}
-#glht()
+post_hocs <- glht(study_hrs_aov, linfct = mcp(discipline = "Tukey"))
+summary(post_hocs)
 ```
 
-#### effect sizes
+
+```{r}
+confint(post_hocs) # notice where there are confidence intervals that contain 0 - those should correspond to the comparisons that were not statistically significant at p < 0.05
+```
+
+
+### Effect sizes (using functions from sjstats package)
+We will also want to calculate effect sizes of the differences
+
+```{r}
+eta_sq(study_hrs_aov)
+```
+
+```{r}
+omega_sq(study_hrs_aov)
+```
+
+Finally, we can get all the output at once using `anova_stats`
+```{r}
+anova_stats(study_hrs_aov)
+```
 
 
 

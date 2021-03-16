@@ -1,0 +1,252 @@
+---
+title: "Week 9 Exercise"
+author: "Dr. Katz"
+date: "3/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(car)
+library(multcomp)
+library(broom)
+library(psych)
+library(purrr)
+library(sjstats)
+library(pwr)
+
+
+```
+
+
+# Exercise Statement
+
+For this week, we will work on Smart Alex's task 1 from the textbook. The text of that setup is added below: 
+
+
+"Imagine that I was interested in how different teaching methods affected students’ knowledge. I noticed that some lecturers were aloof and arrogant in their teaching style and humiliated anyone who asked them a question, while others were encouraging and supportive of questions and comments. I took three statistics courses where I taught the same material. For one group of students I wandered around with a large cane and beat anyone who asked daft questions or got questions wrong (punish). In the second group I used my normal teaching style, which is to encourage students to discuss things that they find difficult and to give anyone working hard a nice sweet (reward). The final group I remained indifferent to and neither punished nor rewarded their efforts (indifferent). As the dependent measure I took the students’ exam marks (percentage). Based on theories of operant conditioning, we expect punishment to be a very unsuccessful way of reinforcing learning, but we expect reward to be very successful. Therefore, one prediction is that reward will produce the best learning. A second hypothesis is that punishment should actually retard learning such that it is worse than an indifferent approach to learning. The data are in the file Teach.dat. Carry out a one-way ANOVA and use planned comparisons to test the hypotheses that: (1) reward results in better exam results than either punishment or indifference; and (2) indifference will lead to significantly better exam results than punishment."
+
+
+## Preliminary steps
+
+### Data Loading
+
+Start by loading in the data (the Teach.dat file)
+
+```{r}
+
+#teach_df <- read.delim(###, header = TRUE)
+
+```
+
+
+### Data Exploration
+
+Let's now explore the data.
+
+We can get descriptive statistics in several ways...
+
+Use `describeBy` from the psych package
+
+```{r}
+#describeBy(x = ###, group = "###")
+
+```
+
+
+Use `group_by()` and `summarize()`
+```{r}
+# teach_df %>% 
+#   group_by(###) %>% 
+#   summarize(n = n(),
+#             mean = mean(###),
+#             median = median(###))
+# 
+
+```
+
+
+Next, visualize your data using histograms and box plots
+
+```{r}
+# teach_df %>% 
+#   ggplot(aes(x = ###, fill = as.factor(###))) +
+#   geom_histogram(alpha = 0.5) +
+#   labs(x = "Exam Score",
+#        y = "Frequency",
+#        title = "Distribution of Scores") +
+#   theme(legend.position = "None")
+
+```
+
+This wasn't very helpful - it might be more useful to facet this histogram
+
+```{r}
+
+# teach_df %>% 
+#   ggplot(aes(x = ###, fill = as.factor(###))) +
+#   geom_histogram(alpha = 0.5, color = "white") +
+#   facet_grid(group ~.) +
+#   labs(x = "Exam Score",
+#        y = "Frequency",
+#        title = "Distribution of Scores") +
+#   theme(legend.position = "None")
+
+```
+
+Faceting seems to make a big difference for seeing what is going on. Box plots can also help illustrate this...
+
+
+```{r}
+
+# teach_df %>% 
+#   ggplot(aes(x = ###, y = ###, fill = as.factor(###))) +
+#   geom_boxplot() +
+#   labs(x = "Group",
+#        y = "Exam Score",
+#        title = "Distribution of Scores") +
+#   theme(legend.position = "None")
+
+```
+
+
+
+If you want to get fancy, you can add a geom_jitter to the points 
+
+```{r}
+
+# teach_df %>% 
+#   ggplot(aes(x = ###, y = ###, fill = as.factor(###))) +
+#   geom_boxplot(alpha = 0.5) +
+#   geom_jitter() +
+#   labs(x = "Group",
+#        y = "Exam Score",
+#        title = "Distribution of Scores") +
+#   theme(legend.position = "None")
+
+
+```
+
+
+## Modeling
+
+
+
+### Estimating ANOVA model
+
+
+First, make sure that the group variable is a factor using `str()`
+
+```{r}
+#str(###)
+```
+
+It looks like it isn't. Let's fix that. There are multiple ways to do this, but we'll use mutate()
+
+```{r}
+#teach_df <- teach_df %>% 
+#  mutate(group = as.factor(###))
+```
+
+Now make sure that it worked by using `str()` again.
+
+```{r}
+#str(###)
+```
+
+We should see that `group` is a factor variable with three levels
+
+
+Once we have done this, we can now estimate our model.
+
+```{r}
+#teach_aov <- aov(### ~ ###, data = ###)
+```
+
+Check out the results of your model using either `summary()` or `tidy()`
+
+```{r}
+#summary(###)
+```
+
+
+```{r}
+#tidy(###) # use this if you want to have a table of the output
+
+```
+
+Plot the results of the anova. You should get four plots.
+```{r}
+#plot(###)
+```
+
+### Assumptions Check
+
+Our main assumption check here is for homogeneity of variance. We can check this using Levene's test of homogeneity of variances
+
+```{r}
+#leveneTest(###, ###, center = mean)
+```
+
+If the p value is greater that 0.05, then it means we have failed to reject the null hypothesis that the group variances are the same (this is good and means we did not violate the assumption).
+
+
+
+### Post hoc comparisons 
+
+In the event where the ANOVA model suggested that we can reject the null hypothesis that the group means are the same, we then want to follow up and see which group differences were statistically significant. There are several different versions for doing this:
+
+
+#### Bonferroni; Holm
+Use   `Use pairwise.t.test(p.adjust.method = "bonferroni")`
+```{r}
+
+#pairwise.t.test(###, ###, p.adjust.method = "bonferroni")
+```
+
+#### Tukey and Dunnett 
+
+We can also use Tukey's method for our post hoc multiple comparisons.
+
+```{r}
+#post_hocs <- glht(###, linfct = mcp(### = "Tukey"))
+```
+
+After storing the results of the post hoc comparisons, use `summary()` to examine them.
+```{r}
+#summary(###)
+```
+
+And use `confint()` to examine the confidence intervals. Specifically, notice if there are confidence intervals that contain 0 - those should correspond to the comparisons that were not statistically significant at p < 0.05.
+```{r}
+#confint(###) 
+```
+
+
+### Effect sizes (using functions from sjstats package)
+Try to calculate effect sizes of the differences
+
+
+First with $\eta^2$
+```{r}
+#eta_sq(###)
+```
+
+
+Next with $\omega^2$
+```{r}
+#omega_sq(###)
+```
+
+Finally, we can get all the output at once using the `anova_stats()` function.
+
+```{r}
+#anova_stats(###)
+```
+
+
+
+
+
