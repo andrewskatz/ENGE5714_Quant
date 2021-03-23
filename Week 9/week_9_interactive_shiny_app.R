@@ -1,4 +1,4 @@
-### Shiny app for weeek 9
+### Shiny app for week 9
 
 
 

@@ -1,0 +1,1441 @@
+---
+title: "Week 10 demo"
+author: "A. Katz"
+date: "3/23/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+This is a _very_ extended demo for Week 10 - Nonparametric tests. 
+
+The scenario is that you have a column of which spatio-temporal belief cluster each student belongs to. These are groups that have distinct patters of when they believe climate change will affect various populations. 
+
+
+With this grouping variable, you then want to see if there are variations in distributions of things like career goals, career interests, and knowledge about climate science. To answer these questions, you decide to run a series of nonparametric tests. The following code first helps with data exploration and then running both individual tests but also an entire battery of tests all at once.
+
+
+PLEASE NOTE: The data for this week's demo are not being released since this is an active project and we are borrowing data from Dr. Shealy over in CEE.
+
+
+
+
+
+
+
+
+
+Same information but faceted with clusters
+
+** This is a good plot for seeing that a cluster's beliefs about effects of global warming on different populations at different times vary in a clear pattern
+```{r}
+
+climate_df %>%
+  #filter(cluster != 0) %>% 
+  pivot_longer(cols = Q27a_tri_num:Q27i_tri_num, names_to = "survey_item", values_to = "response") %>%
+  mutate(cluster_time_rank = as_factor(cluster_time_rank)) %>% 
+  ggplot(aes(x = survey_item)) +
+  geom_bar(aes(fill = as_factor(response))) +
+  facet_wrap(.~ cluster_time_rank, 
+             scales = "free",
+             labeller = labeller(survey_item = q27_labs)) +
+  theme_bw() +
+  labs(x = "When will global warming affect this population?",
+       y = "Count",
+       title = "Cluster patterns of when will global warming affect various populations",
+       fill = "Response") +
+  theme(plot.title = element_text(hjust = 0.5, size = 8)) +
+  scale_fill_manual(values = c("#060a57", "#788FDD", "#ACE0EB"), 
+                    name = "Response", 
+                    labels = c("0" = "0-10 yrs", "1" = "25-50y yrs", "2" = "Never")) +
+  scale_x_discrete(labels = c('Q27a_tri_num' = "Me personally",
+  "Q27b_tri_num" = "My family",
+  "Q27c_tri_num" = "People in my comm.",
+  "Q27d_tri_num" = "People in US",
+  "Q27e_tri_num" = "Other indust. countr.",
+  "Q27f_tri_num" = "Developing countries",
+  "Q27g_tri_num" = "Plant + animal species",
+  "Q27h_tri_num" = "World's poor",
+  "Q27i_tri_num" = "Natural environment")) + 
+  coord_flip()
+
+```
+
+
+#### Overall count for clusters
+
+
+```{r}
+climate_df %>% 
+  filter(cluster != 0) %>% 
+  group_by(cluster_time_rank) %>% 
+  summarize(n = n()) %>% 
+  mutate(perc = round(n / sum(n) * 100, 2)) %>% 
+  mutate(cluster_time_rank = as_factor(cluster_time_rank)) %>% 
+  ggplot(aes(x = fct_reorder(cluster_time_rank, perc), 
+             y = perc, fill = as_factor(cluster_time_rank))) +
+  geom_col() +
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5, size = 8)) +
+  labs(x = "Cluster", 
+       y = "Percentage of students in cluster",
+       title = "Distribution of temporal belief clusters in engineering students") +
+  scale_fill_manual(values = cluster_colors)
+
+
+```
+
+Broken plot
+
+```{r}
+
+climate_df %>% 
+  group_by(cluster_time_rank) %>% 
+  summarize(n = n()) %>% 
+#  add_count(major, name = "major_total") %>% 
+#  mutate(proportion = n / major_total) %>% 
+  mutate(cluster_time_rank = as_factor(cluster_time_rank)) %>% 
+  ggplot(aes(x = fct_reorder(cluster_time_rank, n), 
+             y = n, fill = as_factor(cluster_time_rank))) +
+  geom_col() +
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5, size = 8)) +
+  labs(x = "Cluster", 
+       y = "Count",
+       title = "Distribution of temporal belief clusters in engineering majors") +
+  scale_fill_manual(values = cluster_colors)
+```
+
+
+
+
+
+
+
+
+# Q5 career topic interests for all ten topics in Q5 by cluster (instead of major)
+
+
+
+```{r}
+
+# Add new variables related to career interest (or a new, long dataframe for plotting)
+
+career_interest_df <- climate_df  %>% 
+  select(student_id, Q5a:Q5j, major, cluster_time_rank) %>% 
+  pivot_longer(cols = Q5a:Q5j, names_to = "Q5_item", values_to = "Q5_resp")
+
+
+climate_df <- climate_df %>% 
+  mutate(Q5_total = Q5a + Q5b + Q5c + Q5d + Q5e + Q5f + Q5g + Q5h + Q5i + Q5j)
+
+
+
+## Prepare labels for facet plots of career interest proportions broken down by topic and cluster (or major)
+
+q5_labs <- c("Energy (supply/demand)", 
+              "Disease",
+              "Poverty and wealth dist.",
+              "Climate change",
+              "Terrorism and war",
+              "Water supply",
+              "Food availability",
+              "Opp. for future gen",
+              "Opp. for women and/or min.",
+             "Environmental degradation")
+
+names(q5_labs) <- c("Q5a",
+                     "Q5b",
+                     "Q5c",
+                     "Q5d",
+                     "Q5e",
+                     "Q5f",
+                     "Q5g",
+                     "Q5h",
+                     "Q5i",
+                    "Q5j")
+
+```
+
+
+### Table of average number of topics that students in each cluster identified
+
+```{r}
+
+climate_df %>% 
+  select(Q5a:Q5j, Q5_total, cluster_time_rank) %>% 
+  group_by(cluster_time_rank) %>% 
+  summarize(n = n(),
+            avg_Q5_total = mean(Q5_total)) %>% 
+  arrange(desc(avg_Q5_total))
+
+
+
+
+```
+
+
+### Number of Q5 topics identified in each cluster
+
+```{r}
+
+
+climate_df %>% 
+  ggplot(aes(x = Q5_total)) +
+  geom_histogram() +
+  facet_wrap(. ~ cluster_time_rank) +
+  labs(x = "Total Number of Q5 topics",
+       y = "Count",
+       title = "Number of Q5 topics identified by cluster") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 8))
+
+```
+
+
+
+### Proportions of each cluster interested in Q5 topics
+
+```{r}
+
+
+career_interest_df %>%   
+  ggplot(aes(x = as_factor(cluster_time_rank), fill = factor(Q5_resp))) +
+  geom_bar(position = "fill") +
+  scale_fill_brewer(palette = "Set1", labels = c("No", "Yes")) +
+  facet_wrap(. ~ Q5_item, 
+             scales = "free",
+             labeller = labeller(Q5_item = q5_labs)) +
+  labs(x = "Cluster", y = "Proportion", fill = "", title = "Proportions of Q5 topic by cluster") +
+  coord_flip() +
+  theme(plot.title = element_text(hjust = 0.5, size = 8))
+
+
+```
+
+
+#### Interests within each cluster
+
+
+```{r}
+
+
+career_interest_df %>%  
+  mutate(Q5_item_name = case_when(Q5_item == "Q5a" ~ "Energy (supply/demand)", 
+              Q5_item == "Q5b" ~ "Disease",
+              Q5_item == "Q5c" ~ "Poverty and wealth dist.",
+              Q5_item == "Q5d" ~ "Climate change",
+              Q5_item == "Q5e" ~ "Terrorism and war",
+              Q5_item == "Q5f" ~ "Water supply",
+              Q5_item == "Q5g" ~ "Food availability",
+              Q5_item == "Q5h" ~ "Opp. for future gen",
+              Q5_item == "Q5i" ~ "Opp. for women and/or min.",
+              Q5_item == "Q5j" ~ "Environmental degradation")) %>% 
+  mutate(cluster_time_rank = as_factor(cluster_time_rank)) %>% 
+  ggplot(aes(x = Q5_item_name, 
+             fill = factor(Q5_resp))) +
+  geom_bar(position = "fill") +
+  scale_fill_brewer(palette = "Set1", labels = c("No", "Yes")) +
+  facet_wrap(. ~ cluster_time_rank, 
+             scales = "free") +
+  labs(x = "Cluster", y = "Proportion", fill = "", title = "Proportions of Q5 topic by cluster") +
+  coord_flip() +
+  theme(plot.title = element_text(hjust = 0.5, size = 8))
+
+
+```
+
+
+
+
+```{r}
+
+climate_df %>% 
+  group_by(cluster_time_rank) %>% 
+  summarize(n = n(),
+            Q5a_total = sum(Q5a),
+            Q5a_prop = Q5a_total / n,
+            Q5b_total = sum(Q5b),
+            Q5b_prop = Q5b_total / n,
+            Q5c_total = sum(Q5c),
+            Q5c_prop = Q5c_total / n,
+            Q5d_total = sum(Q5d),
+            Q5d_prop = Q5d_total / n,
+            Q5e_total = sum(Q5e),
+            Q5e_prop = Q5e_total / n,
+            Q5f_total = sum(Q5f),
+            Q5f_prop = Q5f_total / n,
+            Q5g_total = sum(Q5g),
+            Q5g_prop = Q5g_total / n,
+            Q5h_total = sum(Q5h),
+            Q5h_prop = Q5h_total / n,
+            Q5i_total = sum(Q5i),
+            Q5i_prop = Q5i_total / n,
+            Q5j_total = sum(Q5j),
+            Q5j_prop = Q5j_total / n) %>% 
+  pivot_longer(cols = ends_with("prop"), 
+               names_to = "Q5_item", 
+               values_to = "Q5_item_prop") %>%
+  mutate(cluster_time_rank = as_factor(cluster_time_rank)) %>% 
+  ggplot(aes(x = reorder_within(Q5_item, Q5_item_prop, cluster_time_rank), 
+             y = Q5_item_prop, 
+             fill = Q5_item)) +
+  geom_col() +
+  facet_wrap(. ~ cluster_time_rank, scales = "free") +
+  scale_x_reordered() +
+  coord_flip() +
+  theme_light() +
+  theme(legend.position = "none", plot.title = element_text(hjust=0.5)) +
+  labs(x = "Career topic",
+       y = "Proportion",
+       title = "Proportion of cluster interested in various career topics") 
+
+```
+
+
+
+```{r}
+
+### using nest, map, and broom to run all chi square tests at once
+
+nested <- career_interest_df %>% 
+  group_by(Q5_item) %>% 
+  nest(-Q5_item) %>% 
+  mutate(
+    Q5_item_name = case_when(Q5_item == "Q5a" ~ "Energy (supply/demand)", 
+              Q5_item == "Q5b" ~ "Disease",
+              Q5_item == "Q5c" ~ "Poverty and wealth dist.",
+              Q5_item == "Q5d" ~ "Climate change",
+              Q5_item == "Q5e" ~ "Terrorism and war",
+              Q5_item == "Q5f" ~ "Water supply",
+              Q5_item == "Q5g" ~ "Food availability",
+              Q5_item == "Q5h" ~ "Opp. for future gen",
+              Q5_item == "Q5i" ~ "Opp. for women and/or min.",
+              Q5_item == "Q5j" ~ "Environmental degradation"),
+    cont_tab = purrr::map(data, ~table(.$cluster_time_rank, .$Q5_resp)),
+    test = purrr::map(data, ~chisq.test(.$cluster_time_rank, .$Q5_resp)),
+    tidied = purrr::map(test, tidy),
+    m_plot = mosaicplot(cont_tab[[1]], shade = TRUE, main = Q5_item_name)
+    )
+
+
+
+```
+
+
+
+```{r}
+
+nested %>% 
+  select(Q5_item, Q5_item_name, tidied) %>% 
+  unnest(tidied)
+
+```
+
+
+
+
+# Chi square tests of whether different clusters (students with different temporal discounting patterns of when climate change will affect various groups) want to address climate-related outcomes in their careers
+
+## Q5a - energy (supply or demand)
+```{r}
+
+cont_table <- table(climate_df$cluster_time_rank, climate_df$Q5a)
+cont_table
+chisq.test(cont_table)
+
+
+mosaicplot(cont_table, shade = TRUE, main = "Q27 Cluster vs Q5a (energy)")
+
+
+```
+
+
+## Q5d - climate change
+```{r}
+
+cont_table <- table(climate_df$cluster_time_rank, climate_df$Q5d)
+cont_table
+chisq.test(cont_table)
+
+
+mosaicplot(cont_table, shade = TRUE, main = "Q27 Cluster vs Q5d (climate change)")
+
+```
+
+
+### alternative Q5d visualization for proportions of each cluster interested in addressing climate change
+
+```{r}
+
+climate_df %>%
+  ggplot(aes(x = as_factor(cluster_time_rank), fill = as_factor(Q5d))) +
+  geom_bar(position = "fill") +
+  labs(title = "Question 5d responses by cluster",
+       x = "Cluster assignment",
+       y = "Proportion",
+       fill = "No (0) or Yes (1)") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+
+## Q5f - water supply
+```{r}
+# Q5f
+
+cont_table <- table(climate_df$cluster_time_rank, climate_df$Q5f)
+cont_table
+chisq.test(cont_table)
+
+mosaicplot(cont_table, shade = TRUE, main = "Q27 Cluster vs Q5f (water supply)")
+
+```
+
+
+## Q5j - environmental degradation
+```{r}
+
+# Q5j
+
+cont_table <- table(climate_df$cluster_time_rank, climate_df$Q5j)
+cont_table
+chisq.test(cont_table)
+
+mosaicplot(cont_table, shade = TRUE, main = "Q27 Cluster vs Q5j (environmental degradation)")
+
+```
+
+
+
+```{r}
+#Q29 (major)
+
+cont_table_Q29 <- table(climate_df$cluster, climate_df$Q29)
+cont_table_Q29
+chisq.test(cont_table_Q29)
+
+mosaicplot(cont_table_Q29, shade = TRUE, main = "Q27 Cluster vs Q29 (environmental degradation)")
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Chi square tests of whether different clusters (students with different temporal discounting patterns of when climate change will affect various groups) want to pursue various degree options
+
+
+```{r}
+
+career_degree_df <- climate_df %>% 
+  select(student_id, Q3a:Q3g, major, cluster_time_rank) %>% 
+  pivot_longer(cols = Q3a:Q3g, names_to = "Q3_item", values_to = "Q3_resp")
+
+career_degree_df
+
+
+```
+
+
+
+
+```{r}
+q3_labs <- c("MA/MS (non-engineering)",
+             "ME/MS (engineering)",
+             "PhD (engineering)",
+             "MBA",
+             "JD (law)",
+             "MD",
+             "Other")
+
+names(q3_labs) <- c("Q3a",
+                     "Q3b",
+                     "Q3c",
+                     "Q3d",
+                     "Q3e",
+                     "Q3f",
+                     "Q3g")
+```
+
+
+#### Interest of each topic
+
+
+```{r}
+career_degree_df %>%   
+  ggplot(aes(x = as_factor(cluster_time_rank), fill = factor(Q3_resp))) +
+  geom_bar(position = "fill") +
+  scale_fill_brewer(palette = "Set1", labels = c("No", "Yes")) +
+  facet_wrap(. ~ Q3_item, 
+             scales = "free",
+             labeller = labeller(Q3_item = q3_labs)) +
+  labs(x = "Cluster", y = "Proportion", fill = "", title = "Proportions of Q3 degree by cluster") +
+  coord_flip() +
+  theme(plot.title = element_text(hjust = 0.5, size = 8))
+
+
+
+```
+
+
+#### Interest within each cluster
+
+
+```{r}
+
+career_degree_df %>%  
+  mutate(Q3_item_name = case_when(Q3_item == "Q3a" ~ "MA/MS (non-eng)", 
+              Q3_item == "Q3b" ~ "ME/MS (eng)",
+              Q3_item == "Q3c" ~ "PhD (eng)",
+              Q3_item == "Q3d" ~ "MBA",
+              Q3_item == "Q3e" ~ "JD (law)",
+              Q3_item == "Q3f" ~ "MD",
+              Q3_item == "Q3g" ~ "Other")) %>% 
+  mutate(cluster_time_rank = as_factor(cluster_time_rank)) %>% 
+  ggplot(aes(x = Q3_item_name, 
+             fill = factor(Q3_resp))) +
+  geom_bar(position = "fill") +
+  scale_fill_brewer(palette = "Set1", labels = c("No", "Yes")) +
+  facet_wrap(. ~ cluster_time_rank, 
+             scales = "free") +
+  labs(x = "Cluster", y = "Proportion", fill = "", title = "Proportions of Q3 degree by cluster") +
+  coord_flip() +
+  theme(plot.title = element_text(hjust = 0.5, size = 8))
+
+
+```
+
+
+## Chi square tests of degree interests by cluster -- not expecting any differences across clusters
+
+```{r}
+
+
+nested <- career_degree_df %>% 
+  group_by(Q3_item) %>% 
+  nest(-Q3_item) %>% 
+  mutate(
+    Q3_item_name = case_when(Q3_item == "Q3a" ~ "MA/MS (non-eng)", 
+              Q3_item == "Q3b" ~ "ME/MS (eng)",
+              Q3_item == "Q3c" ~ "PhD (eng)",
+              Q3_item == "Q3d" ~ "MBA",
+              Q3_item == "Q3e" ~ "JD (law)",
+              Q3_item == "Q3f" ~ "MD",
+              Q3_item == "Q3g" ~ "Other"),
+    cont_tab = purrr::map(data, ~table(.$cluster_time_rank, .$Q3_resp)),
+    test = purrr::map(data, ~chisq.test(.$cluster_time_rank, .$Q3_resp)),
+    tidied = purrr::map(test, tidy),
+    m_plot = mosaicplot(cont_tab[[1]], shade = TRUE, main = Q3_item_name)
+    )
+
+
+
+```
+
+
+
+```{r}
+
+nested %>% 
+  select(Q3_item, Q3_item_name, tidied) %>% 
+  unnest(tidied)
+
+```
+
+
+
+
+
+# Kruskal wallis tests of whether different clusters (students with different temporal discounting patterns of when climate change will affect various groups) consider various career satisfaction factors important
+
+
+## Career satisfaction items (Q4 items)
+
+```{r}
+
+career_sat_df <- climate_df  %>% 
+  select(student_id, Q4a:Q4p, major, cluster_time_rank) %>% 
+  pivot_longer(cols = Q4a:Q4p, names_to = "Q4_item", values_to = "Q4_resp")
+
+career_sat_df
+
+```
+
+
+
+```{r}
+
+career_sat_df %>%  
+  mutate(Q4_item_name = case_when(Q4_item == "Q4a" ~ "Make money", 
+              Q4_item == "Q4b" ~ "Fame",
+              Q4_item == "Q4c" ~ "Help others",
+              Q4_item == "Q4d" ~ "Supervise others",
+              Q4_item == "Q4e" ~ "Job sec. and opp.",
+              Q4_item == "Q4f" ~ "Work w/ people",
+              Q4_item == "Q4g" ~ "Invent/design",
+              Q4_item == "Q4h" ~ "Develop knowledge/skill",
+              Q4_item == "Q4i" ~ "Personal/fam. time",
+              Q4_item == "Q4j" ~ "Easy job",
+              Q4_item == "Q4k" ~ "Exciting env.",
+              Q4_item == "Q4l" ~ "Solve societal prob.",
+              Q4_item == "Q4m" ~ "Use talent/abilities",
+              Q4_item == "Q4n" ~ "Do hands-on work",
+              Q4_item == "Q4o" ~ "Apply math/sci.",
+              Q4_item == "Q4p" ~ "Volunteer w/ charity")) %>% 
+  mutate(cluster_time_rank = as_factor(cluster_time_rank)) %>% 
+  ggplot(aes(x = Q4_item_name, fill = factor(Q4_resp))) +
+  geom_bar(position = "fill") +
+  scale_fill_brewer(palette = "Set1", labels = c("0", "1", "2", "3", "4")) +
+  facet_wrap(. ~ cluster_time_rank, 
+             scales = "free") +
+  labs(x = "Cluster", y = "Proportion", fill = "", title = "Proportions of Q4 topic by cluster") +
+  coord_flip() +
+  theme(plot.title = element_text(hjust = 0.5, size = 8))
+
+
+```
+
+
+
+
+```{r}
+Q4_labs <- c("Make money", 
+             "Fame",
+             "Help others",
+             "Supervise others",
+             "Job sec. and opp.",
+             "Work w/ people",
+             "Invent/design",
+             "Develop knowledge/skill",
+             "Personal/fam. time",
+             "Easy job",
+             "Exciting env.",
+             "Solve societal prob.",
+             "Use talent/abilities",
+             "Do hands-on work",
+             "Apply math/sci.",
+             "Volunteer w/ charity")
+
+nested <- career_sat_df %>% 
+  group_by(Q4_item) %>% 
+  nest(-Q4_item) %>% 
+  mutate(
+    Q4_item_name = case_when(Q4_item == "Q4a" ~ "Make money", 
+              Q4_item == "Q4b" ~ "Fame",
+              Q4_item == "Q4c" ~ "Help others",
+              Q4_item == "Q4d" ~ "Supervise others",
+              Q4_item == "Q4e" ~ "Job sec. and opp.",
+              Q4_item == "Q4f" ~ "Work w/ people",
+              Q4_item == "Q4g" ~ "Invent/design",
+              Q4_item == "Q4h" ~ "Develop knowledge/skill",
+              Q4_item == "Q4i" ~ "Personal/fam. time",
+              Q4_item == "Q4j" ~ "Easy job",
+              Q4_item == "Q4k" ~ "Exciting env.",
+              Q4_item == "Q4l" ~ "Solve societal prob.",
+              Q4_item == "Q4m" ~ "Use talent/abilities",
+              Q4_item == "Q4n" ~ "Do hands-on work",
+              Q4_item == "Q4o" ~ "Apply math/sci.",
+              Q4_item == "Q4p" ~ "Volunteer w/ charity"),
+    cont_tab = purrr::map(data, ~table(.$cluster_time_rank, .$Q4_resp)),
+    test = purrr::map(data, ~chisq.test(.$cluster_time_rank, .$Q4_resp)),
+    tidied = purrr::map(test, tidy),
+    m_plot = mosaicplot(cont_tab[[1]], shade = TRUE, main = Q4_item_name)
+    )
+
+
+
+```
+
+
+visualize with boxplots instead of mosaicplots 
+
+```{r}
+
+nested <- career_sat_df %>% 
+  mutate(cluster_time_rank = as_factor(cluster_time_rank)) %>% 
+  group_by(Q4_item) %>% 
+  nest(-Q4_item) %>% 
+  mutate(
+    Q4_item_name = case_when(Q4_item == "Q4a" ~ "Make money", 
+              Q4_item == "Q4b" ~ "Fame",
+              Q4_item == "Q4c" ~ "Help others",
+              Q4_item == "Q4d" ~ "Supervise others",
+              Q4_item == "Q4e" ~ "Job sec. and opp.",
+              Q4_item == "Q4f" ~ "Work w/ people",
+              Q4_item == "Q4g" ~ "Invent/design",
+              Q4_item == "Q4h" ~ "Develop knowledge/skill",
+              Q4_item == "Q4i" ~ "Personal/fam. time",
+              Q4_item == "Q4j" ~ "Easy job",
+              Q4_item == "Q4k" ~ "Exciting env.",
+              Q4_item == "Q4l" ~ "Solve societal prob.",
+              Q4_item == "Q4m" ~ "Use talent/abilities",
+              Q4_item == "Q4n" ~ "Do hands-on work",
+              Q4_item == "Q4o" ~ "Apply math/sci.",
+              Q4_item == "Q4p" ~ "Volunteer w/ charity"),
+    cont_tab = purrr::map(data, ~table(.$cluster_time_rank, .$Q4_resp)),
+    test = purrr::map(data, ~chisq.test(.$cluster_time_rank, .$Q4_resp)),
+    tidied = purrr::map(test, tidy),
+    box_plot = purrr::map(data, ~ ggplot(.x, aes(x = .$cluster_time_rank, 
+                                            y = .$Q4_resp)) +
+                            geom_boxplot(alpha = 0.5) +
+                            geom_jitter(aes(color = .$cluster_time_rank),
+                                        alpha = 0.3,
+                                        height = 0.15,
+                                        width = 0.4) +
+                            labs(x = "Cluster",
+                                 y = Q4_item_name,
+                                 title = "Importance of factor to career satisfaction by cluster (0 = Not at all important, 4 = Very important)") +
+                            scale_color_manual(values = cluster_colors) +
+                            theme_light() +
+                            theme(legend.position = "none", 
+                                  plot.title = element_text(hjust = 0.5, 
+                                                            size = 9))
+                          ))
+
+
+for (i in 1:length(nested$box_plot)) {
+  print(nested$box_plot[[i]])
+  }
+
+
+```
+
+
+
+
+#### Table of chi square test results
+
+```{r}
+
+nested %>% 
+  select(Q4_item, Q4_item_name, tidied) %>% 
+  unnest(tidied)
+
+```
+
+
+#### Using kruskal-wallis instead of chi square since outcome is Likert-scale item (i.e., ordinal variable)
+
+```{r}
+
+#kruskal.test(Q4c ~ cluster_time_rank, data = climate_df)
+
+
+nested <- career_sat_df %>% 
+  group_by(Q4_item) %>% 
+  nest(-Q4_item) %>% 
+  mutate(
+    Q4_item_name = case_when(Q4_item == "Q4a" ~ "Make money", 
+              Q4_item == "Q4b" ~ "Fame",
+              Q4_item == "Q4c" ~ "Help others",
+              Q4_item == "Q4d" ~ "Supervise others",
+              Q4_item == "Q4e" ~ "Job sec. and opp.",
+              Q4_item == "Q4f" ~ "Work w/ people",
+              Q4_item == "Q4g" ~ "Invent/design",
+              Q4_item == "Q4h" ~ "Develop knowledge/skill",
+              Q4_item == "Q4i" ~ "Personal/fam. time",
+              Q4_item == "Q4j" ~ "Easy job",
+              Q4_item == "Q4k" ~ "Exciting env.",
+              Q4_item == "Q4l" ~ "Solve societal prob.",
+              Q4_item == "Q4m" ~ "Use talent/abilities",
+              Q4_item == "Q4n" ~ "Do hands-on work",
+              Q4_item == "Q4o" ~ "Apply math/sci.",
+              Q4_item == "Q4p" ~ "Volunteer w/ charity"),
+    cont_tab = purrr::map(data, ~table(.$cluster_time_rank, .$Q4_resp)),
+    test = purrr::map(data, ~kruskal.test(.$cluster_time_rank, .$Q4_resp)),
+    tidied = purrr::map(test, tidy),
+    m_plot = mosaicplot(cont_tab[[1]], shade = TRUE, main = Q4_item_name)
+    )
+
+
+
+```
+
+
+```{r}
+
+nested %>% 
+  select(Q4_item, Q4_item_name, tidied) %>% 
+  unnest(tidied)
+
+```
+
+
+
+## Question 2 items (Working in various sectors) and climate change impacts cluster
+
+
+
+```{r}
+
+career_sector_df <- climate_df %>% 
+  drop_na(Q2_vars) %>% 
+  select(student_id, Q2a:Q2g, major, cluster_time_rank) %>% 
+  pivot_longer(cols = Q2a:Q2g, names_to = "Q2_item", values_to = "Q2_resp")
+
+career_sector_df
+
+```
+
+
+
+```{r}
+
+career_sector_df %>%  
+  mutate(Q2_item_name = case_when(Q2_item == "Q2a" ~ "Private/Corporate", 
+              Q2_item == "Q2b" ~ "Non-profit/NGO",
+              Q2_item == "Q2c" ~ "Gov./Public Policy",
+              Q2_item == "Q2d" ~ "Education",
+              Q2_item == "Q2e" ~ "Entrepreneurship/Start-up",
+              Q2_item == "Q2f" ~ "Healthcare",
+              Q2_item == "Q2g" ~ "Other")) %>% 
+  mutate(cluster_time_rank = as_factor(cluster_time_rank)) %>% 
+  ggplot(aes(x = Q2_item_name, fill = factor(Q2_resp))) +
+  geom_bar(position = "fill") +
+  scale_fill_brewer(palette = "Set1", labels = c("0", "1", "2", "3", "4")) +
+  facet_wrap(. ~ cluster_time_rank, 
+             scales = "free") +
+  labs(x = "Cluster", y = "Proportion", fill = "", title = "Proportions of Q2 sector by cluster") +
+  coord_flip() +
+  theme(plot.title = element_text(hjust = 0.5, size = 8))
+
+
+```
+
+
+#### Using kruskal-wallis instead of chi square since outcome is Likert-scale item (i.e., ordinal variable)
+
+
+```{r}
+
+
+nested <- career_sector_df %>% 
+  group_by(Q2_item) %>% 
+  nest(-Q2_item) %>% 
+  mutate(
+    Q2_item_name = case_when(Q2_item == "Q2a" ~ "Private/Corporate", 
+              Q2_item == "Q2b" ~ "Non-profit/NGO",
+              Q2_item == "Q2c" ~ "Gov./Public Policy",
+              Q2_item == "Q2d" ~ "Education",
+              Q2_item == "Q2e" ~ "Entrepreneurship/Start-up",
+              Q2_item == "Q2f" ~ "Healthcare",
+              Q2_item == "Q2g" ~ "Other"),
+    cont_tab = purrr::map(data, ~table(.$cluster_time_rank, .$Q2_resp)),
+    test = purrr::map(data, ~kruskal.test(.$cluster_time_rank, .$Q2_resp)),
+    tidied = purrr::map(test, tidy),
+    m_plot = mosaicplot(cont_tab[[1]], shade = TRUE, main = Q2_item_name)
+    )
+
+
+
+```
+
+
+visualize with boxplots instead of mosaicplots 
+
+```{r}
+
+nested <- career_sector_df %>% 
+  mutate(cluster_time_rank = as_factor(cluster_time_rank)) %>% 
+  group_by(Q2_item) %>% 
+  nest(-Q2_item) %>% 
+  mutate(
+    Q2_item_name = case_when(Q2_item == "Q2a" ~ "Private/Corporate", 
+              Q2_item == "Q2b" ~ "Non-profit/NGO",
+              Q2_item == "Q2c" ~ "Gov./Public Policy",
+              Q2_item == "Q2d" ~ "Education",
+              Q2_item == "Q2e" ~ "Entrepreneurship/Start-up",
+              Q2_item == "Q2f" ~ "Healthcare",
+              Q2_item == "Q2g" ~ "Other"),
+    cont_tab = purrr::map(data, ~table(.$cluster_time_rank, .$Q2_resp)),
+    test = purrr::map(data, ~chisq.test(.$cluster_time_rank, .$Q2_resp)),
+    tidied = purrr::map(test, tidy),
+    box_plot = purrr::map(data, ~ ggplot(.x, aes(x = .$cluster_time_rank, 
+                                            y = .$Q2_resp)) +
+                            geom_boxplot(alpha = 0.5) +
+                            geom_jitter(aes(color = .$cluster_time_rank),
+                                        alpha = 0.3,
+                                        height = 0.15,
+                                        width = 0.4) +
+                            labs(x = "Cluster",
+                                 y = Q2_item_name,
+                                 title = "Importance of factor to career satisfaction by cluster (0 = Not at all important, 4 = Very important)") +
+                            scale_color_manual(values = cluster_colors) +
+                            theme_light() +
+                            theme(legend.position = "none", 
+                                  plot.title = element_text(hjust = 0.5, 
+                                                            size = 9))
+                          ))
+
+
+for (i in 1:length(nested$box_plot)) {
+  print(nested$box_plot[[i]])
+  }
+
+
+```
+
+
+
+
+#### Table of kruskal wallis test results
+
+```{r}
+
+nested %>% 
+  select(Q2_item, Q2_item_name, tidied) %>% 
+  unnest(tidied)
+
+```
+
+
+
+
+## End of career interest section
+
+
+
+
+
+# Cluster beliefs about global warming
+
+
+The following series of analyses look at differences among the temporal discounting clusters regarding various beliefs about global warming and climate change
+
+
+
+
+## Q18k - We should be taking stronger actions to address climate change
+
+```{r}
+
+climate_df <- climate_df %>% mutate(Q18k_bin =  case_when(Q18k == 0 | Q18k == 1 | Q18k == 2 ~ 0,
+                                         Q18k == 3 | Q18k == 4 ~ 1))
+
+
+cont_table <- table(climate_df$cluster_time_rank, climate_df$Q18k_bin)
+cont_table
+chisq.test(cont_table)
+
+
+mosaicplot(cont_table, shade = TRUE, main = "Cluster vs Q18k - We should take stronger action")
+
+```
+
+
+
+
+
+
+
+```{r}
+
+
+
+climate_df <- climate_df %>%
+  mutate(Q20a_bin = case_when(Q20a == 0 | Q20a == 1 | Q20a == 2 ~ 0,
+                                         Q20a == 3 | Q20a == 4 ~ 1)) %>%
+  mutate(Q20b_bin = case_when(Q20b == 0 | Q20b == 1 | Q20b == 2 ~ 0,
+                                         Q20b == 3 | Q20b == 4 ~ 1)) %>%
+  mutate(Q20d_bin = case_when(Q20d == 0 | Q20d == 1 | Q20d == 2 ~ 0,
+                                         Q20d == 3 | Q20d == 4 ~ 1))
+
+
+
+```
+
+
+
+
+## Plot for Major by Q20a
+
+```{r}
+
+
+CrossTable(climate_df$Q29, climate_df$Q20a_bin, chisq = TRUE)
+
+
+cont_table <- table(climate_df$cluster_time_rank, climate_df$Q20a_bin)
+cont_table
+chisq.test(cont_table)
+
+
+mosaicplot(cont_table, shade = TRUE, main = "Cluster vs Q20a - I am sure global warming is happening")
+
+contingency_tab <- xtabs(~ major + Q5d, data = climate_data, na.action = na.pass)
+contingency_tab
+
+
+
+```
+
+
+
+
+## Plot for Major by Q20b
+
+```{r}
+
+
+#CrossTable(climate_df$Q29, climate_df$Q20b_bin, chisq = TRUE)
+
+cont_table <- table(climate_df$cluster_time_rank, climate_df$Q20b_bin)
+cont_table
+chisq.test(cont_table)
+
+
+mosaicplot(cont_table, shade = TRUE, main = "Cluster vs Q20b - Global warming caused by humans")
+
+
+```
+
+
+
+
+
+## Plot for Major by Q20d
+
+```{r}
+
+
+cont_table <- table(climate_df$cluster_time_rank, climate_df$Q20d_bin)
+cont_table
+chisq.test(cont_table)
+
+
+mosaicplot(cont_table, shade = TRUE, main = "Cluster vs Q20d - Global warming important to me")
+
+
+```
+
+
+
+
+
+## Q22 - What percentage of climate scientists think that human-caused global warming is happening?
+
+```{r}
+
+climate_df <- climate_df %>% mutate(Q22_bin = case_when(Q22 == 4 ~ 1,
+                                          TRUE ~ 0))
+
+
+cont_table <- table(climate_df$cluster_time_rank, climate_df$Q22_bin)
+cont_table
+chisq.test(cont_table)
+
+
+mosaicplot(cont_table, shade = TRUE, main = "Cluster vs Q22 - Percentage of Scientists")
+
+
+```
+
+
+
+
+
+
+
+```{r}
+# 
+
+climate_df <- climate_df %>%
+  drop_na(Q23a, Q23b, Q23c, Q23d, Q23e, Q23f, Q23g, Q23h, Q23i, Q23j) %>%
+  mutate(Q23a_bin = case_when(Q23a == 0 | Q23a == 1 | Q23a == 2 ~ 0,
+                                         Q23a == 3 | Q23a == 4 ~ 1)) %>%
+  mutate(Q23b_bin = case_when(Q23b == 0 | Q23b == 1 ~ 1,
+                                          Q23b == 2| Q23b == 3 | Q23b == 4 ~ 0)) %>%
+  mutate(Q23c_bin = case_when(Q23c == 0 | Q23c == 1 ~ 1,
+                                         Q23c == 2 | Q23c == 3 | Q23c == 4 ~ 0)) %>%
+  mutate(Q23d_bin = case_when(Q23d == 0 | Q23d == 1 | Q23d == 2 ~ 0,
+                                         Q23d == 3 | Q23d == 4 ~ 1)) %>%
+  mutate(Q23e_bin = case_when(Q23e == 0 | Q23e == 1 ~ 1,
+                                         Q23e == 2| Q23e == 3 | Q23e == 4 ~ 0)) %>%
+  mutate(Q23f_bin = case_when(Q23f == 0 | Q23f == 1 | Q23f == 2 ~ 0,
+                                         Q23f == 3 | Q23f == 4 ~ 1)) %>%
+  mutate(Q23g_bin = case_when(Q23g == 0 | Q23g == 1 ~ 1,
+                                         Q23g == 2 | Q23g == 3 | Q23g == 4 ~ 0)) %>%
+  mutate(Q23h_bin = case_when(Q23h == 0 | Q23h == 1 | Q23h == 2 ~ 0,
+                                         Q23h == 3 | Q23h == 4 ~ 1)) %>%
+  mutate(Q23i_bin = case_when(Q23i == 0 | Q23i == 1 ~ 1,
+                                         Q23i == 2 | Q23i == 3 | Q23i == 4 ~ 0)) %>%
+  mutate(Q23j_bin = case_when(Q23j == 0 | Q23j == 1 ~ 1,
+                                         Q23j == 2 | Q23j == 3 | Q23j == 4 ~ 0)) %>%
+  mutate(Q23_bin_total = Q23a_bin + Q23b_bin + Q23c_bin + Q23d_bin + Q23e_bin + Q23f_bin +
+           Q23g_bin + Q23h_bin + Q23i_bin + Q23j_bin)
+```
+
+Plot for Q23
+```{r}
+climate_df %>%
+  ggplot(aes(x = as_factor(cluster_time_rank),
+             y = Q23_bin_total,
+             fill = as_factor(cluster_time_rank))) +
+  geom_boxplot() +
+  scale_fill_manual(values = cluster_colors) +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 8)) +
+  labs(x = "Cluster",
+       y = "Q23 cumulative score",
+       title = "Q23 Score (Causes of climate change) by cluster")
+
+
+```
+
+Alternative plot for Q23 scores using jitter
+```{r}
+climate_df %>%
+  ggplot(aes(x = as_factor(cluster_time_rank),
+             y = Q23_bin_total,
+             fill = as_factor(cluster_time_rank))) +
+  geom_boxplot(aes(alpha = 0.1)) +
+  geom_jitter(aes(color = as_factor(cluster_time_rank)),
+              alpha = 0.5) +
+  theme_light() +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 8)) +
+  labs(x = "Cluster",
+       y = "Cumulative Score on Causes of Climate Change",
+       title = "Score on 'Causes of climate change' Questions by Cluster") +
+  scale_fill_manual(values = cluster_colors) +
+  scale_color_manual(values = cluster_colors)
+
+
+```
+
+
+
+
+Differences in how to slow down climate change by cluster
+
+```{r}
+climate_df <- climate_df %>%
+  drop_na(Q24a, Q24b, Q24c, Q24d, Q24e, Q24f, Q24g, Q24h, Q24i, Q24j, Q24k) %>%
+  mutate(Q24a_bin = case_when(Q24a == 0 | Q24a == 1 | Q24a == 2 ~ 0,
+                                         Q24a == 3 | Q24a == 4 ~ 1)) %>%
+  mutate(Q24b_bin = case_when(Q24b == 0 | Q24b == 1 | Q24b == 2 ~ 0,
+                                         Q24b == 3 | Q24b == 4 ~ 1)) %>%
+  mutate(Q24c_bin = case_when(Q24c == 0 | Q24c == 1 | Q24c == 2 ~ 0,
+                                         Q24c == 3 | Q24c == 4 ~ 1)) %>%
+  mutate(Q24d_bin = case_when(Q24d == 0 | Q24d == 1 ~ 1,
+                                          Q24d == 2 | Q24d == 3 | Q24d == 4 ~ 0)) %>%
+  mutate(Q24e_bin = case_when(Q24e == 0 | Q24e == 1 | Q24e == 2 ~ 0,
+                                         Q24e == 3 | Q24e == 4 ~ 1)) %>%
+  mutate(Q24f_bin = case_when(Q24f == 0 | Q24f == 1 ~ 1,
+                                         Q24f == 2 | Q24f == 3 | Q24f == 4 ~ 0)) %>%
+  mutate(Q24g_bin = case_when(Q24g == 0 | Q24g == 1 | Q24g == 2 ~ 0,
+                                         Q24g == 3 | Q24g == 4 ~ 1)) %>%
+  mutate(Q24h_bin = case_when(Q24h == 0 | Q24h == 1 | Q24h == 2 ~ 0,
+                                         Q24h == 3 | Q24h == 4 ~ 1)) %>%
+  mutate(Q24i_bin = case_when(Q24i == 0 | Q24i == 1 ~ 1,
+                                         Q24i == 2 | Q24i == 3 | Q24i == 4 ~ 0)) %>%
+  mutate(Q24j_bin = case_when(Q24j == 0 | Q24j == 1 | Q24j == 2 ~ 0,
+                                         Q24j == 3 | Q24j == 4 ~ 1)) %>%
+  mutate(Q24k_bin = case_when(Q24k == 0 | Q24k == 1 | Q24k == 2 ~ 0,
+                                         Q24k == 3 | Q24k == 4 ~ 1)) %>%
+  mutate(Q24_bin_total = Q24a_bin + Q24b_bin + Q24c_bin + Q24d_bin + Q24e_bin +
+           Q24f_bin + Q24g_bin + Q24h_bin + Q24i_bin + Q24j_bin + Q24k_bin)
+```
+
+Initial plot for Q24
+
+```{r}
+climate_df %>%
+  ggplot(aes(x = as_factor(cluster_time_rank),
+             y = Q24_bin_total,
+             fill = as_factor(cluster_time_rank))) +
+  geom_boxplot() +
+  scale_fill_manual(values = cluster_colors) +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 8)) +
+  labs(x = "Cluster",
+       y = "Q24 cumulative score",
+       title = "Q24 Score (Ways to slow down climate change) by cluster")
+
+
+
+```
+
+
+Alternative plot for Q24 with jitter
+
+```{r}
+
+climate_df %>%
+  ggplot(aes(x = as_factor(cluster_time_rank),
+             y = Q24_bin_total,
+             fill = as_factor(cluster_time_rank))) +
+  geom_boxplot(aes(alpha = 0.1)) +
+  geom_jitter(aes(color = as_factor(cluster_time_rank)),
+              alpha = 0.5) +
+  theme_light() +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 8)) +
+  labs(x = "Cluster",
+       y = "Cumulative Score on Ways to Slow Down Climate Change",
+       title = "Scores on 'Ways to Slow Down Climate Change' by Cluster") +
+  scale_fill_manual(values = cluster_colors) +
+  scale_color_manual(values = cluster_colors) 
+
+
+```
+
+
+
+
+
+
+## Q25 Which of the following...
+(a) is the most abundant greenhouse gas
+(b) amplifies the greenhouse gas effect the most?
+(c) should we be most concerned about when thinking about global warming? CO2
+
+
+```{r}
+
+climate_df <- climate_df %>%
+  mutate(Q25a_bin = case_when(Q25a == 2 ~ 1,
+                              TRUE ~ 0),
+         Q25b_bin = case_when(Q25b == 3 ~ 1,
+                              TRUE ~ 0),
+         Q25c_bin = case_when(Q25c == 1 ~ 1,
+                              TRUE ~ 0))
+
+
+```
+
+
+### Q25a
+
+```{r}
+
+
+cont_table_Q25a <- table(climate_df$cluster_time_rank, climate_df$Q25a_bin)
+cont_table_Q25a
+chisq.test(cont_table_Q25a)
+
+
+mosaicplot(cont_table_Q25a, shade = TRUE, main = "Cluster vs Q25a - Most abundant greenhouse gas")
+
+
+```
+
+
+
+
+### Q25b
+
+
+```{r}
+
+
+cont_table_Q25b <- table(climate_df$cluster_time_rank, climate_df$Q25b_bin)
+cont_table_Q25b
+chisq.test(cont_table_Q25b)
+
+
+mosaicplot(cont_table_Q25b, shade = TRUE, main = "Cluster vs Q25b - Amplifies greenhouse gas effect most")
+
+
+```
+
+
+
+
+### Q25c
+
+
+
+```{r}
+
+
+cont_table_Q25c <- table(climate_df$cluster_time_rank, climate_df$Q25c_bin)
+cont_table_Q25c
+chisq.test(cont_table_Q25c)
+
+
+mosaicplot(cont_table_Q25c, shade = TRUE, main = "Major vs Q25c - Most concerning")
+
+
+```
+
+
+
+
+
+## Q26 - How much do you agree or disagree with the following statements about Earth's climate?
+
+
+Recoding Q26 for t/F and then creating a total score out of 8
+```{r}
+
+climate_df <- climate_df %>%
+  drop_na(Q26a, Q26b, Q26c, Q26d, Q26e, Q26f, Q26g, Q26h) %>%
+  mutate(Q26a_bin = case_when(Q26a == 0 | Q26a == 1 ~ 1,
+                                         Q26a == 2 | Q26a == 3 | Q26a == 4 ~ 0)) %>%
+  mutate(Q26b_bin = case_when(Q26b == 0 | Q26b == 1 ~ 1,
+                                          Q26b == 2| Q26b == 3 | Q26b == 4 ~ 0)) %>%
+  mutate(Q26c_bin = case_when(Q26c == 0 | Q26c == 1 ~ 1,
+                                         Q26c == 2 | Q26c == 3 | Q26c == 4 ~ 0)) %>%
+  mutate(Q26d_bin = case_when(Q26d == 0 | Q26d == 1 | Q26d == 2 ~ 0,
+                                         Q26d == 3 | Q26d == 4 ~ 1)) %>%
+  mutate(Q26e_bin = case_when(Q26e == 0 | Q26e == 1 ~ 1,
+                                         Q26e == 2| Q26e == 3 | Q26e == 4 ~ 0)) %>%
+  mutate(Q26f_bin = case_when(Q26f == 0 | Q26f == 1 | Q26f == 2 ~ 0,
+                                         Q26f == 3 | Q26f == 4 ~ 1)) %>%
+  mutate(Q26g_bin = case_when(Q26g == 0 | Q26g == 1 ~ 1,
+                                         Q26g == 2 | Q26g == 3 | Q26g == 4 ~ 0)) %>%
+  mutate(Q26h_bin = case_when(Q26h == 0 | Q26h == 1 ~ 1,
+                                         Q26h == 2 | Q26h == 3 | Q26h == 4 ~ 0)) %>%
+  mutate(Q26_bin_total = Q26a_bin + Q26b_bin + Q26c_bin + Q26d_bin + Q26e_bin + Q26f_bin + Q26g_bin + Q26h_bin)
+
+
+```
+
+Initial plot for Q26
+
+```{r}
+
+climate_df %>%
+  ggplot(aes(x = as_factor(cluster_time_rank), y = Q26_bin_total, fill = as_factor(cluster_time_rank))) +
+  geom_boxplot() +
+  scale_fill_manual(values = cluster_colors) +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) +
+  labs(x = "Cluster",
+       y = "Q26 cumulative score",
+       title = "Q26 Score (Statements about Earth's climate) by cluster")
+
+```
+
+
+
+Alternative plot for Q26 using geom_jitter
+
+```{r}
+
+climate_df %>%
+  ggplot(aes(x = as_factor(cluster_time_rank), y = Q26_bin_total, fill = as_factor(cluster_time_rank))) +
+  geom_boxplot(aes(alpha = 0.1)) +
+  geom_jitter(aes(color = as_factor(cluster_time_rank)),
+              alpha = 0.5) +
+  theme_light() +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) +
+  labs(x = "Cluster",
+       y = "Cumulative score on Ctatements About Earth's Climate",
+       title = "Score on 'Statements about Earth's climate' Questions by Cluster") +
+  scale_fill_manual(values = cluster_colors) +
+  scale_color_manual(values = cluster_colors)
+
+
+
+```
+
+
+
+
+
+
+
+
+## Q28 (global warming as technical or social issue) differences by cluster assignment (boxplots and ANOVA results)
+
+```{r}
+
+climate_df %>%
+  ggplot(aes(x = as_factor(cluster_time_rank), y = Q28_social_norm, fill = as_factor(cluster_time_rank))) +
+  geom_boxplot() +
+  labs(x = "Cluster",
+       y = "Averaged Global Warming as Social Issue Score",
+       title = "Cluster Views of Global Warming as a Social Issue") +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 8)) +
+  scale_fill_manual(values = cluster_colors)
+
+
+```
+Using geom_jitter
+
+```{r}
+
+climate_df %>%
+  ggplot(aes(x = as_factor(cluster_time_rank), y = Q28_social_norm, fill = as_factor(cluster_time_rank))) +
+  geom_boxplot(aes(alpha = 0.1)) +
+  geom_jitter(aes(color = as_factor(cluster_time_rank)),
+              alpha = 0.5) +
+  labs(x = "Cluster",
+       y = "Averaged Global Warming as Social Issue Score",
+       title = "Cluster Views of Global Warming as a Social Issue") +
+  theme_light() +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 8)) +
+  scale_fill_manual(values = cluster_colors) +
+  scale_color_manual(values = cluster_colors)
+
+```
+
+
+
+
+### ANOVA for Q27 clusters and Q28 averaged social score
+
+```{r}
+#
+res.aov <- aov(Q28_social_norm ~ as_factor(cluster_time_rank), data = climate_df)
+summary(res.aov)
+
+TukeyHSD(res.aov)
+
+```
+
+
+
+```{r}
+
+climate_df %>%
+  ggplot(aes(x = as_factor(cluster_time_rank),
+             y = Q28_tech_norm,
+             fill = as_factor(cluster_time_rank))) +
+  geom_boxplot() +
+  labs(x = "Cluster",
+       y = "Averaged Global Warming as Technical Issue Score",
+       title = "Cluster Views of Global Warming as a Technical Issue") +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 8)) +
+  scale_fill_manual(values = cluster_colors)
+
+```
+Using geom_jitter instead
+
+```{r}
+
+climate_df %>%
+  ggplot(aes(x = as_factor(cluster_time_rank),
+             y = Q28_tech_norm,
+             fill = as_factor(cluster_time_rank))) +
+  geom_boxplot(aes(alpha = 0.1)) +
+  geom_jitter(aes(color = as_factor(cluster_time_rank)),
+              alpha = 0.5) +
+  labs(x = "Cluster",
+       y = "Averaged Global Warming as Technical Issue Score",
+       title = "Cluster Views of Global Warming as a Technical Issue") +
+  theme_light() +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 8)) +
+  scale_color_manual(values = cluster_colors) +
+  scale_fill_manual(values = cluster_colors)
+
+
+```
