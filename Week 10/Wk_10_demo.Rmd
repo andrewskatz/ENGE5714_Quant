@@ -209,7 +209,8 @@ career_interest_df %>%
              labeller = labeller(Q5_item = q5_labs)) +
   labs(x = "Cluster", y = "Proportion", fill = "", title = "Proportions of Q5 topic by cluster") +
   coord_flip() +
-  theme(plot.title = element_text(hjust = 0.5, size = 8))
+  theme(plot.title = element_text(hjust = 0.5, size = 8),
+        strip.text.x = element_text(size = 7))
 
 
 ```
