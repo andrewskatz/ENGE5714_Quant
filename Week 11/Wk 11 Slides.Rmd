@@ -1,9 +1,9 @@
 ---
-title: "Week 6 Slides"
-subtitle: "Multiple Regression"
+title: "Week 11 Slides"
+subtitle: "Review + Cluster Analysis"
 author: "Andrew Katz"
 institute: "Department of Engineering Education <br><br> Virginia Tech"
-date: "2021-02-23"
+date: "2021-03-30"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -40,9 +40,6 @@ xaringanExtra::use_panelset()
 
 * If you have questions about what I wrote, please let me know!
 
---
-
-### Course notes in a book available at this URL: https://andrewskatz.github.io/test_course_note/
 
 --
 
@@ -63,12 +60,15 @@ xaringanExtra::use_panelset()
 
 * April 13 - Cluster analysis + Reporting results
 
-* April 20 - Where to go next - Factor analysis, Multilevel models, Bayesian models
+* April 20 - Where to go next - Factor Analysis, Multilevel Models, Bayesian Models, Causal Inference
 
 * April 27 - Presentation Day 1
 
 * May 4 - Presentation Day 2 + Wrap up
 
+--
+
+#### Let's talk about presentation scheduling
 
 ---
 
@@ -77,7 +77,7 @@ xaringanExtra::use_panelset()
 
 ### Links for clustering
 
-#### 
+#### Mentzer and Jackson 2017
 
 ### Video options
 
@@ -97,6 +97,10 @@ xaringanExtra::use_panelset()
 
 --
 
+### Review basics ideas in general(ized) linear models
+
+--
+
 ### Review nonparametric tests
 
 --
@@ -104,13 +108,10 @@ xaringanExtra::use_panelset()
 ### Review Chi Square test of association
 
 
---
-
-### Review sample papers
 
 --
 
-### Cluster Analysis
+### _Brief_ Intro to Cluster Analysis
 
 --
 
@@ -124,26 +125,6 @@ class: inverse, middle, center
 
 
 # Review
-
-
----
-
-# Introduction to Regression
-
---
-
-* We will continue with regression this week
-
---
-
-* Reminder: **Simple regression involves one predictor and one outcome**
-
---
-
-* This week we move to multiple regression
-
-  * This involves multiple predictors (but still one continuous outcome)
-
 
 
 
@@ -428,22 +409,7 @@ $AIC = n  \ln{\frac{SSE}{n}} + 2k$
 
 ---
 
-# Methods of multiple regression
 
---
-
-* Hierarchical
-
-
---
-
-* Forced entry
-
---
-
-* Stepwise
-  * Forward
-  * Backward
 
 
 
@@ -540,6 +506,19 @@ $AIC = n  \ln{\frac{SSE}{n}} + 2k$
 
 ]
 
+
+---
+# False positives and false negatives
+
+
+---
+# More on p values
+
+
+---
+# More on confidence intervals
+
+
 ---
 
 class: center, inverse, middle
@@ -549,6 +528,8 @@ class: center, inverse, middle
 
 ---
 
+
+---
 
 
 ---
@@ -609,6 +590,19 @@ class: center, inverse, middle
 
 ## Compute similarities
 
+* Euclidean distance
+--
+
+* Manhattan distance
+
+--
+
+* Pearson correlation distance
+
+--
+
+### This produces a distance matrix
+
 ---
 
 # Step 3
@@ -621,5 +615,15 @@ class: center, inverse, middle
 # Design Choices
 
 * Type of clustering algorithm
+  * K-means
+  * Gaussian mixture model
+  * DBSCAN
+  * Hierarchical
+  * Ward
+  * HDBSCAN
 
 * Type of clustering rule
+  * Single linkage
+  * Complete linkage
+  * Average linkage
+  
