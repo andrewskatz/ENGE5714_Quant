@@ -93,7 +93,7 @@ xaringanExtra::use_panelset()
 
 --
 
-### Review semester goals
+### Ethics week :)
 
 --
 
@@ -424,11 +424,7 @@ $AIC = n  \ln{\frac{SSE}{n}} + 2k$
 
   * There are no general rules of thumb for "good" or "bad" fit
 
---
 
-### Bayesian Information Criteria (BIC)
-
-* Beyond the scope of our class
 
 ---
 
@@ -544,48 +540,86 @@ $AIC = n  \ln{\frac{SSE}{n}} + 2k$
 
 ]
 
-
 ---
 
-# Robust regression: bootstrapping
+class: center, inverse, middle
 
-
-
-
-
----
-
-# Dummy Predictors
-
-
-
----
-
-class: center, middle, inverse
-
-# Demo 
-Full example with Child Aggression data
-
----
-
-class: center, middle, inverse
-
-# Sample Paper
-
----
-
-class: center, middle, inverse
-
-# Week 6 Exercise
+# Nonparametric tests
 
 
 ---
 
 
 
+---
+
+
+class: center, inverse, middle
+
+# Chi Square Test of Association
+
+---
+
+# Contingency tables and the test statistic
+
+
+---
 
 
 
+---
+
+class: center, inverse, middle
+
+# Cluster Analysis
 
 
+---
 
+# What is the point?
+
+--
+
+* Grouping data points that are similar
+
+--
+
+* Data reduction for observations (as opposed to reduction of variables - that's factor analysis)
+
+---
+
+# Types of clustering
+
+* Centroid vs density-based
+
+* Flat vs hierarchical
+
+
+---
+
+# Step 1
+
+--
+
+## Feature selection
+
+---
+
+# Step 2
+
+## Compute similarities
+
+---
+
+# Step 3
+
+## Perform the actual clustering
+
+
+---
+
+# Design Choices
+
+* Type of clustering algorithm
+
+* Type of clustering rule
