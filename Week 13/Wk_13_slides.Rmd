@@ -235,14 +235,14 @@ class: center, inverse, middle
 [hierarchical clustering interactive demo](https://jydelort.appspot.com/resources/figue/demo.html "hierarchical clustering")
 
 ---
-
-
----
-
+Blank 1
 
 ---
-
+Blank 2
 
 ---
+Blank 3
 
+---
+Blank 4
   
