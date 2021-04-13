@@ -184,17 +184,20 @@ class: center, inverse, middle
 ## Compute similarities
 
 * Euclidean distance
+
 --
 
 * Manhattan distance
 
 --
 
-* Pearson correlation distance
+* Cosine distance
 
 --
 
 ### This produces a distance matrix
+
+_(Primarily useful for hierarchical methods)_
 
 ---
 
