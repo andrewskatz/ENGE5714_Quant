@@ -207,6 +207,7 @@ class: center, inverse, middle
 
 # Design Choices
 
+.pull-left[
 * Type of clustering algorithm
   * K-means
   * Gaussian mixture model
@@ -214,11 +215,14 @@ class: center, inverse, middle
   * Hierarchical
   * Ward
   * HDBSCAN
+]
 
+.pull-right[
 * Type of clustering rule
   * Single linkage
   * Complete linkage
   * Average linkage
+]
   
   
 ---
