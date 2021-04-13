@@ -1,0 +1,244 @@
+---
+title: "Week 13 Slides"
+subtitle: "Cluster Analysis"
+author: "Andrew Katz"
+institute: "Department of Engineering Education <br><br> Virginia Tech"
+date: "2021-04-13"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r setup-chunk, echo = FALSE, message = FALSE}
+library(tidyverse)
+library(car)
+
+
+xaringanExtra::use_panelset()
+
+
+```
+
+
+---
+
+.center[
+
+# Week 13 Announcements
+
+]
+
+--
+### I am working on grading your problem set 3
+
+--
+
+### I have commented on everyone's final project pitch.
+
+* If you have questions about what I wrote, please let me know!
+
+
+--
+
+### Don't forget about the feedback surveys
+
+
+---
+
+.center[
+# Week 13 Announcements
+]
+
+## New Schedule!
+
+
+* April 13 - Cluster analysis + Reporting results
+
+* April 20 - Where to go next: 
+  * Factor Analysis 
+  * Multilevel Models
+  * Bayesian Models
+  * Causal Inference
+  * Missing Data
+
+* April 27 - Presentation Day 1
+
+* May 4 - Presentation Day 2 + Wrap up
+
+--
+
+#### Let's talk about presentation scheduling (at the end of class)
+
+---
+
+.center[
+# Week 13 Reading Assignment
+
+### Links for clustering
+
+#### Mentzer and Jackson 2017
+
+### Video options
+
+
+]
+
+
+
+---
+
+
+# Today's Plan
+
+--
+
+### _Brief_ Intro to Cluster Analysis
+
+--
+
+#### Review basics of clustering
+
+--
+
+#### Two identification exercises
+
+--
+
+#### R Demo(s)
+
+--
+
+### Reviewing and Reporting Quant Studies
+
+---
+
+# Today's Goals
+
+--
+
+* Understand basic goal of clustering
+
+--
+
+* Understand how k-means clustering functions
+
+--
+
+* Understand how hierarchical clustering functions
+
+--
+
+* Identify where clustering might be used _in general eng. ed. settings_
+
+--
+
+* Identify where clustering might be used _in your own work_
+
+--
+
+* Implement clustering in R
+
+---
+
+class: center, inverse, middle
+
+# Cluster Analysis
+
+
+---
+
+# What is the point?
+
+--
+
+* Grouping data points that are similar
+
+--
+
+* Data reduction for observations (as opposed to reduction of variables - that's factor analysis)
+
+---
+
+# Types of clustering
+
+* Centroid vs density-based
+
+* Flat vs hierarchical
+
+
+---
+
+# Step 1
+
+--
+
+## Feature selection
+
+---
+
+# Step 2
+
+## Compute similarities
+
+* Euclidean distance
+--
+
+* Manhattan distance
+
+--
+
+* Pearson correlation distance
+
+--
+
+### This produces a distance matrix
+
+---
+
+# Step 3
+
+## Perform the actual clustering
+
+
+---
+
+# Design Choices
+
+* Type of clustering algorithm
+  * K-means
+  * Gaussian mixture model
+  * DBSCAN
+  * Hierarchical
+  * Ward
+  * HDBSCAN
+
+* Type of clustering rule
+  * Single linkage
+  * Complete linkage
+  * Average linkage
+  
+  
+---
+
+# Examples
+
+[k-means interactive demo](https://stanford.edu/class/engr108/visualizations/kmeans/kmeans.html "k-means")
+
+
+[hierarchical clustering interactive demo](https://jydelort.appspot.com/resources/figue/demo.html "hierarchical clustering")
+
+---
+
+
+---
+
+
+---
+
+
+---
+
+  
