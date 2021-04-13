@@ -1,4 +1,4 @@
-## Week 11 script
+## Week 13 Demo Script - Clustering
 
 library(tidyverse)
 library(cluster)
@@ -7,9 +7,7 @@ library(dendextend)
 library(reshape2)
 
 
-# not setting path since we're generating data directly in the script rather than loading in data
-#wd_path <- "G:/My Drive/AK Faculty/Teaching/ENGE 5714 - Quantitative Analysis Spring 2020/ENGE 5714 Quantitative Analysis - Shared materials/Week 11 - Cluster analysis"
-#setwd(wd_path)
+
 
 ## k-means clustering ----
 
