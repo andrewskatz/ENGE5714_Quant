@@ -1,0 +1,366 @@
+---
+title: "Week 14 Slides"
+subtitle: "Where to from here?"
+author: "Andrew Katz"
+institute: "Department of Engineering Education <br><br> Virginia Tech"
+date: "2021-04-20"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r setup-chunk, echo = FALSE, message = FALSE}
+library(tidyverse)
+library(car)
+
+
+xaringanExtra::use_panelset()
+
+
+```
+
+
+---
+
+.center[
+
+# Week 14 Announcements
+
+]
+
+--
+### Great work on problem set 3
+
+--
+
+### Problem Set 4 due 4/22
+
+--
+
+### I have assigned week 1 (4/27) and week 2 (5/04) for projects
+
+* Week 1 - Amy, Andrea, Alli, Rene, Sidd, Yasir
+
+* Week 2 - Abe, Isil, Jeremy, Matt, Maya, Melissa, and Taylor
+
+
+--
+
+### Don't forget about the feedback surveys
+
+
+---
+
+.center[
+# Presentation Expectations
+]
+
+## 
+
+--
+
+#### Let's talk about presentation scheduling (at the end of class)
+
+---
+
+.center[
+# Week 14 Reading Assignment
+
+### None :)
+
+
+]
+
+
+
+---
+
+
+# Today's Plan
+
+--
+
+### Causal Inference
+
+--
+
+#### Factor Analysis and Structural Equation Modeling
+
+--
+
+#### Hierarchical (aka Multilevel) Modeling
+
+--
+
+#### Missing Data
+
+--
+
+### Bayesian Data Analysis
+
+
+---
+
+---
+
+class: center, inverse, middle
+
+# Causal Inference
+
+
+---
+
+# What do we know about causal inference?
+
+(i.e., what does "Causation" even mean?)
+
+--
+
+
+---
+
+# Fundamental Problem of Causal Inference
+
+
+---
+
+# As Aside About Probabilistic Graphical Models (PGMs)
+
+* Notation
+  * Directed acyclic graphs (DAGs)
+  * Undirected graphs
+  * Factor graphs (do not confuse with factor analysis)
+
+---
+
+# PGMs - 2
+
+* 
+
+
+---
+
+# Common Approaches to Causal Inference
+
+* Randomized Control Trials
+
+---
+
+# Commons Approaches to Causal Inference - 2
+
+* Difference-in-differences
+
+
+---
+
+# Common Approaches to Causal Inference - 3
+
+* Instrumental Variables
+
+
+
+---
+
+# Common Approaches to Causal Inference - 4
+
+* Regression Discontinuity
+
+
+---
+
+class: inverse, middle, center
+
+# Factor Analysis
+
+---
+
+# What is the problem?
+
+* We want to measure latent traits
+
+* We want to measure relationships between latent traits
+
+---
+# How does Factor Analysis work?
+
+* 
+
+
+---
+class: inverse, middle, center
+
+# Hierarchical Models
+
+---
+# What is the problem?
+
+* The i.i.d. assumption
+
+* Might want to make one model or several individual models
+
+---
+
+# How does HLM/MLM work?
+
+* Account for nesting in the data
+
+
+---
+
+# Where might this come up?
+
+* Students nested in classrooms
+
+* Classrooms nested in universities
+
+* Employees nested in companies
+
+
+---
+
+class: inverse, middle, center
+
+# Missing Data
+
+---
+
+# What is the problem?
+
+* Data _might_ be systematically missing
+
+---
+
+# Kinds of missing data
+
+* Missing Completely at Random (MCAR)
+
+* Missing at Random (MAR)
+
+* Missing Not at Random (MNAR or NMAR)
+
+---
+
+# MCAR
+
+
+---
+
+# MAR
+
+
+---
+
+# NMAR
+
+$S=frac{\sum_{i=1}^{n}X_i}{n}\;\middle|\;X_i\sim\chi^2(k)$
+
+
+---
+class: center, inverse, middle
+
+Bayesian Inference
+
+---
+
+# What is the problem?
+
+* Point estimates
+
+* Assumptions behind p values and hypothesis testing
+
+---
+
+# Bayes Theorem
+
+$Pr(A|B)=\frac{\Pr(B|A)\Pr(A)}{\Pr(B|A)\Pr(A)+\Pr(B|\neg A)\Pr(\neg A)}$
+
+
+---
+
+$P(D\mid M) = \frac{P(D) * P(M\mid D)}{P(M)}$
+
+$P(D) = \sum_MP(M,D)$
+
+---
+
+# Step 1
+
+--
+
+## Feature selection
+
+---
+
+# Step 2
+
+## Compute similarities
+
+* Euclidean distance
+
+--
+
+* Manhattan distance
+
+--
+
+* Cosine distance
+
+--
+
+### This produces a distance matrix
+
+_(Primarily useful for hierarchical methods)_
+
+---
+
+# Step 3
+
+## Perform the actual clustering
+
+
+---
+
+# Design Choices
+
+.pull-left[
+* Type of clustering algorithm
+  * K-means
+  * Gaussian mixture model
+  * DBSCAN
+  * Hierarchical
+  * Ward
+  * HDBSCAN
+]
+
+.pull-right[
+* Type of clustering rule
+  * Single linkage
+  * Complete linkage
+  * Average linkage
+]
+  
+  
+---
+
+# Examples
+
+[k-means interactive demo](https://stanford.edu/class/engr108/visualizations/kmeans/kmeans.html "k-means")
+
+
+[hierarchical clustering interactive demo](https://jydelort.appspot.com/resources/figue/demo.html "hierarchical clustering")
+
+---
+Blank 1
+
+---
+Blank 2
+
+---
+Blank 3
+
+---
+Blank 4
+  
