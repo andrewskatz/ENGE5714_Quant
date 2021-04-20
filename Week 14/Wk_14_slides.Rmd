@@ -390,7 +390,7 @@ class: inverse, middle, center
 ---
 class: center, inverse, middle
 
-Bayesian Inference
+# Bayesian Inference
 
 ---
 
@@ -461,5 +461,5 @@ Blank 2
 Blank 3
 
 ---
-Blank 4
+
   
